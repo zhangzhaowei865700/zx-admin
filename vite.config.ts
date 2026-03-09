@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { viteMockServe } from 'vite-plugin-mock'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  // demo 模式部署到 GitHub Pages 时，base 设为仓库名路径
+  base: mode === 'demo' ? '/zx-admin/' : '/',
   plugins: [
     react(),
     viteMockServe({
@@ -28,4 +30,4 @@ export default defineConfig({
         : false,
     },
   },
-})
+}))
