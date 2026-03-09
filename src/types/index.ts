@@ -55,4 +55,5 @@ export interface Tenant {
 }
 
 export * from './platform/message'
+export * from './platform/dictionary'
 export * from './tenant'

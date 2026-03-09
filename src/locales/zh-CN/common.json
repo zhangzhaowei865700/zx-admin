@@ -107,5 +107,7 @@
   "noMatchMenu": "无匹配菜单",
   "viewAll": "查看全部",
   "noMessages": "暂无消息",
-  "loading": "加载中..."
+  "loading": "加载中...",
+  "newVersionAvailable": "检测到新版本，请刷新页面以获取最新功能",
+  "refreshNow": "立即刷新"
 }

@@ -14,7 +14,6 @@ const isTenantAdminPath = (path: string) => path.startsWith('/tenant-admin/')
 /** 获取当前后台的首页路径 */
 const getHomePath = (path: string) => {
   if (isTenantAdminPath(path)) {
-    // 从 /tenant-admin/123/xxx 中提取 /tenant-admin/123
     const match = path.match(/^\/tenant-admin\/[^/]+/)
     return match ? match[0] : path
   }
@@ -40,10 +39,8 @@ export const MultiTabs: React.FC = () => {
 
   const isTenant = isTenantAdminPath(location.pathname)
   const homePath = getHomePath(location.pathname)
-  // 当前后台的路径前缀，用于 scope 过滤
   const scope = isTenant ? homePath : '/'
 
-  /** 根据 tab path 动态获取当前语言的标签名（语言切换时自动更新） */
   const getTabLabel = useCallback((tabKey: string) => {
     if (isTenantAdminPath(tabKey)) {
       return getTenantMenuLabelByPath(tabKey)
@@ -51,7 +48,6 @@ export const MultiTabs: React.FC = () => {
     return getPlatformMenuLabelByPath(tabKey)
   }, [t])
 
-  // 只显示当前后台的标签页（不同商户互相隔离）
   const filteredTabs = useMemo(
     () => isTenant
       ? tabs.filter((t) => t.key.startsWith(homePath))
@@ -59,7 +55,6 @@ export const MultiTabs: React.FC = () => {
     [tabs, isTenant, homePath]
   )
 
-  // 路由变化时自动添加标签
   useEffect(() => {
     const label = isTenant
       ? getTenantMenuLabelByPath(location.pathname)
@@ -83,7 +78,6 @@ export const MultiTabs: React.FC = () => {
     (targetKey: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
       if (action === 'remove' && typeof targetKey === 'string') {
         removeTab(targetKey)
-        // 如果关闭的是当前标签，导航到新的活动标签
         const { activeTabKey: newActive } = useAppStore.getState()
         if (targetKey === location.pathname) {
           navigate(newActive)
@@ -100,7 +94,6 @@ export const MultiTabs: React.FC = () => {
         label: t('refreshCurrent'),
         onClick: ({ domEvent }) => {
           domEvent.stopPropagation()
-          // 通过导航到空路由再回来实现刷新
           navigate(tabKey, { replace: true })
         },
       },

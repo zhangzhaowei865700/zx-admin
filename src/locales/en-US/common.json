@@ -107,5 +107,7 @@
   "noMatchMenu": "No matching menus",
   "viewAll": "View All",
   "noMessages": "No messages",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "newVersionAvailable": "A new version is available. Please refresh to get the latest features.",
+  "refreshNow": "Refresh Now"
 }

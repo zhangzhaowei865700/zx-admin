@@ -14,6 +14,8 @@ export const queryKeys = {
     menus: ['system', 'menus'] as const,
     /** 部门树 */
     depts: ['system', 'depts'] as const,
+    /** 字典项（按类型编码） */
+    dictItems: (dictType: string) => ['system', 'dict', dictType] as const,
   },
   platform: {
     /** 租户列表 */
