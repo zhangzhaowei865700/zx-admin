@@ -77,7 +77,6 @@ export const TenantLayout: React.FC = () => {
     showWatermark,
     watermarkText,
     contentWidth,
-    menuAccordion,
     contentPadding,
   } = useAppStore()
 

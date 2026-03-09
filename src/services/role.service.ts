@@ -1,3 +1,4 @@
+import type React from 'react'
 import type { Menu, Dept } from '@/api/modules/platform/system'
 
 function convertAllMenus(items: Menu[]): { title: string; key: number; children: any[] }[] {
@@ -63,9 +64,9 @@ export function convertDeptToTreeData(depts: Dept[], search = ''): { title: stri
 }
 
 /** 递归获取树中所有叶子节点的 key */
-export function getAllLeafKeys(treeData: { key: number; children?: any[] }[]): number[] {
-  const keys: number[] = []
-  const traverse = (nodes: { key: number; children?: any[] }[]) => {
+export function getAllLeafKeys(treeData: { key: React.Key; children?: any[] }[]): React.Key[] {
+  const keys: React.Key[] = []
+  const traverse = (nodes: { key: React.Key; children?: any[] }[]) => {
     nodes.forEach((node) => {
       if (node.children && node.children.length > 0) {
         traverse(node.children)

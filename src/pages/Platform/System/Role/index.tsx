@@ -172,11 +172,11 @@ export const RolePage: React.FC = () => {
   }
 
   const handleMenuSelectAll = (checked: boolean) => {
-    setCheckedMenuKeys(checked ? getAllLeafKeys(convertMenuToTreeData(menuTree, menuSearch)) : [])
+    setCheckedMenuKeys(checked ? getAllLeafKeys(convertMenuToTreeData(menuTree, menuSearch)) as number[] : [])
   }
 
   const handleDeptSelectAll = (checked: boolean) => {
-    setCheckedDeptKeys(checked ? getAllLeafKeys(convertDeptToTreeData(deptTree, deptSearch)) : [])
+    setCheckedDeptKeys(checked ? getAllLeafKeys(convertDeptToTreeData(deptTree, deptSearch)) as number[] : [])
   }
 
   const handleToggleExpand = (type: 'menu' | 'dept') => {
