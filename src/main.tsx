@@ -25,7 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.MODE === 'demo' ? '/zx-admin' : undefined}>
           <App />
         </BrowserRouter>
       </ThemeProvider>
