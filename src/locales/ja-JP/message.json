@@ -1,0 +1,23 @@
+{
+  "title": "メッセージ",
+  "all": "すべて",
+  "announcement": "お知らせ",
+  "notification": "通知",
+  "privateMessage": "メッセージ",
+  "messageTitle": "タイトル",
+  "sender": "送信者",
+  "time": "日時",
+  "type": "タイプ",
+  "priority": "優先度",
+  "priorityNormal": "通常",
+  "priorityImportant": "重要",
+  "priorityUrgent": "緊急",
+  "markRead": "既読",
+  "batchRead": "一括既読",
+  "allRead": "全て既読にする",
+  "allReadSuccess": "全て既読にしました",
+  "markSuccess": "マークしました",
+  "confirmDeleteMessages": "{{count}} 件のメッセージを削除してよろしいですか？",
+  "unread": "未読",
+  "read": "既読"
+}

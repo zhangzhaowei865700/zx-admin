@@ -1,0 +1,85 @@
+{
+  "drawerTitle": "Settings",
+  "copySettings": "Copy Settings",
+  "resetSettings": "Reset Settings",
+  "copiedSuccess": "Settings copied to clipboard, replace defaultSettings.json",
+  "tabTheme": "Theme",
+  "tabLayout": "Layout",
+  "tabTabs": "Tabs",
+  "tabTransition": "Animation",
+  "tabTable": "Table",
+  "tabForm": "Form",
+  "tabSystem": "System",
+  "theme": {
+    "darkMode": "Dark Mode",
+    "primaryColor": "Primary Color",
+    "recommended": "Recommended",
+    "fontSize": "Font Size",
+    "borderRadius": "Border Radius",
+    "colorWeak": "Color Weak",
+    "grayMode": "Gray Mode",
+    "compactMode": "Compact Mode"
+  },
+  "layout": {
+    "sideLayout": "Side Layout",
+    "topLayout": "Top Layout",
+    "mixLayout": "Mix Layout",
+    "contentWidth": "Content Width",
+    "fluid": "Fluid",
+    "fixed": "Fixed",
+    "showHeader": "Show Header",
+    "fixedHeader": "Fixed Header",
+    "showSidebar": "Show Sidebar",
+    "fixedSidebar": "Fixed Sidebar",
+    "menuAccordion": "Menu Accordion",
+    "showFooter": "Show Footer",
+    "showBreadcrumb": "Show Breadcrumb",
+    "sidebarWidth": "Sidebar Width: {{value}}px",
+    "contentPadding": "Content Padding: {{value}}px",
+    "mobileLayoutTip": "Only mix layout is supported on mobile"
+  },
+  "tabs": {
+    "showTabs": "Show Tabs",
+    "tabStyle": "Tab Style",
+    "card": "Card",
+    "line": "Line",
+    "tabLimit": "Tab Limit",
+    "unlimited": "Unlimited",
+    "count": "{{count}}"
+  },
+  "transition": {
+    "pageTransition": "Page Transition",
+    "transitionType": "Type",
+    "fade": "Fade",
+    "slideLeft": "Slide Left",
+    "slideUp": "Slide Up",
+    "zoom": "Zoom",
+    "none": "None"
+  },
+  "table": {
+    "tableSize": "Table Size",
+    "large": "Large",
+    "medium": "Medium",
+    "small": "Small",
+    "tableBorder": "Table Border",
+    "tableResizable": "Resizable Columns"
+  },
+  "form": {
+    "formDisplay": "Form Display",
+    "modal": "Modal",
+    "drawer": "Drawer",
+    "formColumns": "Form Columns",
+    "singleColumn": "Single",
+    "doubleColumn": "Double"
+  },
+  "system": {
+    "systemName": "System Name",
+    "enterSystemName": "Enter system name",
+    "systemLogo": "System Logo",
+    "logoUrl": "Logo URL",
+    "showWatermark": "Show Watermark",
+    "watermarkText": "Watermark Text",
+    "defaultWatermark": "Default: system name",
+    "language": "Language"
+  }
+}

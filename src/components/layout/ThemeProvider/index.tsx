@@ -1,0 +1,52 @@
+import React, { useEffect, useMemo } from 'react'
+import { ConfigProvider, theme as antTheme } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
+import enUS from 'antd/locale/en_US'
+import jaJP from 'antd/locale/ja_JP'
+import { useAppStore } from '@/stores'
+import type { LocaleType } from '@/locales'
+
+const antdLocaleMap: Record<LocaleType, typeof zhCN> = {
+  'zh-CN': zhCN,
+  'en-US': enUS,
+  'ja-JP': jaJP,
+}
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { darkMode, primaryColor, compactMode, colorWeak, grayMode, fontSize, borderRadius, locale } = useAppStore()
+
+  const antdLocale = useMemo(() => antdLocaleMap[locale] || zhCN, [locale])
+
+  // 组合主题算法
+  const algorithms = []
+  if (darkMode) algorithms.push(antTheme.darkAlgorithm)
+  if (compactMode) algorithms.push(antTheme.compactAlgorithm)
+  if (algorithms.length === 0) algorithms.push(antTheme.defaultAlgorithm)
+
+  // CSS 滤镜模式（灰色/色弱）
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.toggle('gray-mode', grayMode)
+    root.classList.toggle('color-weak', colorWeak)
+  }, [grayMode, colorWeak])
+
+  // 暗黑模式 body 背景色
+  useEffect(() => {
+    document.body.style.backgroundColor = darkMode ? '#141414' : '#fff'
+  }, [darkMode])
+
+  return (
+    <ConfigProvider
+      locale={antdLocale}
+      theme={{
+        algorithm: algorithms,
+        token: { colorPrimary: primaryColor, colorLink: primaryColor, fontSize, borderRadius },
+        components: {
+          Pagination: { itemSize: 28 },
+        },
+      }}
+    >
+      {children}
+    </ConfigProvider>
+  )
+}

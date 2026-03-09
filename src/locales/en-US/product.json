@@ -1,0 +1,21 @@
+{
+  "title": "Products",
+  "productName": "Product Name",
+  "category": "Category",
+  "price": "Price",
+  "stock": "Stock",
+  "addProduct": "Add Product",
+  "editProduct": "Edit Product",
+  "editSuccess": "Updated successfully",
+  "addSuccess": "Added successfully",
+  "onSale": "On Sale",
+  "offSale": "Off Sale",
+  "batchOnSale": "Batch On Sale",
+  "batchOffSale": "Batch Off Sale",
+  "confirmDeleteProducts": "Confirm delete {{count}} products?",
+  "categoryElectronics": "Electronics",
+  "categoryFood": "Food",
+  "categoryClothing": "Clothing",
+  "categoryHome": "Home & Living",
+  "productIndex": "Product {{index}}"
+}

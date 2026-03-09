@@ -1,0 +1,21 @@
+{
+  "title": "商品一覧",
+  "productName": "商品名",
+  "category": "カテゴリ",
+  "price": "価格",
+  "stock": "在庫",
+  "addProduct": "商品追加",
+  "editProduct": "商品編集",
+  "editSuccess": "編集しました",
+  "addSuccess": "追加しました",
+  "onSale": "販売中",
+  "offSale": "非公開",
+  "batchOnSale": "一括公開",
+  "batchOffSale": "一括非公開",
+  "confirmDeleteProducts": "{{count}} 件の商品を削除してよろしいですか？",
+  "categoryElectronics": "電子機器",
+  "categoryFood": "食品",
+  "categoryClothing": "衣類",
+  "categoryHome": "ホーム＆リビング",
+  "productIndex": "商品{{index}}"
+}

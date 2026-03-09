@@ -1,0 +1,11 @@
+{
+  "title": "注文一覧",
+  "orderNo": "注文番号",
+  "customer": "顧客",
+  "amount": "金額",
+  "statusPending": "未払い",
+  "statusPaid": "支払済み",
+  "statusShipped": "発送済み",
+  "statusCompleted": "完了",
+  "confirmDeleteOrders": "{{count}} 件の注文を削除してよろしいですか？"
+}

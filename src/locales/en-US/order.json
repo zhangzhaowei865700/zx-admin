@@ -1,0 +1,11 @@
+{
+  "title": "Orders",
+  "orderNo": "Order No.",
+  "customer": "Customer",
+  "amount": "Amount",
+  "statusPending": "Pending",
+  "statusPaid": "Paid",
+  "statusShipped": "Shipped",
+  "statusCompleted": "Completed",
+  "confirmDeleteOrders": "Confirm delete {{count}} orders?"
+}

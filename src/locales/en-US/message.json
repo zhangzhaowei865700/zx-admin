@@ -1,0 +1,23 @@
+{
+  "title": "Inbox",
+  "all": "All",
+  "announcement": "Announcement",
+  "notification": "Notification",
+  "privateMessage": "Message",
+  "messageTitle": "Title",
+  "sender": "Sender",
+  "time": "Time",
+  "type": "Type",
+  "priority": "Priority",
+  "priorityNormal": "Normal",
+  "priorityImportant": "Important",
+  "priorityUrgent": "Urgent",
+  "markRead": "Read",
+  "batchRead": "Batch Read",
+  "allRead": "Mark All Read",
+  "allReadSuccess": "All marked as read",
+  "markSuccess": "Marked successfully",
+  "confirmDeleteMessages": "Confirm delete {{count}} messages?",
+  "unread": "Unread",
+  "read": "Read"
+}

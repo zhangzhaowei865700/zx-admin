@@ -1,0 +1,85 @@
+{
+  "drawerTitle": "项目配置",
+  "copySettings": "拷贝设置",
+  "resetSettings": "重置设置",
+  "copiedSuccess": "设置已复制到剪贴板，可替换 defaultSettings.json",
+  "tabTheme": "主题",
+  "tabLayout": "布局",
+  "tabTabs": "标签页",
+  "tabTransition": "动画",
+  "tabTable": "表格",
+  "tabForm": "表单",
+  "tabSystem": "系统",
+  "theme": {
+    "darkMode": "暗黑模式",
+    "primaryColor": "主题色",
+    "recommended": "推荐",
+    "fontSize": "字体大小",
+    "borderRadius": "圆角大小",
+    "colorWeak": "色弱模式",
+    "grayMode": "灰色模式",
+    "compactMode": "紧凑模式"
+  },
+  "layout": {
+    "sideLayout": "侧边栏布局",
+    "topLayout": "顶部布局",
+    "mixLayout": "混合布局",
+    "contentWidth": "内容区宽度",
+    "fluid": "流式",
+    "fixed": "固定",
+    "showHeader": "显示头部",
+    "fixedHeader": "固定头部",
+    "showSidebar": "显示侧边栏",
+    "fixedSidebar": "固定侧边栏",
+    "menuAccordion": "菜单手风琴",
+    "showFooter": "显示页脚",
+    "showBreadcrumb": "显示面包屑",
+    "sidebarWidth": "侧边栏宽度：{{value}}px",
+    "contentPadding": "内容区内边距：{{value}}px",
+    "mobileLayoutTip": "移动端仅支持混合布局"
+  },
+  "tabs": {
+    "showTabs": "显示标签页",
+    "tabStyle": "标签页风格",
+    "card": "卡片",
+    "line": "线条",
+    "tabLimit": "标签页上限",
+    "unlimited": "不限制",
+    "count": "{{count}} 个"
+  },
+  "transition": {
+    "pageTransition": "页面切换动画",
+    "transitionType": "动画类型",
+    "fade": "淡入淡出",
+    "slideLeft": "左滑",
+    "slideUp": "上滑",
+    "zoom": "缩放",
+    "none": "无"
+  },
+  "table": {
+    "tableSize": "表格大小",
+    "large": "大",
+    "medium": "中",
+    "small": "小",
+    "tableBorder": "表格边框",
+    "tableResizable": "可拖拽列宽"
+  },
+  "form": {
+    "formDisplay": "表单展示",
+    "modal": "弹窗",
+    "drawer": "抽屉",
+    "formColumns": "表单列数",
+    "singleColumn": "单列",
+    "doubleColumn": "双列"
+  },
+  "system": {
+    "systemName": "系统名称",
+    "enterSystemName": "请输入系统名称",
+    "systemLogo": "系统 Logo",
+    "logoUrl": "Logo URL",
+    "showWatermark": "显示水印",
+    "watermarkText": "水印文字",
+    "defaultWatermark": "默认使用系统名称",
+    "language": "语言"
+  }
+}

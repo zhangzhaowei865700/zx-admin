@@ -1,0 +1,49 @@
+{
+  "theme": {
+    "darkMode": false,
+    "primaryColor": "#1677ff",
+    "colorWeak": false,
+    "grayMode": false,
+    "compactMode": false,
+    "fontSize": 14,
+    "borderRadius": 6
+  },
+  "layout": {
+    "layoutMode": "mix",
+    "collapsed": false,
+    "sidebarWidth": 208,
+    "showHeader": true,
+    "fixedHeader": true,
+    "showSidebar": true,
+    "fixedSidebar": true,
+    "showFooter": true,
+    "showBreadcrumb": true,
+    "contentWidth": "fluid",
+    "menuAccordion": false,
+    "contentPadding": 24
+  },
+  "tabs": {
+    "showTabs": true,
+    "tabStyle": "card",
+    "maxTabs": 0
+  },
+  "transition": {
+    "enableTransition": true,
+    "transitionName": "fade"
+  },
+  "form": {
+    "formDisplayMode": "drawer",
+    "formColumns": 1
+  },
+  "system": {
+    "systemName": "ZX Admin",
+    "systemLogo": "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg",
+    "showWatermark": false,
+    "watermarkText": ""
+  },
+  "table": {
+    "tableSize": "large",
+    "tableBordered": false,
+    "tableResizable": false
+  }
+}

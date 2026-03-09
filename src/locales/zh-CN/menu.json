@@ -1,0 +1,12 @@
+{
+  "home": "首页",
+  "tenantManagement": "商户管理",
+  "systemManagement": "系统管理",
+  "userManagement": "用户管理",
+  "roleManagement": "角色管理",
+  "menuManagement": "菜单管理",
+  "inbox": "站内信",
+  "orderManagement": "订单管理",
+  "productManagement": "商品管理",
+  "storeSetting": "店铺设置"
+}

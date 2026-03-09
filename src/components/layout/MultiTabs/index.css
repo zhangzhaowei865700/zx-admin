@@ -1,0 +1,13 @@
+.multi-tabs-wrapper .ant-tabs {
+  margin-bottom: 0;
+}
+
+.multi-tabs-wrapper .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.multi-tab-label {
+  display: inline-block;
+  padding: 0 4px;
+  user-select: none;
+}

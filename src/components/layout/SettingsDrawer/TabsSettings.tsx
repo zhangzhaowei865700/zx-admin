@@ -1,0 +1,56 @@
+import React from 'react'
+import { Switch, Select, Segmented } from 'antd'
+import { useTranslation } from 'react-i18next'
+import { useAppStore } from '@/stores'
+import type { TabStyle } from '@/stores/useAppStore'
+
+const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <span>{label}</span>
+    {children}
+  </div>
+)
+
+export const TabsSettings: React.FC = () => {
+  const {
+    showTabs, setShowTabs,
+    tabStyle, setTabStyle,
+    maxTabs, setMaxTabs,
+  } = useAppStore()
+  const { t } = useTranslation('settings')
+
+  return (
+    <>
+      <SettingRow label={t('tabs.showTabs')}>
+        <Switch checked={showTabs} onChange={setShowTabs} />
+      </SettingRow>
+      <SettingRow label={t('tabs.tabStyle')}>
+        <Segmented
+          size="small"
+          value={tabStyle}
+          onChange={(v) => setTabStyle(v as TabStyle)}
+          options={[
+            { label: t('tabs.card'), value: 'card' },
+            { label: t('tabs.line'), value: 'line' },
+          ]}
+          disabled={!showTabs}
+        />
+      </SettingRow>
+      <SettingRow label={t('tabs.tabLimit')}>
+        <Select
+          value={maxTabs}
+          onChange={setMaxTabs}
+          options={[
+            { value: 0, label: t('tabs.unlimited') },
+            { value: 10, label: t('tabs.count', { count: 10 }) },
+            { value: 20, label: t('tabs.count', { count: 20 }) },
+            { value: 30, label: t('tabs.count', { count: 30 }) },
+          ]}
+          disabled={!showTabs}
+          style={{ width: 100 }}
+          size="small"
+        />
+      </SettingRow>
+    </>
+  )
+}

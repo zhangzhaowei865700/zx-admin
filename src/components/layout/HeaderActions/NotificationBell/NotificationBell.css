@@ -1,0 +1,11 @@
+@media (max-width: 768px) {
+  .notification-bell-popover.ant-popover {
+    inset-inline-start: 8px !important;
+    inset-inline-end: 8px !important;
+    width: auto !important;
+  }
+
+  .notification-bell-popover .ant-popover-inner {
+    max-width: calc(100vw - 16px);
+  }
+}

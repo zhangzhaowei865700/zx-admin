@@ -1,0 +1,23 @@
+{
+  "title": "站内信",
+  "all": "全部",
+  "announcement": "公告",
+  "notification": "通知",
+  "privateMessage": "私信",
+  "messageTitle": "标题",
+  "sender": "发送人",
+  "time": "时间",
+  "type": "类型",
+  "priority": "优先级",
+  "priorityNormal": "普通",
+  "priorityImportant": "重要",
+  "priorityUrgent": "紧急",
+  "markRead": "已读",
+  "batchRead": "批量已读",
+  "allRead": "全部已读",
+  "allReadSuccess": "全部已读",
+  "markSuccess": "标记成功",
+  "confirmDeleteMessages": "确认删除 {{count}} 条消息？",
+  "unread": "未读",
+  "read": "已读"
+}

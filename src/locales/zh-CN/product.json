@@ -1,0 +1,21 @@
+{
+  "title": "商品列表",
+  "productName": "商品名称",
+  "category": "分类",
+  "price": "价格",
+  "stock": "库存",
+  "addProduct": "新增商品",
+  "editProduct": "编辑商品",
+  "editSuccess": "编辑成功",
+  "addSuccess": "新增成功",
+  "onSale": "上架",
+  "offSale": "下架",
+  "batchOnSale": "批量上架",
+  "batchOffSale": "批量下架",
+  "confirmDeleteProducts": "确认删除 {{count}} 个商品？",
+  "categoryElectronics": "电子产品",
+  "categoryFood": "食品",
+  "categoryClothing": "服装",
+  "categoryHome": "家居",
+  "productIndex": "商品{{index}}"
+}

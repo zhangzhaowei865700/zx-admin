@@ -1,0 +1,85 @@
+{
+  "drawerTitle": "プロジェクト設定",
+  "copySettings": "設定をコピー",
+  "resetSettings": "設定をリセット",
+  "copiedSuccess": "設定をクリップボードにコピーしました",
+  "tabTheme": "テーマ",
+  "tabLayout": "レイアウト",
+  "tabTabs": "タブ",
+  "tabTransition": "アニメーション",
+  "tabTable": "テーブル",
+  "tabForm": "フォーム",
+  "tabSystem": "システム",
+  "theme": {
+    "darkMode": "ダークモード",
+    "primaryColor": "テーマカラー",
+    "recommended": "おすすめ",
+    "fontSize": "フォントサイズ",
+    "borderRadius": "角丸サイズ",
+    "colorWeak": "色弱モード",
+    "grayMode": "グレーモード",
+    "compactMode": "コンパクトモード"
+  },
+  "layout": {
+    "sideLayout": "サイドバーレイアウト",
+    "topLayout": "トップレイアウト",
+    "mixLayout": "ミックスレイアウト",
+    "contentWidth": "コンテンツ幅",
+    "fluid": "フルード",
+    "fixed": "固定",
+    "showHeader": "ヘッダー表示",
+    "fixedHeader": "ヘッダー固定",
+    "showSidebar": "サイドバー表示",
+    "fixedSidebar": "サイドバー固定",
+    "menuAccordion": "メニューアコーディオン",
+    "showFooter": "フッター表示",
+    "showBreadcrumb": "パンくずリスト表示",
+    "sidebarWidth": "サイドバー幅：{{value}}px",
+    "contentPadding": "コンテンツ余白：{{value}}px",
+    "mobileLayoutTip": "モバイルではミックスレイアウトのみ対応しています"
+  },
+  "tabs": {
+    "showTabs": "タブ表示",
+    "tabStyle": "タブスタイル",
+    "card": "カード",
+    "line": "ライン",
+    "tabLimit": "タブ上限",
+    "unlimited": "無制限",
+    "count": "{{count}} 個"
+  },
+  "transition": {
+    "pageTransition": "ページ切替アニメーション",
+    "transitionType": "アニメーションタイプ",
+    "fade": "フェード",
+    "slideLeft": "左スライド",
+    "slideUp": "上スライド",
+    "zoom": "ズーム",
+    "none": "なし"
+  },
+  "table": {
+    "tableSize": "テーブルサイズ",
+    "large": "大",
+    "medium": "中",
+    "small": "小",
+    "tableBorder": "テーブル枠線",
+    "tableResizable": "列幅のドラッグ変更"
+  },
+  "form": {
+    "formDisplay": "フォーム表示",
+    "modal": "モーダル",
+    "drawer": "ドロワー",
+    "formColumns": "フォーム列数",
+    "singleColumn": "1列",
+    "doubleColumn": "2列"
+  },
+  "system": {
+    "systemName": "システム名",
+    "enterSystemName": "システム名を入力",
+    "systemLogo": "システムロゴ",
+    "logoUrl": "ロゴURL",
+    "showWatermark": "透かし表示",
+    "watermarkText": "透かしテキスト",
+    "defaultWatermark": "デフォルト：システム名",
+    "language": "言語"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "home": "ホーム",
+  "tenantManagement": "加盟店管理",
+  "systemManagement": "システム管理",
+  "userManagement": "ユーザー管理",
+  "roleManagement": "ロール管理",
+  "menuManagement": "メニュー管理",
+  "inbox": "メッセージ",
+  "orderManagement": "注文管理",
+  "productManagement": "商品管理",
+  "storeSetting": "店舗設定"
+}
