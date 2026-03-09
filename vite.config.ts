@@ -7,7 +7,7 @@ import { viteMockServe } from 'vite-plugin-mock'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig(({ mode }) => ({
-  // demo 模式部署到 GitHub Pages 时，base 设为仓库名路径
+  // demo 模式部署到 GitHub Pages 根路径
   base: mode === 'demo' ? '/zx-admin/' : '/',
   plugins: [
     react(),

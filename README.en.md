@@ -55,7 +55,7 @@ zx-admin is a multi-tenant, multi-platform enterprise management dashboard built
 
 ## Screenshots
 
-**Live Demo: [https://zhangzhaowei865700.github.io/](https://zhangzhaowei865700.github.io/)**
+**Live Demo: [https://zhangzhaowei865700.github.io/zx-admin/](https://zhangzhaowei865700.github.io/zx-admin/)**
 
 > Screenshots coming soon. Clone the project and run `npm run dev` to preview locally.
 
