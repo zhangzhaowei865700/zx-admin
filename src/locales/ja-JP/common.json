@@ -106,5 +106,6 @@
   "searchMenuPlaceholder": "メニューを検索...",
   "noMatchMenu": "一致するメニューなし",
   "viewAll": "すべて見る",
-  "noMessages": "メッセージなし"
+  "noMessages": "メッセージなし",
+  "loading": "読み込み中..."
 }

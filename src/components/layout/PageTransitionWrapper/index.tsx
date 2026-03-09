@@ -1,6 +1,7 @@
 import React, { Suspense, useRef, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Spin } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 
 const AnimatedOutlet: React.FC = () => {
@@ -30,11 +31,13 @@ const AnimatedOutlet: React.FC = () => {
 }
 
 export const PageTransitionWrapper: React.FC = () => {
+  const { t } = useTranslation()
+
   return (
     <Suspense
       fallback={
         <div style={{ padding: 50, textAlign: 'center' }}>
-          <Spin tip="加载中..." />
+          <Spin tip={t('common:loading')} />
         </div>
       }
     >

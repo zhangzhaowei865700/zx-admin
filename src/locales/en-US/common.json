@@ -106,5 +106,6 @@
   "searchMenuPlaceholder": "Search menus...",
   "noMatchMenu": "No matching menus",
   "viewAll": "View All",
-  "noMessages": "No messages"
+  "noMessages": "No messages",
+  "loading": "Loading..."
 }

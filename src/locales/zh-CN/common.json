@@ -106,5 +106,6 @@
   "searchMenuPlaceholder": "搜索菜单...",
   "noMatchMenu": "无匹配菜单",
   "viewAll": "查看全部",
-  "noMessages": "暂无消息"
+  "noMessages": "暂无消息",
+  "loading": "加载中..."
 }

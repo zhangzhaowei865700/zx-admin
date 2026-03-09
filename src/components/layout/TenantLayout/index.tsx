@@ -54,8 +54,8 @@ export const TenantLayout: React.FC = () => {
           sessionStorage.setItem(`tenant_name_${tenantId}`, res.name)
           setTenantName(res.name)
         }
-      }).catch(() => {
-        // ignore
+      }).catch((e) => {
+        console.warn('[TenantLayout] Failed to fetch tenant detail:', e)
       })
     }
   }, [tenantId])
@@ -148,8 +148,8 @@ export const TenantLayout: React.FC = () => {
   const handleLogout = useCallback(async () => {
     try {
       await logout()
-    } catch {
-      // ignore
+    } catch (e) {
+      console.warn('[TenantLayout] logout API failed:', e)
     }
     broadcastAuthEvent('logout')
     storeLogout()

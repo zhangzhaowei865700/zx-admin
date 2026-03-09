@@ -117,8 +117,8 @@ export const AppLayout: React.FC = () => {
   const handleLogout = useCallback(async () => {
     try {
       await logout()
-    } catch {
-      // ignore error
+    } catch (e) {
+      console.warn('[AppLayout] logout API failed:', e)
     }
     broadcastAuthEvent('logout')
     storeLogout()
