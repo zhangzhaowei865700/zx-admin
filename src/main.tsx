@@ -1,4 +1,10 @@
-import React from 'react'
+// 过滤 antd 内部 findDOMNode 废弃警告（antd 尚未完全移除该 API 调用）
+const originalError = console.error
+console.error = (...args: Parameters<typeof console.error>) => {
+  if (typeof args[0] === 'string' && args[0].includes('findDOMNode is deprecated')) return
+  originalError.apply(console, args)
+}
+
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, HashRouter } from 'react-router-dom'
 import { ThemeProvider } from './components/layout/ThemeProvider'
@@ -17,6 +23,8 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
+      staleTime: 5 * 60 * 1000,   // 5 分钟内数据视为新鲜，不会重新请求
+      gcTime: 10 * 60 * 1000,     // 10 分钟后未使用的缓存被回收
     },
   },
 })
@@ -26,13 +34,11 @@ const queryClient = new QueryClient({
 const Router = import.meta.env.MODE === 'demo' ? HashRouter : BrowserRouter
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <Router basename={import.meta.env.MODE === 'demo' ? undefined : import.meta.env.VITE_BASE_PATH}>
-          <App />
-        </Router>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <Router basename={import.meta.env.MODE === 'demo' ? undefined : import.meta.env.VITE_BASE_PATH}>
+        <App />
+      </Router>
+    </ThemeProvider>
+  </QueryClientProvider>
 )

@@ -53,8 +53,8 @@ export const NotificationBell: React.FC = () => {
     try {
       const count = await getUnreadCount()
       setUnreadCount(count)
-    } catch {
-      // ignore
+    } catch (e) {
+      console.warn('[NotificationBell] Failed to fetch unread count:', e)
     }
   }, [setUnreadCount])
 
@@ -71,8 +71,8 @@ export const NotificationBell: React.FC = () => {
         type: type === 'all' || !type ? undefined : (type as MessageType),
       })
       setMessages(result.list)
-    } catch {
-      // ignore
+    } catch (e) {
+      console.warn('[NotificationBell] Failed to fetch messages:', e)
     }
     setLoading(false)
   }, [])

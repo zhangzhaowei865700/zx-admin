@@ -3,6 +3,7 @@ import { EditableProTable as AntEditableProTable } from '@ant-design/pro-compone
 import type { EditableProTableProps, ProColumns } from '@ant-design/pro-components'
 import { Tooltip } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 import { ExportModal } from './ExportModal'
 import { ResizableHeaderCell } from './ResizableHeaderCell'
@@ -27,6 +28,7 @@ function EditableProTable<T extends Record<string, any>, U extends Record<string
     ...restProps
   } = props
   const { tableSize, tableBordered, tableResizable } = useAppStore()
+  const { t } = useTranslation()
   const dataRef = useRef<T[]>([])
   const [exportOpen, setExportOpen] = useState(false)
   const [selectedRows, setSelectedRows] = useState<T[]>([])
@@ -44,7 +46,7 @@ function EditableProTable<T extends Record<string, any>, U extends Record<string
   const mergedOptionsRender: typeof optionsRender = exportable
     ? (p, defaultDoms) => {
         const exportIcon = (
-          <Tooltip key="export" title="导出">
+          <Tooltip key="export" title={t('common:export')}>
             <DownloadOutlined
               style={{ fontSize: 17, cursor: 'pointer' }}
               onClick={() => setExportOpen(true)}

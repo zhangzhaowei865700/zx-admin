@@ -106,5 +106,8 @@
   "searchMenuPlaceholder": "Search menus...",
   "noMatchMenu": "No matching menus",
   "viewAll": "View All",
-  "noMessages": "No messages"
+  "noMessages": "No messages",
+  "loading": "Loading...",
+  "newVersionAvailable": "A new version is available. Please refresh to get the latest features.",
+  "refreshNow": "Refresh Now"
 }

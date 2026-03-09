@@ -1,25 +1,13 @@
 import { useMemo, useCallback, useState, useEffect, memo } from 'react'
 import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom'
-import { Avatar, Dropdown, Modal, Form, Input, message, theme as antTheme, ConfigProvider, Watermark, Grid } from 'antd'
-import { ProLayout } from '@ant-design/pro-components'
-import {
-  LogoutOutlined,
-  RollbackOutlined,
-  UserOutlined,
-  EditOutlined,
-} from '@ant-design/icons'
+import { RollbackOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
-import { logout } from '@/api/modules/platform/auth'
 import { getTenantDetail } from '@/api/modules/platform/tenant'
-import { removeToken, removeUserInfo, getUserInfo } from '@/utils/storage'
-import { broadcastAuthEvent, onAuthEvent } from '@/utils/authChannel'
 import { getTenantMenuItems } from '@/constants/tenantMenu'
 import type { MenuItem } from '@/constants/platformMenu'
-import { MultiTabs } from '../MultiTabs'
-import { PageTransitionWrapper } from '../PageTransitionWrapper'
-import { SettingsDrawer } from '../SettingsDrawer'
-import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, LockScreenOverlay, OverflowActions } from '../HeaderActions'
+import { BaseLayout } from '../BaseLayout'
+import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions } from '../HeaderActions'
 
 // 递归转换菜单数据为 ProLayout route 格式（带 tenantId 前缀）
 const convertMenuToRoutes = (items: MenuItem[], basePath: string): any[] =>
@@ -36,8 +24,10 @@ export const TenantLayout: React.FC = () => {
   const { tenantId } = useParams<{ tenantId: string }>()
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
+  const { saasName } = useUserStore()
+  const { systemLogo } = useAppStore()
+
   const [tenantName, setTenantName] = useState(() => {
-    // 优先从 URL 参数获取，其次从 sessionStorage 缓存读取
     const nameFromUrl = searchParams.get('name')
     if (nameFromUrl) {
       sessionStorage.setItem(`tenant_name_${tenantId}`, nameFromUrl)
@@ -54,57 +44,11 @@ export const TenantLayout: React.FC = () => {
           sessionStorage.setItem(`tenant_name_${tenantId}`, res.name)
           setTenantName(res.name)
         }
-      }).catch(() => {
-        // ignore
+      }).catch((e) => {
+        console.warn('[TenantLayout] Failed to fetch tenant detail:', e)
       })
     }
   }, [tenantId])
-
-  const { token: themeToken } = antTheme.useToken()
-
-  const {
-    collapsed, setCollapsed,
-    layoutMode, setLayoutMode,
-    showHeader,
-    fixedHeader,
-    showSidebar,
-    fixedSidebar,
-    showFooter,
-    sidebarWidth,
-    darkMode,
-    primaryColor,
-    compactMode,
-    showWatermark,
-    watermarkText,
-    contentWidth,
-    contentPadding,
-  } = useAppStore()
-
-  const { userInfo: storeUserInfo, setUserInfo: setStoreUserInfo, logout: storeLogout, saasName } = useUserStore()
-
-  const [userInfo, setUserInfo] = useState(storeUserInfo)
-  const [profileVisible, setProfileVisible] = useState(false)
-  const screens = Grid.useBreakpoint()
-  const isMobile = !screens.md
-
-  // PC 端设置了 side/top 布局后切到移动端，自动回退为 mix
-  useEffect(() => {
-    if (isMobile && layoutMode !== 'mix') {
-      setLayoutMode('mix')
-    }
-  }, [isMobile, layoutMode, setLayoutMode])
-
-  useEffect(() => {
-    if (!storeUserInfo) {
-      const info = getUserInfo()
-      if (info) {
-        setUserInfo(info)
-        setStoreUserInfo(info)
-      }
-    } else {
-      setUserInfo(storeUserInfo)
-    }
-  }, [storeUserInfo, setStoreUserInfo])
 
   const basePath = `/tenant-admin/${tenantId}`
 
@@ -115,7 +59,7 @@ export const TenantLayout: React.FC = () => {
 
   const pathname = useMemo(() => location.pathname, [location.pathname])
 
-  // 精确匹配当前路径对应的菜单项，避免首页因前缀匹配始终高亮
+  // 精确匹配当前路径对应的菜单项
   const selectedKeys = useMemo(() => {
     const menuItems = getTenantMenuItems()
     for (const item of menuItems) {
@@ -145,210 +89,45 @@ export const TenantLayout: React.FC = () => {
     ]
   }, [pathname, basePath, tenantName])
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await logout()
-    } catch {
-      // ignore
+  const handleExtraMenuClick = useCallback((key: string) => {
+    if (key === 'backToPlatform') {
+      navigate('/tenant')
     }
-    broadcastAuthEvent('logout')
-    storeLogout()
-    removeToken()
-    removeUserInfo()
-    message.success(t('common:loggedOut'))
-    navigate('/login')
-  }, [navigate, storeLogout])
-
-  // 监听其他标签页的登出/切换平台事件
-  useEffect(() => {
-    return onAuthEvent((event) => {
-      if (event === 'logout' || event === 'switchPlatform') {
-        storeLogout()
-        removeToken()
-        removeUserInfo()
-        navigate('/login')
-      }
-    })
-  }, [navigate, storeLogout])
-
-  const handleBackToPlatform = useCallback(() => {
-    navigate('/tenant')
   }, [navigate])
 
-  const handleProfileSubmit = useCallback(() => {
-    message.success(t('common:saveSuccess'))
-    setProfileVisible(false)
-  }, [])
+  const extraMenuItems = useMemo(() => [
+    { key: 'backToPlatform', label: t('common:backToPlatform'), icon: <RollbackOutlined /> },
+  ], [t])
 
-  const menuItemRender = useCallback((item: any, defaultDom: React.ReactNode) => {
-    if (!item.path) return defaultDom
-    return (
-      <span
-        role="button"
-        tabIndex={0}
-        style={{ display: 'block', width: '100%', cursor: 'pointer' }}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          navigate(item.path)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            navigate(item.path)
-          }
-        }}
-      >
-        {defaultDom}
-      </span>
-    )
-  }, [navigate])
+  const headerActions = useMemo(() => (
+    <OverflowActions gap={4}>
+      <MenuSearch menuItems={getTenantMenuItems()} basePath={basePath} />
+      <DarkModeToggle />
+      <LockScreenButton />
+      <FullScreen />
+    </OverflowActions>
+  ), [basePath])
 
-  const handleMenuClick = useCallback(({ key }: { key: string }) => {
-    if (key === 'profile') {
-      setProfileVisible(true)
-    } else if (key === 'backToPlatform') {
-      handleBackToPlatform()
-    } else if (key === 'logout') {
-      handleLogout()
-    }
-  }, [handleLogout, handleBackToPlatform])
-
-  const rightContentRender = useCallback(() => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', overflow: 'hidden' }}>
-      <OverflowActions gap={4}>
-        <MenuSearch menuItems={getTenantMenuItems()} basePath={basePath} />
-        <DarkModeToggle />
-        <LockScreenButton />
-        <FullScreen />
-      </OverflowActions>
-      <span style={{ width: 1, height: 20, flexShrink: 0, background: themeToken.colorBorderSecondary, margin: isMobile ? '0 4px' : '0 8px' }} />
-      <Dropdown
-        menu={{
-          items: [
-            { key: 'profile', label: t('common:profileCenter'), icon: <UserOutlined /> },
-            { key: 'backToPlatform', label: t('common:backToPlatform'), icon: <RollbackOutlined /> },
-            { type: 'divider' as const },
-            { key: 'logout', label: t('common:logoutBtn'), icon: <LogoutOutlined /> },
-          ],
-          onClick: handleMenuClick,
-        }}
-        trigger={['click']}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            cursor: 'pointer',
-            padding: '0 8px',
-            borderRadius: 6,
-            height: 32,
-            transition: 'background-color 0.2s',
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = themeToken.colorFillTertiary }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
-        >
-          <Avatar
-            style={{ backgroundColor: themeToken.colorPrimary, flexShrink: 0 }}
-            size="small"
-            src={userInfo?.avatar}
-          >
-            {userInfo?.nickname?.[0] || userInfo?.username?.[0] || 'A'}
-          </Avatar>
-          {!isMobile && (
-            <span style={{ color: themeToken.colorText, fontSize: 14, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {userInfo?.nickname || userInfo?.username || t('common:admin')}
-            </span>
-          )}
-        </div>
-      </Dropdown>
-    </div>
-  ), [userInfo, handleMenuClick, themeToken, isMobile, basePath, t])
+  const layoutTitle = saasName ? `${saasName} - ${tenantName}` : tenantName
+  const watermarkContent = saasName ? `${saasName} - ${tenantName}` : tenantName
 
   return (
-    <>
-      <ProLayout
-      key={`${layoutMode}-${isMobile}`}
-      title={saasName ? `${saasName} - ${tenantName}` : tenantName}
+    <BaseLayout
+      title={layoutTitle}
+      logo={systemLogo}
       route={staticRoute}
-      location={{ pathname }}
-      layout={layoutMode}
-      contentWidth={contentWidth === 'fixed' ? 'Fixed' : 'Fluid'}
-      collapsed={collapsed}
-      onCollapse={setCollapsed}
-      onMenuHeaderClick={() => navigate(basePath)}
-      menuItemRender={menuItemRender}
-      menuFooterRender={undefined}
-      rightContentRender={showHeader ? rightContentRender : false}
-      fixSiderbar={fixedSidebar}
-      fixedHeader={fixedHeader}
-      headerRender={showHeader ? undefined : false}
-      menuRender={layoutMode === 'top' ? undefined : (showSidebar ? undefined : false)}
-      siderWidth={sidebarWidth}
+      homePath={basePath}
+      headerActions={headerActions}
+      extraMenuItems={extraMenuItems}
+      onExtraMenuClick={handleExtraMenuClick}
+      footerText={tenantName}
+      watermarkContent={watermarkContent}
       breadcrumbProps={{
-        itemRender: (route) => <span>{route.title}</span>,
+        itemRender: (route: any) => <span>{route.title}</span>,
         items: breadcrumbItems,
       }}
-      menuProps={{
-        selectedKeys,
-      }}
-      footerRender={showFooter ? () => (
-        <div style={{ textAlign: 'center', padding: '16px 0', color: themeToken.colorTextSecondary }}>
-          {tenantName} ©{new Date().getFullYear()}
-        </div>
-      ) : false}
-      navTheme={darkMode ? 'realDark' : 'light'}
-      token={{
-        header: {
-          colorBgHeader: darkMode ? '#141414' : '#ffffff',
-          colorBgScrollHeader: darkMode ? '#141414' : '#ffffff',
-        },
-        pageContainer: {
-          paddingBlockPageContainerContent: contentPadding,
-          paddingInlinePageContainerContent: contentPadding,
-        },
-      }}
-    >
-      <Watermark content={showWatermark ? (watermarkText || (saasName ? `${saasName} - ${tenantName}` : tenantName)) : ''}>
-        <ConfigProvider
-          theme={{
-            algorithm: [
-              darkMode ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-              ...(compactMode ? [antTheme.compactAlgorithm] : []),
-            ],
-            token: { colorPrimary: primaryColor, colorLink: primaryColor },
-          }}
-        >
-          <MultiTabs />
-          <PageTransitionWrapper />
-        </ConfigProvider>
-      </Watermark>
-        <Modal
-          title={t('common:profileCenter')}
-          open={profileVisible}
-          onCancel={() => setProfileVisible(false)}
-          onOk={handleProfileSubmit}
-          okText={t('common:save')}
-        >
-          <Form layout="vertical" initialValues={userInfo ?? undefined}>
-            <Form.Item label={t('common:username')} name="username">
-              <Input disabled />
-            </Form.Item>
-            <Form.Item label={t('common:nickname')} name="nickname">
-              <Input prefix={<EditOutlined />} placeholder={t('common:enterNickname')} />
-            </Form.Item>
-            <Form.Item label={t('common:avatar')} name="avatar">
-              <Input prefix={<UserOutlined />} placeholder={t('common:avatarUrl')} />
-            </Form.Item>
-          </Form>
-        </Modal>
-    </ProLayout>
-
-      <SettingsDrawer />
-      <LockScreenOverlay />
-    </>
+      menuProps={{ selectedKeys }}
+    />
   )
 }
 

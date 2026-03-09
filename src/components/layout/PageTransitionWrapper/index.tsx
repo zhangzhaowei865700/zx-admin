@@ -1,7 +1,7 @@
 import React, { Suspense, useRef, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { Spin } from 'antd'
 import { useAppStore } from '@/stores'
+import { PageSkeleton } from '@/components/common/PageSkeleton'
 
 const AnimatedOutlet: React.FC = () => {
   const location = useLocation()
@@ -31,13 +31,7 @@ const AnimatedOutlet: React.FC = () => {
 
 export const PageTransitionWrapper: React.FC = () => {
   return (
-    <Suspense
-      fallback={
-        <div style={{ padding: 50, textAlign: 'center' }}>
-          <Spin tip="加载中..." />
-        </div>
-      }
-    >
+    <Suspense fallback={<PageSkeleton type="table" />}>
       <AnimatedOutlet />
     </Suspense>
   )

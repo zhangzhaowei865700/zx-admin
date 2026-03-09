@@ -1,6 +1,9 @@
 import CryptoJS from 'crypto-js'
 
-const CRYPTO_KEY = import.meta.env.VITE_APP_SECRET || 'default-key'
+const CRYPTO_KEY = import.meta.env.VITE_APP_SECRET
+if (!CRYPTO_KEY) {
+  console.warn('[crypto] VITE_APP_SECRET is not set. Encryption/decryption will not work correctly.')
+}
 
 export function encrypt(data: any): string {
   const jsonString = JSON.stringify(data)
