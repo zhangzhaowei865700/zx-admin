@@ -94,19 +94,29 @@ export const TenantPage: React.FC = () => {
       valueType: 'option',
       width: 150,
       fixed: 'right',
-      render: (_: unknown, record: Tenant) => (
-        <Space size="middle">
-          <a onClick={() => window.open(`/tenant-admin/${record.id}?name=${encodeURIComponent(record.name)}`, '_blank')}>{t('tenant:backend')}</a>
-          <HasPermission code="tenant:edit">
-            <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
-          </HasPermission>
-          <HasPermission code="tenant:delete">
-            <Popconfirm title={t('common:confirmDelete')} onConfirm={() => deleteMutation.mutate(record.id)}>
-              <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-            </Popconfirm>
-          </HasPermission>
-        </Space>
-      ),
+      render: (_: unknown, record: Tenant) => {
+        const getTenantUrl = () => {
+          const path = `/tenant-admin/${record.id}?name=${encodeURIComponent(record.name)}`
+          if (import.meta.env.MODE === 'demo') {
+            return `${import.meta.env.VITE_BASE_PATH || ''}/#${path}`
+          }
+          return `${import.meta.env.VITE_BASE_PATH || ''}${path}`
+        }
+
+        return (
+          <Space size="middle">
+            <a onClick={() => window.open(getTenantUrl(), '_blank')}>{t('tenant:backend')}</a>
+            <HasPermission code="tenant:edit">
+              <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
+            </HasPermission>
+            <HasPermission code="tenant:delete">
+              <Popconfirm title={t('common:confirmDelete')} onConfirm={() => deleteMutation.mutate(record.id)}>
+                <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+              </Popconfirm>
+            </HasPermission>
+          </Space>
+        )
+      },
     },
   ]
 
