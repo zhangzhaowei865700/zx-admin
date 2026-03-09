@@ -28,7 +28,7 @@
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node"></a>
 </p>
 
-[Live Demo](https://zhangzhaowei865700.github.io/ZX-Admin/) · [Quick Start](#-quick-start) · [Documentation](./docs) · [Changelog](./CHANGELOG.md)
+[Live Demo](https://zhangzhaowei865700.github.io/ZX-Admin/) · [Quick Start](#-quick-start)
 
 [中文](./README.md) | English
 

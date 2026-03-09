@@ -28,7 +28,7 @@
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node"></a>
 </p>
 
-[在线演示](https://zhangzhaowei865700.github.io/ZX-Admin/) · [快速开始](#快速开始) · [文档](./docs) · [更新日志](./CHANGELOG.md)
+[在线演示](https://zhangzhaowei865700.github.io/ZX-Admin/) · [快速开始](#快速开始)
 
 中文 | [English](./README.en.md)
 
