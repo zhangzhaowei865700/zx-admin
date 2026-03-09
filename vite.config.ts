@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig(({ mode }) => ({
   // demo 模式部署到 GitHub Pages 根路径
-  base: mode === 'demo' ? '/zx-admin/' : '/',
+  base: mode === 'demo' ? '/ZX-Admin/' : '/',
   plugins: [
     react(),
     viteMockServe({
