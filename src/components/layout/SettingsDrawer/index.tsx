@@ -16,7 +16,7 @@ const STORAGE_KEY = 'settings-float-ball-position'
 
 export const SettingsDrawer: React.FC = () => {
   const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState(() => {
+  const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     return saved ? JSON.parse(saved) : { x: window.innerWidth - 80, y: window.innerHeight - 120 }
   })

@@ -21,7 +21,7 @@ Multi-Platform Multi-Tenant Enterprise Management Dashboard
 
 [中文](./README.md) | English
 
-**[Contributing](./CONTRIBUTING.en.md)**
+**[Contributing](./CONTRIBUTING.en.md)** ｜ **[Live Demo](https://zhangzhaowei865700.github.io/zx-admin/)**
 
 </div>
 
@@ -54,6 +54,8 @@ zx-admin is a multi-tenant, multi-platform enterprise management dashboard built
 ---
 
 ## Screenshots
+
+**Live Demo: [https://zhangzhaowei865700.github.io/](https://zhangzhaowei865700.github.io/)**
 
 > Screenshots coming soon. Clone the project and run `npm run dev` to preview locally.
 

@@ -1,7 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { viteMockServe } from 'vite-plugin-mock'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig(({ mode }) => ({
   // demo 模式部署到 GitHub Pages 时，base 设为仓库名路径
@@ -20,14 +23,13 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: 3000,
-    proxy: {
-      // 开发环境：生产环境才代理到后端，开发环境走 mock
-      '/api': process.env.NODE_ENV === 'production'
-        ? {
+    proxy: process.env.NODE_ENV === 'production'
+      ? {
+          '/api': {
             target: 'http://localhost:9001',
             changeOrigin: true,
-          }
-        : false,
-    },
+          },
+        }
+      : undefined,
   },
 }))
