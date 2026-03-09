@@ -14,8 +14,13 @@ function handleUnauthorized() {
   removeUserInfo()
   message.error(i18n.t('common:loginExpired'))
   setTimeout(() => {
-    const basename = import.meta.env.VITE_BASE_PATH || ''
-    window.location.href = `${basename}/login`
+    if (import.meta.env.MODE === 'demo') {
+      // demo 模式使用 HashRouter
+      window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/#/login`
+    } else {
+      // 其他环境使用 BrowserRouter
+      window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/login`
+    }
   }, 300)
 }
 
@@ -68,7 +73,10 @@ service.interceptors.response.use(
       return data
     }
 
-    if (code === 401) {
+    // 登录相关接口的 401 不触发登录过期逻辑
+    const isLoginRequest = response.config.url?.includes('/auth/pre-login') ||
+                          response.config.url?.includes('/auth/login-platform')
+    if (code === 401 && !isLoginRequest) {
       handleUnauthorized()
       return Promise.reject(rawPayload)
     }
@@ -77,7 +85,10 @@ service.interceptors.response.use(
     return Promise.reject(rawPayload)
   },
   (error) => {
-    if (error?.response?.status === 401) {
+    // 登录相关接口的 401 不触发登录过期逻辑
+    const isLoginRequest = error?.config?.url?.includes('/auth/pre-login') ||
+                          error?.config?.url?.includes('/auth/login-platform')
+    if (error?.response?.status === 401 && !isLoginRequest) {
       handleUnauthorized()
       return Promise.reject(error)
     }
