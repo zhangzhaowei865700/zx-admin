@@ -14,7 +14,8 @@ function handleUnauthorized() {
   removeUserInfo()
   message.error(i18n.t('common:loginExpired'))
   setTimeout(() => {
-    window.location.href = '/login'
+    const basename = import.meta.env.VITE_BASE_PATH || ''
+    window.location.href = `${basename}/login`
   }, 300)
 }
 
