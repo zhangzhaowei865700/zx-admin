@@ -30,6 +30,8 @@
 
 [在线演示](https://zhangzhaowei865700.github.io/ZX-Admin/) · [快速开始](#快速开始)
 
+**👤 测试账号：** `admin` / `123456`
+
 中文 | [English](./README.en.md)
 
 </div>
@@ -452,10 +454,11 @@ ZX-Admin/
 
 ```bash
 # .env.development（默认使用 Mock）
-VITE_API_BASE_URL=             # 留空使用 Mock 服务
-VITE_CRYPTO_ENABLED=false      # 是否开启 AES 加密
-VITE_APP_KEY=merchant-admin    # 请求签名 Key
-VITE_APP_SECRET=dev-secret     # 请求签名 Secret
+VITE_API_BASE_URL=             # 留空使用 Mock 服务，填写真实 API 地址则对接后端
+VITE_CRYPTO_ENABLED=false      # 是否开启 AES 加密（生产环境建议 true）
+VITE_APP_KEY=merchant-admin    # 请求签名 Key（需与后端一致）
+VITE_APP_SECRET=dev-secret     # 请求签名 Secret（生产环境必须修改）
+VITE_BASE_PATH=/               # 部署子路径（如 GitHub Pages 用 /ZX-Admin/）
 ```
 
 ### 对接真实后端
@@ -464,13 +467,16 @@ VITE_APP_SECRET=dev-secret     # 请求签名 Secret
 
 ```bash
 # .env.development.local
-VITE_API_BASE_URL=http://your-backend-url.com
-VITE_CRYPTO_ENABLED=true
-VITE_APP_KEY=your-app-key
-VITE_APP_SECRET=your-app-secret
+VITE_API_BASE_URL=http://your-backend-url.com  # 后端 API 地址
+VITE_CRYPTO_ENABLED=true                        # 启用加密
+VITE_APP_KEY=your-app-key                       # 与后端约定的 Key
+VITE_APP_SECRET=your-app-secret                 # 与后端约定的 Secret
 ```
 
-> ⚠️ **注意**：所有请求会自动携带签名头（`X-App-Key`、`X-Timestamp`、`X-Nonce`、`X-Sign`），确保与后端签名算法一致。
+> ⚠️ **安全提示**：
+> - 所有请求会自动携带签名头（`X-App-Key`、`X-Timestamp`、`X-Nonce`、`X-Sign`），确保与后端签名算法一致
+> - 生产环境务必修改 `VITE_APP_SECRET` 并启用 `VITE_CRYPTO_ENABLED`
+> - 签名算法详见 `src/utils/sign.ts`，加密算法详见 `src/utils/crypto.ts`
 
 <br>
 
@@ -541,7 +547,7 @@ docker run -d -p 80:80 zx-admin
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Safari |
 | :-: | :-: | :-: | :-: |
-| 111+ | 117+ | 111+ | 18+ |
+| 90+ | 88+ | 90+ | 14+ |
 
 </div>
 
@@ -565,6 +571,118 @@ docker run -d -p 80:80 zx-admin
 
 ---
 
+## ❓ 常见问题
+
+<details>
+<summary><b>1. 如何切换到真实 API？</b></summary>
+
+<br>
+
+创建 `.env.development.local` 文件并配置后端地址：
+
+```bash
+VITE_API_BASE_URL=http://your-backend-url.com
+VITE_CRYPTO_ENABLED=true
+VITE_APP_KEY=your-app-key
+VITE_APP_SECRET=your-app-secret
+```
+
+重启开发服务器即可。
+
+</details>
+
+<details>
+<summary><b>2. 登录失败怎么办？</b></summary>
+
+<br>
+
+**使用 Mock 模式**：
+- 确保 `VITE_API_BASE_URL` 为空
+- 使用默认账号：`admin` / `123456`
+
+**对接真实后端**：
+- 检查后端 API 地址是否正确
+- 确认 `VITE_APP_KEY` 和 `VITE_APP_SECRET` 与后端一致
+- 查看浏览器控制台网络请求，检查签名是否匹配
+- 确认后端支持跨域（CORS）
+
+</details>
+
+<details>
+<summary><b>3. 如何自定义主题色？</b></summary>
+
+<br>
+
+点击右上角设置图标 → 主题设置 → 选择预设主题色或自定义颜色。
+
+所有配置会自动保存到 `localStorage`，刷新页面后保持。
+
+</details>
+
+<details>
+<summary><b>4. 如何添加新菜单？</b></summary>
+
+<br>
+
+**平台级菜单**：编辑 `src/constants/platformMenu.tsx`
+
+**租户级菜单**：编辑 `src/constants/tenantMenu.tsx`
+
+菜单配置示例：
+
+```tsx
+{
+  key: 'my-page',
+  label: '我的页面',
+  icon: <IconComponent />,
+  path: '/my-page',
+  children: [] // 可选子菜单
+}
+```
+
+</details>
+
+<details>
+<summary><b>5. 跨域问题如何解决？</b></summary>
+
+<br>
+
+**开发环境**：在 `vite.config.ts` 中配置代理：
+
+```ts
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://your-backend-url.com',
+      changeOrigin: true,
+      rewrite: (path) => path.replace(/^\/api/, '')
+    }
+  }
+}
+```
+
+**生产环境**：需要后端配置 CORS 响应头，或使用 Nginx 反向代理。
+
+</details>
+
+<details>
+<summary><b>6. 如何禁用请求签名/加密？</b></summary>
+
+<br>
+
+```bash
+# .env.development.local
+VITE_CRYPTO_ENABLED=false  # 禁用 AES 加密
+```
+
+签名功能无法禁用（安全考虑），如需修改签名逻辑，请编辑 `src/utils/sign.ts`。
+
+</details>
+
+<br>
+
+---
+
 ## 🤝 贡献指南
 
 我们欢迎所有形式的贡献！
@@ -579,9 +697,23 @@ docker run -d -p 80:80 zx-admin
 
 ### 开发规范
 
-- 遵循 ESLint 规则
-- 提交信息遵循 [Conventional Commits](https://www.conventionalcommits.org/)
-- 添加必要的测试和文档
+- **代码风格**：遵循 ESLint 规则，运行 `npm run lint` 检查
+- **提交规范**：遵循 [Conventional Commits](https://www.conventionalcommits.org/)
+  ```
+  feat: 新功能
+  fix: 修复 Bug
+  docs: 文档更新
+  style: 代码格式调整
+  refactor: 重构代码
+  perf: 性能优化
+  test: 测试相关
+  chore: 构建/工具链相关
+  ```
+- **命名规范**：
+  - 组件文件：PascalCase（如 `UserTable.tsx`）
+  - 工具函数：camelCase（如 `formatDate.ts`）
+  - 常量文件：camelCase（如 `platformMenu.tsx`）
+- **代码审查**：所有 PR 需要至少一位维护者审核通过
 
 详见 [贡献指南](CONTRIBUTING.md)
 

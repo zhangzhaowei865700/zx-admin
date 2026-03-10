@@ -30,6 +30,8 @@
 
 [Live Demo](https://zhangzhaowei865700.github.io/ZX-Admin/) · [Quick Start](#-quick-start)
 
+**👤 Test Account:** `admin` / `123456`
+
 [中文](./README.md) | English
 
 </div>
@@ -95,6 +97,7 @@
 - [Deployment](#-deployment)
 - [Browser Support](#-browser-support)
 - [Demo Account](#-demo-account)
+- [FAQ](#-faq)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -452,10 +455,11 @@ ZX-Admin/
 
 ```bash
 # .env.development (uses Mock by default)
-VITE_API_BASE_URL=             # Empty = use Mock server
-VITE_CRYPTO_ENABLED=false      # Enable AES encryption
-VITE_APP_KEY=merchant-admin    # Request signing key
-VITE_APP_SECRET=dev-secret     # Request signing secret
+VITE_API_BASE_URL=             # Empty = use Mock server, fill in real API URL to connect backend
+VITE_CRYPTO_ENABLED=false      # Enable AES encryption (recommended true in production)
+VITE_APP_KEY=merchant-admin    # Request signing key (must match backend)
+VITE_APP_SECRET=dev-secret     # Request signing secret (must change in production)
+VITE_BASE_PATH=/               # Deployment sub-path (e.g., /ZX-Admin/ for GitHub Pages)
 ```
 
 ---
@@ -466,13 +470,16 @@ Create a `.env.development.local` file (not committed to git):
 
 ```bash
 # .env.development.local
-VITE_API_BASE_URL=http://your-backend-url.com
-VITE_CRYPTO_ENABLED=true
-VITE_APP_KEY=your-app-key
-VITE_APP_SECRET=your-app-secret
+VITE_API_BASE_URL=http://your-backend-url.com  # Backend API URL
+VITE_CRYPTO_ENABLED=true                        # Enable encryption
+VITE_APP_KEY=your-app-key                       # Key agreed with backend
+VITE_APP_SECRET=your-app-secret                 # Secret agreed with backend
 ```
 
-> ⚠️ **Note**: All requests automatically include signature headers (`X-App-Key`, `X-Timestamp`, `X-Nonce`, `X-Sign`). Ensure your backend verifies the same signing algorithm.
+> ⚠️ **Security Tips**:
+> - All requests automatically include signature headers (`X-App-Key`, `X-Timestamp`, `X-Nonce`, `X-Sign`). Ensure your backend verifies the same signing algorithm
+> - Must change `VITE_APP_SECRET` and enable `VITE_CRYPTO_ENABLED` in production
+> - Signing algorithm: see `src/utils/sign.ts`, encryption algorithm: see `src/utils/crypto.ts`
 
 <br>
 
@@ -543,7 +550,7 @@ docker run -d -p 80:80 zx-admin
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Safari |
 | :-: | :-: | :-: | :-: |
-| 111+ | 117+ | 111+ | 18+ |
+| 90+ | 88+ | 90+ | 14+ |
 
 </div>
 
@@ -567,6 +574,118 @@ docker run -d -p 80:80 zx-admin
 
 ---
 
+## ❓ FAQ
+
+<details>
+<summary><b>1. How to switch to a real API?</b></summary>
+
+<br>
+
+Create a `.env.development.local` file and configure the backend URL:
+
+```bash
+VITE_API_BASE_URL=http://your-backend-url.com
+VITE_CRYPTO_ENABLED=true
+VITE_APP_KEY=your-app-key
+VITE_APP_SECRET=your-app-secret
+```
+
+Restart the dev server.
+
+</details>
+
+<details>
+<summary><b>2. What if login fails?</b></summary>
+
+<br>
+
+**Using Mock mode**:
+- Ensure `VITE_API_BASE_URL` is empty
+- Use default account: `admin` / `123456`
+
+**Connecting to real backend**:
+- Check if backend API URL is correct
+- Verify `VITE_APP_KEY` and `VITE_APP_SECRET` match backend
+- Check browser console network requests to verify signature matching
+- Ensure backend supports CORS
+
+</details>
+
+<details>
+<summary><b>3. How to customize theme colors?</b></summary>
+
+<br>
+
+Click the settings icon in the top right → Theme Settings → Choose preset theme colors or customize.
+
+All configurations are auto-saved to `localStorage` and persist after page refresh.
+
+</details>
+
+<details>
+<summary><b>4. How to add new menus?</b></summary>
+
+<br>
+
+**Platform-level menu**: Edit `src/constants/platformMenu.tsx`
+
+**Tenant-level menu**: Edit `src/constants/tenantMenu.tsx`
+
+Menu configuration example:
+
+```tsx
+{
+  key: 'my-page',
+  label: 'My Page',
+  icon: <IconComponent />,
+  path: '/my-page',
+  children: [] // Optional sub-menu
+}
+```
+
+</details>
+
+<details>
+<summary><b>5. How to resolve CORS issues?</b></summary>
+
+<br>
+
+**Development environment**: Configure proxy in `vite.config.ts`:
+
+```ts
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://your-backend-url.com',
+      changeOrigin: true,
+      rewrite: (path) => path.replace(/^\/api/, '')
+    }
+  }
+}
+```
+
+**Production environment**: Backend needs to configure CORS response headers, or use Nginx reverse proxy.
+
+</details>
+
+<details>
+<summary><b>6. How to disable request signing/encryption?</b></summary>
+
+<br>
+
+```bash
+# .env.development.local
+VITE_CRYPTO_ENABLED=false  # Disable AES encryption
+```
+
+Signing cannot be disabled (for security). To modify signing logic, edit `src/utils/sign.ts`.
+
+</details>
+
+<br>
+
+---
+
 ## 🤝 Contributing
 
 We welcome all forms of contribution!
@@ -581,9 +700,23 @@ We welcome all forms of contribution!
 
 ### Development Standards
 
-- Follow ESLint rules
-- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
-- Add necessary tests and documentation
+- **Code Style**: Follow ESLint rules, run `npm run lint` to check
+- **Commit Convention**: Follow [Conventional Commits](https://www.conventionalcommits.org/)
+  ```
+  feat: New feature
+  fix: Bug fix
+  docs: Documentation update
+  style: Code formatting
+  refactor: Code refactoring
+  perf: Performance optimization
+  test: Test related
+  chore: Build/toolchain related
+  ```
+- **Naming Convention**:
+  - Component files: PascalCase (e.g., `UserTable.tsx`)
+  - Utility functions: camelCase (e.g., `formatDate.ts`)
+  - Constant files: camelCase (e.g., `platformMenu.tsx`)
+- **Code Review**: All PRs require approval from at least one maintainer
 
 See [Contributing Guide](CONTRIBUTING.en.md) for details
 
