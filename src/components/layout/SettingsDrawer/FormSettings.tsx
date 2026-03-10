@@ -24,8 +24,8 @@ export const FormSettings: React.FC = () => {
           value={formDisplayMode}
           onChange={(v) => setFormDisplayMode(v as 'modal' | 'drawer')}
           options={[
-            { label: t('form.modal'), value: 'modal' },
             { label: t('form.drawer'), value: 'drawer' },
+            { label: t('form.modal'), value: 'modal' },
           ]}
         />
       </SettingRow>

@@ -14,18 +14,46 @@ import { TableSettings } from './TableSettings'
 
 const STORAGE_KEY = 'settings-float-ball-position'
 
+// 贴边吸附辅助函数（提取到组件外部）
+const getSnapPosition = (x: number, y: number) => {
+  const buttonSize = 40
+  const padding = 16
+  const maxX = window.innerWidth - buttonSize - padding
+  const maxY = window.innerHeight - buttonSize - padding
+
+  // 限制在视口内
+  let newX = Math.max(padding, Math.min(maxX, x))
+  let newY = Math.max(padding, Math.min(maxY, y))
+
+  // 判断靠左还是靠右
+  const centerX = window.innerWidth / 2
+  if (newX < centerX) {
+    newX = padding // 吸附到左边
+  } else {
+    newX = maxX // 吸附到右边
+  }
+
+  return { x: newX, y: newY }
+}
+
 export const SettingsDrawer: React.FC = () => {
   const [open, setOpen] = useState(false)
+
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
       try {
-        return JSON.parse(saved) as { x: number; y: number }
+        const parsed = JSON.parse(saved) as { x: number; y: number }
+        // 对保存的位置也应用贴边逻辑，确保始终贴边
+        return getSnapPosition(parsed.x, parsed.y)
       } catch {
         // ignore corrupted data
       }
     }
-    return { x: window.innerWidth - 80, y: window.innerHeight - 120 }
+    // 初始位置也应用贴边逻辑
+    const defaultX = window.innerWidth - 80
+    const defaultY = window.innerHeight - 120
+    return getSnapPosition(defaultX, defaultY)
   })
   const [isDragging, setIsDragging] = useState(false)
   const [isLongPress, setIsLongPress] = useState(false)
@@ -49,26 +77,16 @@ export const SettingsDrawer: React.FC = () => {
   const { token } = theme.useToken()
   const { t } = useTranslation('settings')
 
-  // 贴边吸附
+  // 贴边吸附（复用初始化时的逻辑）
   const snapToEdge = (x: number, y: number) => {
-    const buttonSize = 40
-    const padding = 16
-    const maxX = window.innerWidth - buttonSize - padding
-    const maxY = window.innerHeight - buttonSize - padding
+    return getSnapPosition(x, y)
+  }
 
-    // 限制在视口内
-    let newX = Math.max(padding, Math.min(maxX, x))
-    let newY = Math.max(padding, Math.min(maxY, y))
-
-    // 判断靠左还是靠右
-    const centerX = window.innerWidth / 2
-    if (newX < centerX) {
-      newX = padding // 吸附到左边
-    } else {
-      newX = maxX // 吸附到右边
-    }
-
-    return { x: newX, y: newY }
+  // 关闭抽屉时清理可能残留的 View Transition 类名
+  const handleDrawerClose = () => {
+    setOpen(false)
+    // 清理可能残留的 View Transition 类名
+    document.documentElement.classList.remove('dark-transition')
   }
 
   const handleEnd = () => {
@@ -297,17 +315,19 @@ export const SettingsDrawer: React.FC = () => {
           zIndex: 1000,
           userSelect: 'none',
           touchAction: 'none',
+          outline: 'none',
         }}
         title={t('drawerTitle')}
       >
         <SettingOutlined style={{ fontSize: 18 }} />
       </div>
       <Drawer
+        className="settings-drawer"
         title={t('drawerTitle')}
         placement="right"
         width={500}
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleDrawerClose}
         footer={
           <Space style={{ width: '100%' }} direction="vertical" size={12}>
             <Button block icon={<CopyOutlined />} onClick={handleCopySettings}>
