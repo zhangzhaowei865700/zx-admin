@@ -228,11 +228,15 @@ function withViewTransition(callback: () => void, className?: string) {
     document.documentElement.classList.add(className)
   }
   const transition = document.startViewTransition(callback)
-  transition.finished.then(() => {
+
+  // 确保在过渡完成或失败时都清理 className
+  const cleanup = () => {
     if (className) {
       document.documentElement.classList.remove(className)
     }
-  })
+  }
+
+  transition.finished.then(cleanup).catch(cleanup)
 }
 
 export const useAppStore = create<AppState>()(

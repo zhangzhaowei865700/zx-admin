@@ -15,6 +15,8 @@ body {
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+  border: none;
+  outline: none;
 }
 ::view-transition-old(root) {
   z-index: 1;
@@ -23,21 +25,47 @@ body {
   z-index: 9999;
 }
 
-/* 暗黑模式切换：交叉淡入淡出 */
-.dark-transition::view-transition-old(root) {
-  animation: 400ms ease-in-out both fade-out;
-}
-.dark-transition::view-transition-new(root) {
-  animation: 400ms ease-in-out both fade-in;
+/* 确保 view-transition 容器没有边框 */
+::view-transition-group(root),
+::view-transition-image-pair(root) {
+  border: none;
+  outline: none;
 }
 
-@keyframes fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+/* 暗黑模式切换：交叉淡入淡出 */
+.dark-transition::view-transition-old(root),
+.dark-transition::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
 }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+.dark-transition::view-transition-old(root) {
+  animation-name: theme-fade-out;
+}
+
+.dark-transition::view-transition-new(root) {
+  animation-name: theme-fade-in;
+}
+
+/* 旧画面：淡出 */
+@keyframes theme-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* 新画面：淡入 */
+@keyframes theme-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* 灰色模式 */
@@ -107,6 +135,17 @@ html.color-weak {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(128, 128, 128, 0.45);
+}
+
+/* 防止 Drawer 和其他组件出现意外边框 */
+.ant-drawer,
+.ant-drawer-mask,
+.ant-drawer-content-wrapper,
+.ant-drawer-content,
+.ant-drawer-wrapper-body,
+.ant-drawer-body {
+  border: none !important;
+  outline: none !important;
 }
 
 /* 页面切换动画 */

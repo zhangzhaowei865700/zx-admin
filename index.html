@@ -6,6 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss:; frame-src 'none'; object-src 'none'; base-uri 'self';" />
     <title>ZX-Admin</title>
+    <!-- 内联脚本：在页面渲染前设置主题，避免闪烁 -->
+    <script>
+      (function() {
+        try {
+          // 从 localStorage 读取持久化的设置
+          const settings = localStorage.getItem('app-settings');
+          if (settings) {
+            const { state } = JSON.parse(settings);
+            const { darkMode } = state;
+
+            // 立即设置 body 背景色
+            if (darkMode) {
+              document.body.style.backgroundColor = '#141414';
+            } else {
+              document.body.style.backgroundColor = '#fff';
+            }
+          }
+        } catch (e) {
+          // 静默失败，使用默认浅色主题
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

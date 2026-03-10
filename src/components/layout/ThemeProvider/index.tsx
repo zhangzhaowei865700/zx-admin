@@ -31,8 +31,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.classList.toggle('color-weak', colorWeak)
   }, [grayMode, colorWeak])
 
-  // 暗黑模式 body 背景色
-  useEffect(() => {
+  // 暗黑模式 body 背景色（同步更新，避免 View Transition 闪烁）
+  useMemo(() => {
     document.body.style.backgroundColor = darkMode ? '#141414' : '#fff'
   }, [darkMode])
 
