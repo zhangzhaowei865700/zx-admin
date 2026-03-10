@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { getAllRoles } from '@/api/modules/platform/system'
 import { queryKeys } from '@/hooks/query'
+import { useQuery } from '@tanstack/react-query'
 
 /**
  * 获取所有角色列表（用于下拉选项）

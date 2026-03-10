@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
 import { getMenuTree, createMenu, updateMenu, deleteMenu } from '@/api/modules/platform/system'
 import { queryKeys } from '@/hooks/query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 
 /** 获取菜单树（带缓存，表单选择父级菜单时复用） */
 export const useMenuTreeQuery = () => {

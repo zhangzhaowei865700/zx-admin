@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
 import { getUnreadCount, markAsRead, markAllAsRead, deleteMessages } from '@/api/modules/platform/message'
 import { useMessageStore } from '@/stores'
 import { queryKeys } from '@/hooks/query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 /** 未读消息数查询（带缓存，收件箱页面挂载时立即刷新） */
 export const useUnreadCountQuery = () => {

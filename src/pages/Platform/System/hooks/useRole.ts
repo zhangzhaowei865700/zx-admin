@@ -1,4 +1,3 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
@@ -13,6 +12,7 @@ import {
   type Role,
 } from '@/api/modules/platform/system'
 import { queryKeys } from '@/hooks/query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 
 /** 获取菜单树（用于角色权限配置），5 分钟内不重新请求 */
 export const useMenuTreeQuery = () => {

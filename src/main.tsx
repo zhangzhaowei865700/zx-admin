@@ -23,8 +23,7 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 5 * 60 * 1000,   // 5 分钟内数据视为新鲜，不会重新请求
-      gcTime: 10 * 60 * 1000,     // 10 分钟后未使用的缓存被回收
+      staleTime: 5 * 60 * 1000,
     },
   },
 })

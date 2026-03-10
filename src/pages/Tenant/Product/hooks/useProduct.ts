@@ -1,4 +1,3 @@
-import { useMutation } from '@tanstack/react-query'
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
@@ -10,6 +9,7 @@ import {
   batchDeleteProducts,
   batchUpdateProductStatus,
 } from '@/api/modules/tenant'
+import { useMutation } from '@tanstack/react-query'
 
 /** 商品 Mutations（创建、更新、删除、批量操作） */
 export const useProductMutations = (

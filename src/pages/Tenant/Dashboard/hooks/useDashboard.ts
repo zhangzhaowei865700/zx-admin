@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { getDashboardStats, getRecentOrders } from '@/api/modules/tenant'
 import { queryKeys } from '@/hooks/query'
+import { useQuery } from '@tanstack/react-query'
 
 /** 仪表盘统计数据查询（1 分钟内不重新请求） */
 export const useDashboardStatsQuery = () => {

@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { getDictItems } from '@/api/modules/platform/dictionary'
 import { queryKeys } from '@/hooks/query'
+import { useQuery } from '@tanstack/react-query'
 
 /**
  * 数据字典 Hook
