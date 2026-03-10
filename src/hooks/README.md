@@ -25,11 +25,21 @@ hooks/
 | `usePermission` | `usePermission.ts` | 权限码判断 |
 | `useFormModal` | `useFormModal.ts` | 表单弹窗状态管理（open / record / isEdit） |
 | `usePolling` | `usePolling.ts` | 通用轮询，页面隐藏时自动暂停 |
+| `useDictionary` | `useDictionary.ts` | 数据字典查询（支持缓存、label/color 转换） |
+| `useVersionCheck` | `useVersionCheck.ts` | 版本更新检测（基于 version.json） |
 
 所有 Hook 均通过 `@/hooks` 统一导出：
 
 ```ts
-import { usePagination, useSearchParams, usePermission, useFormModal, usePolling } from '@/hooks'
+import {
+  usePagination,
+  useSearchParams,
+  usePermission,
+  useFormModal,
+  usePolling,
+  useDictionary,
+  useVersionCheck,
+} from '@/hooks'
 ```
 
 > **业务查询 Hook**（如 `useSystemRolesQuery`）属于页面私有逻辑，按功能模块就近放置，例如：
@@ -312,4 +322,110 @@ deleteMutation.mutate(record.id)
 
 // 需要等待结果（如表单提交关闭弹窗）
 await submitMutation.mutateAsync({ record: currentRecord, values })
+```
+
+---
+
+## useDictionary
+
+数据字典查询 Hook，根据字典类型编码获取字典项列表，使用 React Query 缓存（30 分钟 staleTime）。
+
+### 参数
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `dictType` | `string` | 字典类型编码 |
+
+### 返回值
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `items` | `DictItem[]` | 字典项列表 |
+| `isLoading` | `boolean` | 加载状态 |
+| `getLabel` | `(value: string \| number) => string` | 根据 value 获取 label |
+| `getColor` | `(value: string \| number) => string \| undefined` | 根据 value 获取 color |
+| `options` | `{ label: string; value: any }[]` | 转换为 Select/Radio 等组件的 options 格式 |
+
+### 用法
+
+```tsx
+import { useDictionary } from '@/hooks'
+
+const { items, getLabel, getColor, options } = useDictionary('order_status')
+
+// 在表格列中展示
+{
+  title: '状态',
+  dataIndex: 'status',
+  render: (status) => <Tag color={getColor(status)}>{getLabel(status)}</Tag>
+}
+
+// 或使用 DictTag 组件
+{
+  title: '状态',
+  dataIndex: 'status',
+  render: (status) => <DictTag dictType="order_status" value={status} />
+}
+
+// 在下拉框中使用
+<Select options={options} />
+```
+
+### 特性
+
+- **自动缓存**：字典数据缓存 30 分钟，减少重复请求
+- **懒加载**：只有 `dictType` 非空时才发起请求
+- **类型安全**：value 支持 string 和 number 类型自动转换
+
+---
+
+## useVersionCheck
+
+版本更新检测 Hook，定期轮询 `/version.json` 检测新版本，配合 `VersionUpdateBar` 组件使用。
+
+### 参数
+
+无参数。
+
+### 返回值
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `hasNewVersion` | `boolean` | 是否检测到新版本 |
+| `refresh` | `() => void` | 刷新页面（重新加载） |
+
+### 用法
+
+```tsx
+import { useVersionCheck } from '@/hooks'
+
+const { hasNewVersion, refresh } = useVersionCheck()
+
+if (hasNewVersion) {
+  return (
+    <Alert
+      message="发现新版本"
+      type="info"
+      action={<Button onClick={refresh}>立即刷新</Button>}
+    />
+  )
+}
+```
+
+### 工作原理
+
+1. 每 5 分钟轮询一次 `/version.json?t=${timestamp}`
+2. 对比返回的 `version` 与当前构建版本 `__APP_VERSION__`
+3. 版本不一致时设置 `hasNewVersion = true`
+4. 页面隐藏时自动暂停轮询（基于 `usePolling` 的 `visibilityAware`）
+
+### 配置
+
+需要在构建时生成 `public/version.json`：
+
+```json
+{
+  "version": "1.0.0",
+  "buildTime": "2024-03-10T10:00:00Z"
+}
 ```
