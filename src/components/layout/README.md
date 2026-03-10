@@ -6,6 +6,7 @@
 
 | 组件 | 路径 | 说明 |
 | --- | --- | --- |
+| `BaseLayout` | `./BaseLayout/index.tsx` | 基础布局组件（AppLayout 和 TenantLayout 的共享基类） |
 | `AppLayout` | `./AppLayout/index.tsx` | 平台级布局 |
 | `TenantLayout` | `./TenantLayout/index.tsx` | 租户级布局 |
 | `ThemeProvider` | `./ThemeProvider/index.tsx` | 全局主题提供者 |
@@ -16,27 +17,76 @@
 
 ---
 
-## AppLayout
+## BaseLayout
 
-平台级主布局，用于 `/` 前缀的所有路由。基于 `@ant-design/pro-components` 的 `ProLayout` 封装。
+基础布局组件，封装了 `ProLayout` 的通用逻辑，被 `AppLayout` 和 `TenantLayout` 复用。
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `string` | ✅ | ProLayout 标题 |
+| `logo` | `string` | ❌ | ProLayout Logo URL |
+| `route` | `{ path: string; routes: any[] }` | ✅ | ProLayout 路由配置 |
+| `headerActions` | `ReactNode` | ✅ | 顶栏右侧操作按钮（头像下拉菜单之前） |
+| `extraMenuItems` | `ItemType[]` | ❌ | 头像下拉菜单额外项（插入到退出登录之前） |
+| `onExtraMenuClick` | `(key: string) => void` | ❌ | 额外菜单项点击处理 |
+| `footerText` | `string` | ✅ | 页脚文本 |
+| `watermarkContent` | `string` | ✅ | 水印文本 |
+| `homePath` | `string` | ✅ | 菜单头部点击跳转路径 |
+| `breadcrumbRender` | `any` | ❌ | ProLayout 面包屑渲染函数覆盖 |
+| `breadcrumbProps` | `Record<string, any>` | ❌ | ProLayout 面包屑属性覆盖 |
+| `menuProps` | `Record<string, any>` | ❌ | ProLayout 菜单属性覆盖 |
+| `selectedKeys` | `string[]` | ❌ | ProLayout 选中菜单项覆盖 |
 
 ### 功能
 
 - 递归将菜单配置转换为 ProLayout 路由
-- 顶栏操作区：`MenuSearch`、`LanguageSwitch`、`FullScreen`、`DarkModeToggle`、`LockScreenButton`、`NotificationBell`，超出宽度自动折叠到 `OverflowActions`
-- 用户头像下拉菜单：个人信息、切换平台、退出登录
+- 用户头像下拉菜单：个人信息、额外菜单项、退出登录
 - 监听 `BroadcastChannel` 的 `logout` / `switchPlatform` 事件，跨 Tab 同步鉴权状态
 - 内嵌 `MultiTabs`、`PageTransitionWrapper`、`SettingsDrawer`、`LockScreenOverlay`
+- 支持水印、响应式布局、个人信息编辑
+
+### 设计模式
+
+BaseLayout 采用"模板方法"模式，定义了布局的骨架结构，具体的菜单配置、顶栏操作、面包屑逻辑由子类（AppLayout / TenantLayout）传入。
+
+---
+
+## AppLayout
+
+平台级主布局，用于 `/` 前缀的所有路由。基于 `BaseLayout` 封装。
+
+### 功能
+
+- 使用 `platformMenu` 作为菜单配置
+- 顶栏操作区：`MenuSearch`、`LanguageSwitch`、`FullScreen`、`DarkModeToggle`、`LockScreenButton`、`NotificationBell`，超出宽度自动折叠到 `OverflowActions`
+- 用户头像下拉菜单：个人信息、切换平台、退出登录
+- 面包屑正常显示层级结构
 
 ### 使用位置
 
 `src/routes/modules/platform.tsx` 中作为根路由 layout。
 
+### 示例
+
+```tsx
+// src/routes/modules/platform.tsx
+{
+  path: '/',
+  element: <AppLayout />,
+  children: [
+    { path: 'dashboard', element: <Dashboard /> },
+    // ...
+  ]
+}
+```
+
 ---
 
 ## TenantLayout
 
-租户级布局，用于 `/tenant-admin/:tenantId` 前缀的所有路由。
+租户级布局，用于 `/tenant-admin/:tenantId` 前缀的所有路由。基于 `BaseLayout` 封装。
 
 ### 与 AppLayout 的区别
 
@@ -56,6 +106,20 @@
 
 `src/routes/modules/tenant.tsx` 中作为根路由 layout。
 
+### 示例
+
+```tsx
+// src/routes/modules/tenant.tsx
+{
+  path: '/tenant-admin/:tenantId',
+  element: <TenantLayout />,
+  children: [
+    { path: 'orders', element: <Orders /> },
+    // ...
+  ]
+}
+```
+
 ---
 
 ## ThemeProvider
@@ -69,6 +133,25 @@
 - 色弱模式：为 `body` 添加 CSS filter `invert(80%)`
 - 灰色模式：为 `body` 添加 CSS filter `grayscale(100%)`
 - 根据暗黑模式动态设置 `body` 背景色
+
+### 使用位置
+
+挂载在应用根节点 `src/App.tsx`，包裹整个应用。
+
+### 示例
+
+```tsx
+// src/App.tsx
+import { ThemeProvider } from '@/components/layout'
+
+function App() {
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  )
+}
+```
 
 ---
 
@@ -86,6 +169,19 @@
 
 在 SettingsDrawer 的「过渡动画」设置中可选：`fade`、`slide-left`、`slide-up`、`zoom`、`none`。
 
+### 使用位置
+
+在 `BaseLayout` 中包裹 `<Outlet />`，自动应用于所有页面路由切换。
+
+### 示例
+
+```tsx
+// BaseLayout 内部使用
+<PageTransitionWrapper>
+  <Outlet />
+</PageTransitionWrapper>
+```
+
 ---
 
 ## MultiTabs
@@ -100,6 +196,17 @@
 - 首页 / 根路径 Tab 不可关闭
 - 支持「卡片」和「线条」两种 Tab 样式（由 `useAppStore.tabStyle` 控制）
 - Tab 数量上限由 `useAppStore.maxTabs` 控制，超出后自动关闭最旧的 Tab
+
+### 使用位置
+
+在 `BaseLayout` 中根据 `showTabs` 配置条件渲染。
+
+### 示例
+
+```tsx
+// BaseLayout 内部使用
+{showTabs && <MultiTabs />}
+```
 
 ---
 
@@ -123,6 +230,17 @@
 
 - **复制配置**：将当前所有设置序列化为 JSON 复制到剪贴板
 - **重置设置**：恢复 `defaultSettings.json` 中的默认值
+
+### 使用位置
+
+在 `BaseLayout` 中自动渲染，通过右下角悬浮按钮打开。
+
+### 示例
+
+```tsx
+// BaseLayout 内部使用
+<SettingsDrawer />
+```
 
 ---
 
@@ -159,3 +277,29 @@
 - Popover 内按类型分 Tab：全部 / 公告 / 通知 / 消息
 - 点击消息条目跳转详情并标记已读
 - 「全部已读」「查看全部」快捷操作
+
+### 用法
+
+```tsx
+import {
+  DarkModeToggle,
+  FullScreen,
+  LanguageSwitch,
+  LockScreenButton,
+  LockScreenOverlay,
+  MenuSearch,
+  NotificationBell,
+  OverflowActions,
+} from '@/components/layout/HeaderActions'
+
+// 在 AppLayout 顶栏中使用
+<OverflowActions>
+  <MenuSearch basePath="/" />
+  <LanguageSwitch />
+  <FullScreen />
+  <DarkModeToggle />
+  <LockScreenButton />
+  <NotificationBell />
+</OverflowActions>
+<LockScreenOverlay />
+```
