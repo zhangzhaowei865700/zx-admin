@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.2.1 (2026-03-10)
+
+代码结构重构，统一类型定义和 API 导入风格。
+
+### 重构 (Refactor)
+
+- **API 导入统一**: 统一 platform API 导入风格，新增 `index.ts` 并替换所有子模块直接引用
+- **租户类型拆分**: 拆分 `types/tenant/index.ts` 为独立领域文件（order、product、setting），删除原聚合文件
+- **冗余类型清理**: 移除 `src/api/types.ts` 冗余文件，所有类型统一从 `@/types` 导入
+- **类型定义整合**: 整合类型定义到 `src/types/` 目录，消除重复和分散定义
+- **租户模块拆分**: 拆分租户模块 API 和 Mock 为独立领域文件（order、product、setting）
+
+---
+
 ## v1.2.0 (2026-03-10)
 
 安全加固、性能优化与代码质量提升。
