@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams, useSearchParams } from 'react-rout
 import { RollbackOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
-import { getTenantDetail } from '@/api/modules/platform/tenant'
+import { getTenantDetail } from '@/api/modules/platform'
 import { getTenantMenuItems } from '@/constants/tenantMenu'
 import type { MenuItem } from '@/constants/platformMenu'
 import { BaseLayout } from '../BaseLayout'

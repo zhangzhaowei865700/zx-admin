@@ -1,4 +1,4 @@
-import { getAllRoles } from '@/api/modules/platform/system'
+import { getAllRoles } from '@/api/modules/platform'
 import { queryKeys } from '@/hooks/query'
 import { useQuery } from '@tanstack/react-query'
 

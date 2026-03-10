@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { getDictItems } from '@/api/modules/platform/dictionary'
+import { getDictItems } from '@/api/modules/platform'
 import { queryKeys } from '@/hooks/query'
 import { useQuery } from '@tanstack/react-query'
 

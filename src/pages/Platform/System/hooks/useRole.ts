@@ -10,7 +10,7 @@ import {
   batchDeleteRoles,
   updateRolePermission,
   type Role,
-} from '@/api/modules/platform/system'
+} from '@/api/modules/platform'
 import { queryKeys } from '@/hooks/query'
 import { useQuery, useMutation } from '@tanstack/react-query'
 

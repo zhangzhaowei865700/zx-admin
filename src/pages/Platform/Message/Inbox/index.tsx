@@ -3,7 +3,7 @@ import { Badge, Button, Descriptions, Divider, Drawer, Popconfirm, Space, Tabs, 
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
-import { getMessageList } from '@/api/modules/platform/message'
+import { getMessageList } from '@/api/modules/platform'
 import { useTranslation } from 'react-i18next'
 import { useMessageStore } from '@/stores'
 import type { Message, MessageType } from '@/types/platform/message'

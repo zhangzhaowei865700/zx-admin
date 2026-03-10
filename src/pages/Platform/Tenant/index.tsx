@@ -7,7 +7,7 @@ import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
 import { FormContainer } from '@/components/common/FormContainer'
 import { HasPermission } from '@/components/common/HasPermission'
-import { deleteTenant, getTenantList, createTenant, updateTenant, batchDeleteTenants, batchUpdateTenantStatus, type Tenant } from '@/api/modules/platform/tenant'
+import { deleteTenant, getTenantList, createTenant, updateTenant, batchDeleteTenants, batchUpdateTenantStatus, type Tenant } from '@/api/modules/platform'
 import { useTranslation } from 'react-i18next'
 
 export const TenantPage: React.FC = () => {

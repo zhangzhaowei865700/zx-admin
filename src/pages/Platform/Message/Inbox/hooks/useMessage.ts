@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
-import { getUnreadCount, markAsRead, markAllAsRead, deleteMessages } from '@/api/modules/platform/message'
+import { getUnreadCount, markAsRead, markAllAsRead, deleteMessages } from '@/api/modules/platform'
 import { useMessageStore } from '@/stores'
 import { queryKeys } from '@/hooks/query'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'

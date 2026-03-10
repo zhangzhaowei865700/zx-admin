@@ -9,7 +9,7 @@ import {
   MessageOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { getMessageList, markAllAsRead, getUnreadCount } from '@/api/modules/platform/message'
+import { getMessageList, markAllAsRead, getUnreadCount } from '@/api/modules/platform'
 import { useMessageStore } from '@/stores'
 import type { Message, MessageType } from '@/types/platform/message'
 import { ActionIcon } from '../ActionIcon'

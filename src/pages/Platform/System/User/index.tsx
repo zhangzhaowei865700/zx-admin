@@ -15,7 +15,7 @@ import {
   batchUpdateUserStatus,
   resetUserPassword,
   type SystemUser,
-} from '@/api/modules/platform/system'
+} from '@/api/modules/platform'
 import { useSystemRolesQuery } from '../hooks'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'

@@ -9,7 +9,7 @@ import {
 import { PageContainer } from '@/components/common/PageContainer'
 import { ProTable } from '@/components/common/ProTable'
 import { FormContainer } from '@/components/common/FormContainer'
-import { type Menu } from '@/api/modules/platform/system'
+import { type Menu } from '@/api/modules/platform'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMenuTreeQuery, useMenuMutations } from './hooks/useMenu'

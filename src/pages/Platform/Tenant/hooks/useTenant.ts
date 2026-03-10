@@ -1,4 +1,4 @@
-import { getTenantList, createTenant, updateTenant, deleteTenant } from '@/api/modules/platform/tenant'
+import { getTenantList, createTenant, updateTenant, deleteTenant } from '@/api/modules/platform'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useTenantList = getTenantList

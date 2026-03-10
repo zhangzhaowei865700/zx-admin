@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
-import { getMenuTree, createMenu, updateMenu, deleteMenu } from '@/api/modules/platform/system'
+import { getMenuTree, createMenu, updateMenu, deleteMenu } from '@/api/modules/platform'
 import { queryKeys } from '@/hooks/query'
 import { useQuery, useMutation } from '@tanstack/react-query'
 

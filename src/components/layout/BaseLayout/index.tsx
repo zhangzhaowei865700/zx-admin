@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { logout } from '@/api/modules/platform/auth'
+import { logout } from '@/api/modules/platform'
 import { removeToken, removeUserInfo, getUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent, onAuthEvent } from '@/utils/authChannel'
 import { MultiTabs } from '../MultiTabs'
