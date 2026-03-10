@@ -324,7 +324,7 @@ All configurations auto-persist to localStorage, user preferences permanently sa
 
 **🔍 Other Features**
 - Menu search (Ctrl+K)
-- Excel export
+- Excel export (multi-format, footer aggregation)
 - Lock screen
 - Clear cache functionality
 - Mock data service

@@ -571,9 +571,91 @@ import { exportToExcel } from '@/utils/export';
 exportToExcel(data, columns, 'users.xlsx');
 ```
 
-- 将表格数据导出为 Excel
+- 将表格数据导出为 Excel/CSV/TXT/HTML/XML 多种格式
 - 支持列映射和格式化
 - 自动处理日期和数字格式
+- 支持表尾汇总功能
+
+**表尾汇总功能：**
+
+导出时可以在数据底部添加汇总行，支持多种自定义方式：
+
+```tsx
+// 方式1：自动求和（数值列默认行为）
+// valueType 为 'digit'、'money'、'percent' 的列会自动求和
+{
+  title: '金额',
+  dataIndex: 'amount',
+  valueType: 'money'  // 自动求和并保留2位小数
+}
+
+// 方式2：显式指定汇总方式
+{
+  title: '数量',
+  dataIndex: 'qty',
+  exportFooter: 'sum'  // 求和
+}
+{
+  title: '均价',
+  dataIndex: 'price',
+  exportFooter: 'avg'  // 平均值
+}
+{
+  title: '最高分',
+  dataIndex: 'score',
+  exportFooter: 'max'  // 最大值
+}
+{
+  title: '最低分',
+  dataIndex: 'score',
+  exportFooter: 'min'  // 最小值
+}
+{
+  title: '记录数',
+  dataIndex: 'count',
+  exportFooter: 'count'  // 行数统计
+}
+
+// 方式3：固定文本
+{
+  title: '状态',
+  dataIndex: 'status',
+  exportFooter: '—'  // 显示固定文本
+}
+
+// 方式4：自定义函数
+{
+  title: '利润率',
+  dataIndex: 'profit',
+  exportFooter: (data) => {
+    const total = data.reduce((sum, row) => sum + row.profit, 0);
+    return (total / data.length).toFixed(2) + '%';
+  }
+}
+
+// 方式5：明确禁用（即使是数值列也不汇总）
+{
+  title: 'ID',
+  dataIndex: 'id',
+  valueType: 'digit',
+  exportFooter: false  // 不显示汇总
+}
+```
+
+**内置聚合方式：**
+- `sum`：求和（默认用于数值列）
+- `avg`：平均值
+- `max`：最大值
+- `min`：最小值
+- `count`：行数统计
+
+**优先级：**
+`exportFooter` 配置 > `valueType` 自动识别
+
+**格式化：**
+- `money` 类型：保留2位小数
+- `percent` 类型：保留2位小数并添加 % 符号
+- 自定义函数：完全控制格式化逻辑
 
 ### format.ts
 

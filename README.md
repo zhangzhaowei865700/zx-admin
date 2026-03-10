@@ -325,7 +325,7 @@ Ant Design Pro Components + TailwindCSS
 
 **🔍 其他特性**
 - 菜单搜索 (Ctrl+K)
-- Excel 导出
+- Excel 导出（支持多格式、表尾汇总）
 - 锁屏功能
 - 清除缓存功能
 - Mock 数据服务

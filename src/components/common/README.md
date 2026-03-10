@@ -217,10 +217,114 @@ ProTable/
 
 `ExportModal` 是两个表格组件共用的内部子组件，不对外暴露。支持：
 
-- 文件格式：xlsx、csv 等
-- 数据范围：当前页 / 选中行 / 全量数据
-- 字段选择：勾选需要导出的列
-- 参数设置：表头、源数据等选项
+- **文件格式**：Excel (.xlsx) / CSV / TXT / HTML / XML
+- **数据范围**：当前页 / 选中行 / 全量数据
+- **字段选择**：勾选需要导出的列
+- **参数设置**：
+  - 表头：是否包含表头行
+  - 表尾：是否包含汇总行
+  - 分组表头：是否保留多级表头结构（暂未实现）
+  - 合并：是否合并相同值的单元格（暂未实现）
+  - 样式：是否应用样式（暂未实现）
+  - 展开层级：树形数据展开层级（暂未实现）
+
+### 表尾汇总功能
+
+导出时可以在数据底部添加汇总行，支持多种自定义方式：
+
+#### 方式1：自动求和（数值列默认行为）
+
+`valueType` 为 `'digit'`、`'money'`、`'percent'` 的列会自动求和：
+
+```tsx
+{
+  title: '金额',
+  dataIndex: 'amount',
+  valueType: 'money'  // 自动求和并保留2位小数
+}
+```
+
+#### 方式2：显式指定汇总方式
+
+通过 `exportFooter` 属性指定内置聚合方式：
+
+```tsx
+{
+  title: '数量',
+  dataIndex: 'qty',
+  exportFooter: 'sum'  // 求和
+}
+{
+  title: '均价',
+  dataIndex: 'price',
+  exportFooter: 'avg'  // 平均值
+}
+{
+  title: '最高分',
+  dataIndex: 'score',
+  exportFooter: 'max'  // 最大值
+}
+{
+  title: '最低分',
+  dataIndex: 'score',
+  exportFooter: 'min'  // 最小值
+}
+{
+  title: '记录数',
+  dataIndex: 'count',
+  exportFooter: 'count'  // 行数统计
+}
+```
+
+**内置聚合方式：**
+- `sum`：求和（默认用于数值列）
+- `avg`：平均值
+- `max`：最大值
+- `min`：最小值
+- `count`：行数统计
+
+#### 方式3：固定文本
+
+```tsx
+{
+  title: '状态',
+  dataIndex: 'status',
+  exportFooter: '—'  // 显示固定文本
+}
+```
+
+#### 方式4：自定义函数
+
+```tsx
+{
+  title: '利润率',
+  dataIndex: 'profit',
+  exportFooter: (data) => {
+    const total = data.reduce((sum, row) => sum + row.profit, 0);
+    return (total / data.length).toFixed(2) + '%';
+  }
+}
+```
+
+#### 方式5：明确禁用
+
+即使是数值列也不汇总：
+
+```tsx
+{
+  title: 'ID',
+  dataIndex: 'id',
+  valueType: 'digit',
+  exportFooter: false  // 不显示汇总
+}
+```
+
+**优先级：** `exportFooter` 配置 > `valueType` 自动识别
+
+**格式化：**
+- `money` 类型：保留2位小数
+- `percent` 类型：保留2位小数并添加 % 符号
+- 自定义函数：完全控制格式化逻辑
 
 ---
 
