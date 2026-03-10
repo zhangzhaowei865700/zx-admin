@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, Segmented } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import type { TableSize } from '@/stores/useAppStore'
 
 const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -16,7 +17,11 @@ export const TableSettings: React.FC = () => {
     tableSize, setTableSize,
     tableBordered, setTableBordered,
     tableResizable, setTableResizable,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    tableSize: s.tableSize, setTableSize: s.setTableSize,
+    tableBordered: s.tableBordered, setTableBordered: s.setTableBordered,
+    tableResizable: s.tableResizable, setTableResizable: s.setTableResizable,
+  })))
   const { t } = useTranslation('settings')
 
   return (

@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, ColorPicker, Segmented } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 
 const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -19,7 +20,15 @@ export const ThemeSettings: React.FC = () => {
     compactMode, setCompactMode,
     fontSize, setFontSize,
     borderRadius, setBorderRadius,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    darkMode: s.darkMode, setDarkMode: s.setDarkMode,
+    primaryColor: s.primaryColor, setPrimaryColor: s.setPrimaryColor,
+    colorWeak: s.colorWeak, setColorWeak: s.setColorWeak,
+    grayMode: s.grayMode, setGrayMode: s.setGrayMode,
+    compactMode: s.compactMode, setCompactMode: s.setCompactMode,
+    fontSize: s.fontSize, setFontSize: s.setFontSize,
+    borderRadius: s.borderRadius, setBorderRadius: s.setBorderRadius,
+  })))
   const { t } = useTranslation('settings')
 
   return (

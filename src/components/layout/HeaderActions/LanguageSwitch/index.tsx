@@ -1,12 +1,13 @@
 import { Dropdown } from 'antd'
 import { TranslationOutlined } from '@ant-design/icons'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { LANGUAGE_OPTIONS } from '@/locales'
 import type { LocaleType } from '@/locales'
 import { ActionIcon } from '../ActionIcon'
 
 export const LanguageSwitch: React.FC = () => {
-  const { locale, setLocale } = useAppStore()
+  const { locale, setLocale } = useAppStore(useShallow((s) => ({ locale: s.locale, setLocale: s.setLocale })))
 
   return (
     <Dropdown

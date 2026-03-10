@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, Select, Segmented } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import type { TabStyle } from '@/stores/useAppStore'
 
 const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -16,7 +17,11 @@ export const TabsSettings: React.FC = () => {
     showTabs, setShowTabs,
     tabStyle, setTabStyle,
     maxTabs, setMaxTabs,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    showTabs: s.showTabs, setShowTabs: s.setShowTabs,
+    tabStyle: s.tabStyle, setTabStyle: s.setTabStyle,
+    maxTabs: s.maxTabs, setMaxTabs: s.setMaxTabs,
+  })))
   const { t } = useTranslation('settings')
 
   return (

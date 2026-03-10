@@ -1,11 +1,12 @@
 import React, { Suspense, useRef, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { PageSkeleton } from '@/components/common/PageSkeleton'
 
 const AnimatedOutlet: React.FC = () => {
   const location = useLocation()
-  const { enableTransition, transitionName } = useAppStore()
+  const { enableTransition, transitionName } = useAppStore(useShallow((s) => ({ enableTransition: s.enableTransition, transitionName: s.transitionName })))
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

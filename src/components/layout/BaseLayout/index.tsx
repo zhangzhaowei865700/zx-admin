@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { logout } from '@/api/modules/platform/auth'
 import { removeToken, removeUserInfo, getUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent, onAuthEvent } from '@/utils/authChannel'
@@ -18,6 +19,7 @@ import { SettingsDrawer } from '../SettingsDrawer'
 import { LockScreenOverlay } from '../HeaderActions'
 import type { MenuDataItem } from '@ant-design/pro-components'
 import type { ItemType } from 'antd/es/menu/interface'
+import type { User } from '@/types'
 
 export interface BaseLayoutProps {
   /** ProLayout title */
@@ -84,7 +86,22 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     showWatermark,
     contentWidth,
     contentPadding,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    collapsed: s.collapsed, setCollapsed: s.setCollapsed,
+    layoutMode: s.layoutMode, setLayoutMode: s.setLayoutMode,
+    showHeader: s.showHeader,
+    fixedHeader: s.fixedHeader,
+    showSidebar: s.showSidebar,
+    fixedSidebar: s.fixedSidebar,
+    showFooter: s.showFooter,
+    sidebarWidth: s.sidebarWidth,
+    darkMode: s.darkMode,
+    primaryColor: s.primaryColor,
+    compactMode: s.compactMode,
+    showWatermark: s.showWatermark,
+    contentWidth: s.contentWidth,
+    contentPadding: s.contentPadding,
+  })))
 
   const { userInfo: storeUserInfo, setUserInfo: setStoreUserInfo, logout: storeLogout } = useUserStore()
   const [profileVisible, setProfileVisible] = useState(false)
@@ -102,7 +119,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const [userInfo, setUserInfo] = useState(storeUserInfo)
   useEffect(() => {
     if (!storeUserInfo) {
-      const info = getUserInfo()
+      const info = getUserInfo<User>()
       if (info) {
         setUserInfo(info)
         setStoreUserInfo(info)

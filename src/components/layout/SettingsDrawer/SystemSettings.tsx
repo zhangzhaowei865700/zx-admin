@@ -3,6 +3,7 @@ import { Switch, Input, Avatar, Select } from 'antd'
 import { PictureOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { LANGUAGE_OPTIONS } from '@/locales'
 import type { LocaleType } from '@/locales'
 
@@ -21,7 +22,13 @@ export const SystemSettings: React.FC = () => {
     showWatermark, setShowWatermark,
     watermarkText, setWatermarkText,
     locale, setLocale,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    systemName: s.systemName, setSystemName: s.setSystemName,
+    systemLogo: s.systemLogo, setSystemLogo: s.setSystemLogo,
+    showWatermark: s.showWatermark, setShowWatermark: s.setShowWatermark,
+    watermarkText: s.watermarkText, setWatermarkText: s.setWatermarkText,
+    locale: s.locale, setLocale: s.setLocale,
+  })))
 
   return (
     <>

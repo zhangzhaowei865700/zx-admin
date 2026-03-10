@@ -5,6 +5,7 @@ import { Tooltip } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { ExportModal } from './ExportModal'
 import { ResizableHeaderCell } from './ResizableHeaderCell'
 import { PAGINATION } from '@/constants'
@@ -27,7 +28,7 @@ function EditableProTable<T extends Record<string, any>, U extends Record<string
     postData, columns, rowSelection, optionsRender, pagination, scroll,
     ...restProps
   } = props
-  const { tableSize, tableBordered, tableResizable } = useAppStore()
+  const { tableSize, tableBordered, tableResizable } = useAppStore(useShallow((s) => ({ tableSize: s.tableSize, tableBordered: s.tableBordered, tableResizable: s.tableResizable })))
   const { t } = useTranslation()
   const dataRef = useRef<T[]>([])
   const [exportOpen, setExportOpen] = useState(false)

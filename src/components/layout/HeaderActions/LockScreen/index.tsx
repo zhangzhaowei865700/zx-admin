@@ -3,11 +3,12 @@ import { Tooltip, Modal, Input, Form, message, theme as antTheme, Avatar, Grid }
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { ActionIcon } from '../ActionIcon'
 
 /** 锁屏按钮 - 放在 Header 中 */
 export const LockScreenButton: React.FC = () => {
-  const { setIsLocked, setLockPassword } = useAppStore()
+  const { setIsLocked, setLockPassword } = useAppStore(useShallow((s) => ({ setIsLocked: s.setIsLocked, setLockPassword: s.setLockPassword })))
   const [visible, setVisible] = useState(false)
   const [password, setPassword] = useState('')
   const { t } = useTranslation()
@@ -60,7 +61,7 @@ export const LockScreenButton: React.FC = () => {
 
 /** 锁屏遮罩 - 放在 AppLayout 最外层 */
 export const LockScreenOverlay: React.FC = () => {
-  const { isLocked, lockPassword, setIsLocked, setLockPassword, locale, darkMode } = useAppStore()
+  const { isLocked, lockPassword, setIsLocked, setLockPassword, locale, darkMode } = useAppStore(useShallow((s) => ({ isLocked: s.isLocked, lockPassword: s.lockPassword, setIsLocked: s.setIsLocked, setLockPassword: s.setLockPassword, locale: s.locale, darkMode: s.darkMode })))
   const { userInfo } = useUserStore()
   const { token: themeToken } = antTheme.useToken()
   const [inputPassword, setInputPassword] = useState('')

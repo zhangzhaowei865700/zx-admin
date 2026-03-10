@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { getDictItems } from '@/api/modules/platform/dictionary'
 import { queryKeys } from '@/hooks/query'
 import { useQuery } from '@tanstack/react-query'
@@ -47,10 +47,10 @@ export function useDictionary(dictType: string) {
   )
 
   /** 转换为 Select/Radio 等组件的 options 格式 */
-  const options = items.map((item) => ({
-    label: item.label,
-    value: item.value,
-  }))
+  const options = useMemo(
+    () => items.map((item) => ({ label: item.label, value: item.value })),
+    [items]
+  )
 
   return { items, isLoading, getLabel, getColor, options }
 }

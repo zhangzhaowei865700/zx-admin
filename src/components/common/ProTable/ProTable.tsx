@@ -5,6 +5,7 @@ import { Tooltip } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { ExportModal } from './ExportModal'
 import { ResizableHeaderCell } from './ResizableHeaderCell'
 import { PAGINATION } from '@/constants'
@@ -24,7 +25,7 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
 ) {
   const { exportable, exportFileName, onExportAllData, postData, columns, rowSelection, optionsRender, pagination, scroll, ...restProps } = props
   const { t } = useTranslation()
-  const { tableSize, tableBordered, tableResizable } = useAppStore()
+  const { tableSize, tableBordered, tableResizable } = useAppStore(useShallow((s) => ({ tableSize: s.tableSize, tableBordered: s.tableBordered, tableResizable: s.tableResizable })))
   const dataRef = useRef<T[]>([])
   const [exportOpen, setExportOpen] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
@@ -60,11 +61,11 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
     ? {
         ...(typeof rowSelection === 'object' ? rowSelection : {}),
         selectedRowKeys,
-        onChange: (keys: React.Key[], rows: T[], info: any) => {
+        onChange: (keys: React.Key[], rows: T[], info: { type: 'all' | 'none' | 'invert' | 'single' | 'multiple' }) => {
           setSelectedRowKeys(keys)
           setSelectedRows(rows)
           if (typeof rowSelection === 'object') {
-            rowSelection.onChange?.(keys as any, rows, info)
+            rowSelection.onChange?.(keys, rows, info)
           }
         },
       }
@@ -84,11 +85,11 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
   const resizableColumns = useMemo(() => {
     if (!tableResizable || !columns) return columns
     return columns.map((col) => {
-      const key = String((col as any).dataIndex || (col as any).key || '')
+      const key = String((col as ProColumns<T>).dataIndex || (col as ProColumns<T>).key || '')
       if (!key) return col
 
       // 使用已保存的宽度，或列定义的宽度，或默认宽度 150
-      const width = columnWidths[key] ?? (col as any).width ?? 150
+      const width = columnWidths[key] ?? (col as ProColumns<T>).width ?? 150
 
       return {
         ...col,

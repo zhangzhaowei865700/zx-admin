@@ -25,7 +25,7 @@ export const TenantLayout: React.FC = () => {
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
   const { saasName } = useUserStore()
-  const { systemLogo } = useAppStore()
+  const systemLogo = useAppStore((s) => s.systemLogo)
 
   const [tenantName, setTenantName] = useState(() => {
     const nameFromUrl = searchParams.get('name')

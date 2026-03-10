@@ -4,6 +4,7 @@ import zhCN from 'antd/locale/zh_CN'
 import enUS from 'antd/locale/en_US'
 import jaJP from 'antd/locale/ja_JP'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import type { LocaleType } from '@/locales'
 
 const antdLocaleMap: Record<LocaleType, typeof zhCN> = {
@@ -13,7 +14,7 @@ const antdLocaleMap: Record<LocaleType, typeof zhCN> = {
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { darkMode, primaryColor, compactMode, colorWeak, grayMode, fontSize, borderRadius, locale } = useAppStore()
+  const { darkMode, primaryColor, compactMode, colorWeak, grayMode, fontSize, borderRadius, locale } = useAppStore(useShallow((s) => ({ darkMode: s.darkMode, primaryColor: s.primaryColor, compactMode: s.compactMode, colorWeak: s.colorWeak, grayMode: s.grayMode, fontSize: s.fontSize, borderRadius: s.borderRadius, locale: s.locale })))
 
   const antdLocale = useMemo(() => antdLocaleMap[locale] || zhCN, [locale])
 

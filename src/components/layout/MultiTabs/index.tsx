@@ -4,6 +4,7 @@ import { Tabs, Dropdown, theme as antTheme } from 'antd'
 import type { MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { getPlatformMenuLabelByPath } from '@/constants/platformMenu'
 import { getTenantMenuLabelByPath } from '@/constants/tenantMenu'
 import './index.css'
@@ -35,7 +36,17 @@ export const MultiTabs: React.FC = () => {
     removeOtherTabs,
     removeAllTabs,
     setActiveTabKey,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    tabs: s.tabs,
+    activeTabKey: s.activeTabKey,
+    showTabs: s.showTabs,
+    tabStyle: s.tabStyle,
+    addTab: s.addTab,
+    removeTab: s.removeTab,
+    removeOtherTabs: s.removeOtherTabs,
+    removeAllTabs: s.removeAllTabs,
+    setActiveTabKey: s.setActiveTabKey,
+  })))
 
   const isTenant = isTenantAdminPath(location.pathname)
   const homePath = getHomePath(location.pathname)

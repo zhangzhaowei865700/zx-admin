@@ -1,6 +1,7 @@
 import { ModalForm, DrawerForm } from '@ant-design/pro-components'
 import type { ModalFormProps, DrawerFormProps } from '@ant-design/pro-components'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { FORM_SIZE_MAP, type FormSizePreset } from '@/constants/formSize'
 
 type FormContainerProps = ModalFormProps & DrawerFormProps & {
@@ -8,7 +9,7 @@ type FormContainerProps = ModalFormProps & DrawerFormProps & {
 }
 
 export const FormContainer: React.FC<FormContainerProps> = (props) => {
-  const { formDisplayMode, formColumns, formSizePreset } = useAppStore()
+  const { formDisplayMode, formColumns, formSizePreset } = useAppStore(useShallow((s) => ({ formDisplayMode: s.formDisplayMode, formColumns: s.formColumns, formSizePreset: s.formSizePreset })))
 
   const isDrawer = formDisplayMode === 'drawer'
   const Form = isDrawer ? DrawerForm : ModalForm

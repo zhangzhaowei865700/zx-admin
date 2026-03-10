@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { SwapOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { getPlatformMenuItems, type MenuItem } from '@/constants/platformMenu'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, NotificationBell, LanguageSwitch, OverflowActions } from '../HeaderActions'
@@ -29,7 +30,14 @@ export const AppLayout: FC = () => {
     systemName,
     systemLogo,
     collapsed,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    showBreadcrumb: s.showBreadcrumb,
+    menuAccordion: s.menuAccordion,
+    sideMenuType: s.sideMenuType,
+    systemName: s.systemName,
+    systemLogo: s.systemLogo,
+    collapsed: s.collapsed,
+  })))
 
   // 根据当前路径提取应该展开的父菜单 key
   const getParentKeys = useCallback((path: string): string[] => {

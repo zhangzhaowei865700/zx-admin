@@ -2,6 +2,7 @@ import React from 'react'
 import { Segmented } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import type { FormSizePreset } from '@/stores/useAppStore'
 
 const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -12,7 +13,7 @@ const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ la
 )
 
 export const FormSettings: React.FC = () => {
-  const { formDisplayMode, setFormDisplayMode, formColumns, setFormColumns, formSizePreset, setFormSizePreset } = useAppStore()
+  const { formDisplayMode, setFormDisplayMode, formColumns, setFormColumns, formSizePreset, setFormSizePreset } = useAppStore(useShallow((s) => ({ formDisplayMode: s.formDisplayMode, setFormDisplayMode: s.setFormDisplayMode, formColumns: s.formColumns, setFormColumns: s.setFormColumns, formSizePreset: s.formSizePreset, setFormSizePreset: s.setFormSizePreset })))
   const { t } = useTranslation('settings')
 
   return (

@@ -59,5 +59,18 @@ export default defineConfig(({ mode }) => {
           }
         : undefined,
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-antd': ['antd', '@ant-design/icons'],
+            'vendor-pro': ['@ant-design/pro-components'],
+            'vendor-query': ['@tanstack/react-query'],
+            'vendor-i18n': ['i18next', 'react-i18next'],
+          },
+        },
+      },
+    },
   }
 })

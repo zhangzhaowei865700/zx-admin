@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, Slider, Tooltip, Segmented, Grid, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import type { LayoutMode, ContentWidth, SideMenuType } from '@/stores/useAppStore'
 
 const { useBreakpoint } = Grid
@@ -71,7 +72,20 @@ export const LayoutSettings: React.FC = () => {
     menuAccordion, setMenuAccordion,
     sideMenuType, setSideMenuType,
     contentPadding, setContentPadding,
-  } = useAppStore()
+  } = useAppStore(useShallow((s) => ({
+    layoutMode: s.layoutMode, setLayoutMode: s.setLayoutMode,
+    showHeader: s.showHeader, setShowHeader: s.setShowHeader,
+    fixedHeader: s.fixedHeader, setFixedHeader: s.setFixedHeader,
+    showSidebar: s.showSidebar, setShowSidebar: s.setShowSidebar,
+    fixedSidebar: s.fixedSidebar, setFixedSidebar: s.setFixedSidebar,
+    showFooter: s.showFooter, setShowFooter: s.setShowFooter,
+    showBreadcrumb: s.showBreadcrumb, setShowBreadcrumb: s.setShowBreadcrumb,
+    sidebarWidth: s.sidebarWidth, setSidebarWidth: s.setSidebarWidth,
+    contentWidth: s.contentWidth, setContentWidth: s.setContentWidth,
+    menuAccordion: s.menuAccordion, setMenuAccordion: s.setMenuAccordion,
+    sideMenuType: s.sideMenuType, setSideMenuType: s.setSideMenuType,
+    contentPadding: s.contentPadding, setContentPadding: s.setContentPadding,
+  })))
   const { t } = useTranslation('settings')
   const screens = useBreakpoint()
   const isMobile = !screens.md
