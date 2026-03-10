@@ -26,20 +26,21 @@ export const DashboardPage: React.FC = () => {
   const { t } = useTranslation(['tenant', 'common'])
 
   const tenantColumns = [
-    { title: t('tenant:platformDashboard.storeName'), dataIndex: 'name', key: 'name' },
-    { title: t('tenant:platformDashboard.contact'), dataIndex: 'contact', key: 'contact' },
-    { title: t('tenant:platformDashboard.phone'), dataIndex: 'phone', key: 'phone' },
+    { title: t('tenant:platformDashboard.storeName'), dataIndex: 'name', key: 'name', width: 150 },
+    { title: t('tenant:platformDashboard.contact'), dataIndex: 'contact', key: 'contact', width: 100 },
+    { title: t('tenant:platformDashboard.phone'), dataIndex: 'phone', key: 'phone', width: 130 },
     {
       title: t('common:status'),
       dataIndex: 'status',
       key: 'status',
+      width: 100,
       render: (_: unknown, record: (typeof recentTenants)[number]) => (
         <Tag icon={record.status === 1 ? <CheckCircleOutlined /> : <CloseCircleOutlined />} color={record.status === 1 ? 'success' : 'error'}>
           {record.status === 1 ? t('common:enabled') : t('common:disabled')}
         </Tag>
       ),
     },
-    { title: t('common:createTime'), dataIndex: 'createdAt', key: 'createdAt' },
+    { title: t('common:createTime'), dataIndex: 'createdAt', key: 'createdAt', width: 120 },
   ]
 
   return (

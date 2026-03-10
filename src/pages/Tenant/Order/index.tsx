@@ -25,17 +25,19 @@ export const TenantOrderPage: React.FC = () => {
 
   const columns: ProColumns<TenantOrder>[] = [
     { title: t('common:id'), dataIndex: 'id', width: 60, search: false },
-    { title: t('order:orderNo'), dataIndex: 'orderNo', copyable: true },
-    { title: t('order:customer'), dataIndex: 'customerName' },
+    { title: t('order:orderNo'), dataIndex: 'orderNo', width: 180, copyable: true },
+    { title: t('order:customer'), dataIndex: 'customerName', width: 120 },
     {
       title: t('order:amount'),
       dataIndex: 'amount',
+      width: 120,
       search: false,
       valueType: 'money',
     },
     {
       title: t('common:status'),
       dataIndex: 'status',
+      width: 120,
       valueType: 'select',
       valueEnum: {
         0: { text: t('order:statusPending') },
@@ -48,7 +50,7 @@ export const TenantOrderPage: React.FC = () => {
         return <Tag color={s.color}>{s.text}</Tag>
       },
     },
-    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', search: false },
+    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', width: 170, search: false },
   ]
 
   return (

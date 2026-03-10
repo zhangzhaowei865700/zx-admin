@@ -89,14 +89,15 @@ export const UserPage: React.FC = () => {
 
   const columns: ProColumns<SystemUser>[] = [
     { title: t('common:id'), dataIndex: 'id', width: 80, search: false },
-    { title: t('common:username'), dataIndex: 'username' },
-    { title: t('common:nickname'), dataIndex: 'nickname' },
-    { title: t('common:phone'), dataIndex: 'phone' },
-    { title: t('common:email'), dataIndex: 'email', search: false },
-    { title: t('system:user.role'), dataIndex: 'roleName', search: false },
+    { title: t('common:username'), dataIndex: 'username', width: 120 },
+    { title: t('common:nickname'), dataIndex: 'nickname', width: 120 },
+    { title: t('common:phone'), dataIndex: 'phone', width: 130 },
+    { title: t('common:email'), dataIndex: 'email', width: 180, search: false },
+    { title: t('system:user.role'), dataIndex: 'roleName', width: 120, search: false },
     {
       title: t('common:status'),
       dataIndex: 'status',
+      width: 100,
       valueType: 'select',
       valueEnum: {
         1: { text: t('common:enabled'), status: 'Success' },
@@ -108,10 +109,11 @@ export const UserPage: React.FC = () => {
         </Tag>
       ),
     },
-    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', search: false },
+    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', width: 170, search: false },
     {
       title: t('common:operation'),
       valueType: 'option',
+      width: 200,
       render: (_: unknown, record: SystemUser) => (
         <Space size="middle">
           <HasPermission code="system:user:edit">

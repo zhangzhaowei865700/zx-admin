@@ -2,6 +2,7 @@ import React from 'react'
 import { Segmented } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
+import type { FormSizePreset } from '@/stores/useAppStore'
 
 const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -11,7 +12,7 @@ const SettingRow: React.FC<{ label: string; children: React.ReactNode }> = ({ la
 )
 
 export const FormSettings: React.FC = () => {
-  const { formDisplayMode, setFormDisplayMode, formColumns, setFormColumns } = useAppStore()
+  const { formDisplayMode, setFormDisplayMode, formColumns, setFormColumns, formSizePreset, setFormSizePreset } = useAppStore()
   const { t } = useTranslation('settings')
 
   return (
@@ -35,6 +36,18 @@ export const FormSettings: React.FC = () => {
           options={[
             { label: t('form.singleColumn'), value: 1 },
             { label: t('form.doubleColumn'), value: 2 },
+          ]}
+        />
+      </SettingRow>
+      <SettingRow label={t('form.formSize')}>
+        <Segmented
+          size="small"
+          value={formSizePreset}
+          onChange={(v) => setFormSizePreset(v as FormSizePreset)}
+          options={[
+            { label: t('form.small'), value: 'small' },
+            { label: t('form.medium'), value: 'medium' },
+            { label: t('form.large'), value: 'large' },
           ]}
         />
       </SettingRow>

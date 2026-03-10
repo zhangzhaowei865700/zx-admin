@@ -8,5 +8,9 @@
   "inbox": "メッセージ",
   "orderManagement": "注文管理",
   "productManagement": "商品管理",
-  "storeSetting": "店舗設定"
+  "storeSetting": "店舗設定",
+  "dashboard": "ダッシュボード",
+  "business": "業務管理",
+  "system": "システム管理",
+  "message": "メッセージセンター"
 }

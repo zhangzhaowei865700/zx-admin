@@ -32,18 +32,20 @@ export const TenantDashboardPage: React.FC = () => {
   }
 
   const orderColumns = [
-    { title: t('order:orderNo'), dataIndex: 'orderNo', key: 'orderNo' },
-    { title: t('order:customer'), dataIndex: 'customerName', key: 'customerName' },
+    { title: t('order:orderNo'), dataIndex: 'orderNo', key: 'orderNo', width: 180 },
+    { title: t('order:customer'), dataIndex: 'customerName', key: 'customerName', width: 120 },
     {
       title: t('order:amount'),
       dataIndex: 'amount',
       key: 'amount',
+      width: 120,
       render: (_: unknown, record: TenantOrder) => `¥${record.amount.toFixed(2)}`,
     },
     {
       title: t('common:status'),
       dataIndex: 'status',
       key: 'status',
+      width: 120,
       render: (_: unknown, record: TenantOrder) => (
         <Tag color={statusMap[record.status].color}>{statusMap[record.status].text}</Tag>
       ),

@@ -13,9 +13,11 @@ export type LayoutMode = 'side' | 'top' | 'mix'
 export type PageTransition = 'fade' | 'slide-left' | 'slide-up' | 'zoom' | 'none'
 export type FormDisplayMode = 'modal' | 'drawer'
 export type FormColumns = 1 | 2
+export type FormSizePreset = 'small' | 'medium' | 'large'
 export type TabStyle = 'card' | 'line'
 export type ContentWidth = 'fluid' | 'fixed'
 export type TableSize = 'large' | 'middle' | 'small'
+export type SideMenuType = 'sub' | 'group'
 
 export interface TabItem {
   key: string
@@ -45,6 +47,7 @@ interface AppSettings {
   showBreadcrumb: boolean
   contentWidth: ContentWidth
   menuAccordion: boolean
+  sideMenuType: SideMenuType
   contentPadding: number
 
   // 标签页
@@ -65,6 +68,7 @@ interface AppSettings {
   // 表单
   formDisplayMode: FormDisplayMode
   formColumns: FormColumns
+  formSizePreset: FormSizePreset
 
   // 系统
   systemName: string
@@ -103,6 +107,7 @@ interface AppActions {
   setShowBreadcrumb: (v: boolean) => void
   setContentWidth: (v: ContentWidth) => void
   setMenuAccordion: (v: boolean) => void
+  setSideMenuType: (v: SideMenuType) => void
   setContentPadding: (v: number) => void
 
   // 标签页
@@ -126,6 +131,7 @@ interface AppActions {
   // 表单
   setFormDisplayMode: (v: FormDisplayMode) => void
   setFormColumns: (v: FormColumns) => void
+  setFormSizePreset: (v: FormSizePreset) => void
 
   // 系统
   setSystemName: (v: string) => void
@@ -171,6 +177,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   showBreadcrumb: settings.layout.showBreadcrumb,
   contentWidth: settings.layout.contentWidth as ContentWidth,
   menuAccordion: settings.layout.menuAccordion,
+  sideMenuType: (settings.layout as { sideMenuType?: string }).sideMenuType as SideMenuType ?? 'sub',
   contentPadding: settings.layout.contentPadding,
 
   // 标签页
@@ -191,6 +198,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   // 表单
   formDisplayMode: settings.form.formDisplayMode as FormDisplayMode,
   formColumns: (settings.form as { formColumns?: number }).formColumns as FormColumns ?? 1,
+  formSizePreset: (settings.form as { formSizePreset?: string }).formSizePreset as FormSizePreset ?? 'medium',
 
   // 系统
   systemName: settings.system.systemName,
@@ -253,6 +261,7 @@ export const useAppStore = create<AppState>()(
       setShowBreadcrumb: (showBreadcrumb) => set({ showBreadcrumb }),
       setContentWidth: (contentWidth) => set({ contentWidth }),
       setMenuAccordion: (menuAccordion) => set({ menuAccordion }),
+      setSideMenuType: (sideMenuType) => set({ sideMenuType }),
       setContentPadding: (contentPadding) => set({ contentPadding }),
 
       // 标签页
@@ -316,6 +325,7 @@ export const useAppStore = create<AppState>()(
       // 表单
       setFormDisplayMode: (formDisplayMode) => set({ formDisplayMode }),
       setFormColumns: (formColumns) => set({ formColumns }),
+      setFormSizePreset: (formSizePreset) => set({ formSizePreset }),
 
       // 系统
       setSystemName: (systemName) => set({ systemName }),
@@ -374,6 +384,7 @@ export const useAppStore = create<AppState>()(
         showBreadcrumb: state.showBreadcrumb,
         contentWidth: state.contentWidth,
         menuAccordion: state.menuAccordion,
+        sideMenuType: state.sideMenuType,
         contentPadding: state.contentPadding,
         showTabs: state.showTabs,
         tabStyle: state.tabStyle,
@@ -390,6 +401,7 @@ export const useAppStore = create<AppState>()(
         watermarkText: state.watermarkText,
         formDisplayMode: state.formDisplayMode,
         formColumns: state.formColumns,
+        formSizePreset: state.formSizePreset,
         tableSize: state.tableSize,
         tableBordered: state.tableBordered,
         tableResizable: state.tableResizable,

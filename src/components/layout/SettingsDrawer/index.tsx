@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { flushSync } from 'react-dom'
-import { Drawer, Button, Tabs, Space, message, theme } from 'antd'
-import { SettingOutlined, CopyOutlined, UndoOutlined } from '@ant-design/icons'
+import { Drawer, Button, Tabs, Space, message, theme, Modal } from 'antd'
+import { SettingOutlined, CopyOutlined, UndoOutlined, ClearOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 import { ThemeSettings } from './ThemeSettings'
@@ -21,8 +21,10 @@ export const SettingsDrawer: React.FC = () => {
     return saved ? JSON.parse(saved) : { x: window.innerWidth - 80, y: window.innerHeight - 120 }
   })
   const [isDragging, setIsDragging] = useState(false)
+  const [isLongPress, setIsLongPress] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const hasMovedRef = useRef(false)
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
   const resetSettings = useAppStore((s) => s.resetSettings)
   const { token } = theme.useToken()
@@ -53,14 +55,26 @@ export const SettingsDrawer: React.FC = () => {
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return
     hasMovedRef.current = false
-    setIsDragging(true)
+
+    // 启动长按计时器
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPress(true)
+      setIsDragging(true)
+    }, 100) // 100ms 后进入拖拽模式
+
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0]
     hasMovedRef.current = false
-    setIsDragging(true)
+
+    // 启动长按计时器
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPress(true)
+      setIsDragging(true)
+    }, 100)
+
     setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y })
     e.preventDefault()
   }
@@ -80,8 +94,17 @@ export const SettingsDrawer: React.FC = () => {
     }
 
   const handleEnd = () => {
+      // 清除长按计时器
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+        longPressTimerRef.current = null
+      }
+
       // flushSync 强制同步渲染，让 transition 先生效，再更新吸附位置
-      flushSync(() => setIsDragging(false))
+      flushSync(() => {
+        setIsDragging(false)
+        setIsLongPress(false)
+      })
 
       if (hasMovedRef.current) {
         setPosition((prev) => {
@@ -106,6 +129,12 @@ export const SettingsDrawer: React.FC = () => {
   }, [isDragging, dragStart])
 
   const handleClick = (e: React.MouseEvent) => {
+    // 清除长按计时器
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+
     // 如果刚拖拽过，阻止点击
     if (hasMovedRef.current) {
       e.stopPropagation()
@@ -170,6 +199,38 @@ export const SettingsDrawer: React.FC = () => {
     })
   }
 
+  const handleClearCache = () => {
+    Modal.confirm({
+      title: t('clearCache'),
+      content: t('clearCacheConfirm'),
+      okText: t('confirm'),
+      cancelText: t('cancel'),
+      okButtonProps: { danger: true },
+      onOk: () => {
+        // 保存用户设置和语言配置
+        const appSettings = localStorage.getItem('app-settings')
+        const appLocale = localStorage.getItem('app-locale')
+
+        // 清除所有缓存
+        localStorage.clear()
+        sessionStorage.clear()
+
+        // 恢复用户设置和语言配置
+        if (appSettings) {
+          localStorage.setItem('app-settings', appSettings)
+        }
+        if (appLocale) {
+          localStorage.setItem('app-locale', appLocale)
+        }
+
+        message.success(t('clearCacheSuccess'))
+        setTimeout(() => {
+          window.location.reload()
+        }, 500)
+      },
+    })
+  }
+
   const tabItems = [
     { key: 'theme', label: t('tabTheme'), children: <ThemeSettings /> },
     { key: 'layout', label: t('tabLayout'), children: <LayoutSettings /> },
@@ -199,12 +260,12 @@ export const SettingsDrawer: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          boxShadow: isDragging
+          cursor: isLongPress ? 'grabbing' : 'pointer',
+          boxShadow: isLongPress
             ? '0 6px 20px rgba(0,0,0,0.25)'
             : '0 2px 12px rgba(0,0,0,0.15)',
           transition: isDragging ? 'box-shadow 0.2s, transform 0.2s' : 'left 0.3s ease-out, top 0.3s ease-out, box-shadow 0.2s, transform 0.2s',
-          transform: isDragging ? 'scale(1.08)' : 'scale(1)',
+          transform: isLongPress ? 'scale(1.08)' : 'scale(1)',
           zIndex: 1000,
           userSelect: 'none',
           touchAction: 'none',
@@ -220,13 +281,28 @@ export const SettingsDrawer: React.FC = () => {
         open={open}
         onClose={() => setOpen(false)}
         footer={
-          <Space style={{ width: '100%' }} direction="vertical">
+          <Space style={{ width: '100%' }} direction="vertical" size={12}>
             <Button block icon={<CopyOutlined />} onClick={handleCopySettings}>
               {t('copySettings')}
             </Button>
-            <Button block danger icon={<UndoOutlined />} onClick={resetSettings}>
-              {t('resetSettings')}
-            </Button>
+            <Space.Compact block>
+              <Button
+                danger
+                icon={<UndoOutlined />}
+                onClick={resetSettings}
+                style={{ width: '50%' }}
+              >
+                {t('resetSettings')}
+              </Button>
+              <Button
+                danger
+                icon={<ClearOutlined />}
+                onClick={handleClearCache}
+                style={{ width: '50%' }}
+              >
+                {t('clearCache')}
+              </Button>
+            </Space.Compact>
           </Space>
         }
       >

@@ -51,17 +51,25 @@ const DashboardPage = () => (
 
 - **表单展示模式**：根据 `formDisplayMode` 自动切换弹窗 / 抽屉
 - **表单列数**：根据 `formColumns` 自动开启 grid 布局
+- **表单大小**：根据 `formSizePreset` 自动设置宽度（small/medium/large）
 - **destroyOnClose**：默认开启
 
 ### Props
 
-透传 `ModalFormProps` & `DrawerFormProps` 全部属性。组件内部自动处理 `drawerProps` / `modalProps` / `grid` / `colProps`，传入的同名属性会与默认值合并。
+透传 `ModalFormProps` & `DrawerFormProps` 全部属性，额外支持：
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `formSize` | `'small' \| 'medium' \| 'large'` | `formSizePreset` | 表单尺寸，不传则使用全局设置 |
+
+组件内部自动处理 `drawerProps` / `modalProps` / `grid` / `colProps`，传入的同名属性会与默认值合并。
 
 ### 用法
 
 ```tsx
 import { FormContainer } from '@/components/common/FormContainer'
 
+// 基础用法：跟随全局设置
 <FormContainer
   title="新增用户"
   open={open}
@@ -75,6 +83,16 @@ import { FormContainer } from '@/components/common/FormContainer'
   <ProFormText name="email" label="邮箱" />
   {/* 字段级覆盖列宽 */}
   <ProFormTextArea name="remark" label="备注" colProps={{ span: 24 }} />
+</FormContainer>
+
+// 固定尺寸：不跟随全局设置
+<FormContainer
+  title="配置权限"
+  formSize="large"
+  open={open}
+  onOpenChange={setOpen}
+>
+  {/* 复杂表单内容 */}
 </FormContainer>
 ```
 

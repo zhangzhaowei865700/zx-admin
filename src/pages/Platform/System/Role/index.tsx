@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Space, Tag, Tabs, Input, Checkbox, Tree, theme } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
-import { ModalForm, DrawerForm, ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
+import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
 import type { DataNode } from 'antd/es/tree'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
@@ -8,7 +8,6 @@ import { FormContainer } from '@/components/common/FormContainer'
 import { getRoleList, type Role } from '@/api/modules/platform/system'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAppStore } from '@/stores'
 import { useMenuTreeQuery, useDeptTreeQuery, useRoleMutations } from '../hooks/useRole'
 import {
   convertMenuToTreeData,
@@ -139,14 +138,11 @@ export const RolePage: React.FC = () => {
   const [expandedDeptKeys, setExpandedDeptKeys] = useState<number[]>([])
   const [menuAllExpanded, setMenuAllExpanded] = useState(true)
   const [deptAllExpanded, setDeptAllExpanded] = useState(true)
-  const { formDisplayMode } = useAppStore()
   const { t } = useTranslation(['system', 'common'])
 
   const { data: menuTree = [] } = useMenuTreeQuery()
   const { data: deptTree = [] } = useDeptTreeQuery()
   const { submit, remove, batchRemove, savePermission } = useRoleMutations(actionRef)
-
-  const PermissionContainer = formDisplayMode === 'drawer' ? DrawerForm : ModalForm
 
   const handleAdd = () => {
     setCurrentRecord(undefined)
@@ -197,12 +193,13 @@ export const RolePage: React.FC = () => {
 
   const columns: ProColumns<Role>[] = [
     { title: t('common:id'), dataIndex: 'id', width: 80, search: false },
-    { title: t('system:role.roleName'), dataIndex: 'name' },
-    { title: t('system:role.roleCode'), dataIndex: 'code' },
-    { title: t('common:description'), dataIndex: 'description', search: false, ellipsis: true },
+    { title: t('system:role.roleName'), dataIndex: 'name', width: 150 },
+    { title: t('system:role.roleCode'), dataIndex: 'code', width: 150 },
+    { title: t('common:description'), dataIndex: 'description', width: 200, search: false, ellipsis: true },
     {
       title: t('common:status'),
       dataIndex: 'status',
+      width: 100,
       valueType: 'select',
       valueEnum: {
         1: { text: t('common:enabled'), status: 'Success' },
@@ -214,10 +211,11 @@ export const RolePage: React.FC = () => {
         </Tag>
       ),
     },
-    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', search: false },
+    { title: t('common:createTime'), dataIndex: 'createdAt', valueType: 'dateTime', width: 170, search: false },
     {
       title: t('common:operation'),
       valueType: 'option',
+      width: 200,
       render: (_: unknown, record: Role) => (
         <Space size="middle">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
@@ -314,20 +312,14 @@ export const RolePage: React.FC = () => {
       </FormContainer>
 
       {/* 配置权限 */}
-      <PermissionContainer
+      <FormContainer
         title={t('system:role.configPermissionTitle', { name: currentRecord?.name })}
         open={permissionDrawerOpen}
         onOpenChange={setPermissionDrawerOpen}
-        {...(formDisplayMode === 'drawer'
-          ? {
-              drawerProps: {
-                destroyOnClose: true,
-                width: 500,
-                className: 'permission-config-drawer',
-                styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } },
-              },
-            }
-          : { modalProps: { destroyOnClose: true, centered: true } })}
+        drawerProps={{
+          className: 'permission-config-drawer',
+          styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } },
+        }}
         onFinish={async () => {
           await savePermission.mutateAsync({
             roleId: currentRecord!.id,
@@ -422,7 +414,7 @@ export const RolePage: React.FC = () => {
             ]}
           />
         </>
-      </PermissionContainer>
+      </FormContainer>
     </PageContainer>
   )
 }

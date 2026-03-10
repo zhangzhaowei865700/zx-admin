@@ -38,6 +38,7 @@
 | `breadcrumbProps` | `Record<string, any>` | ❌ | ProLayout 面包屑属性覆盖 |
 | `menuProps` | `Record<string, any>` | ❌ | ProLayout 菜单属性覆盖 |
 | `selectedKeys` | `string[]` | ❌ | ProLayout 选中菜单项覆盖 |
+| `siderMenuType` | `'sub' \| 'group'` | ❌ | 侧边栏菜单类型（经典模式/分组模式） |
 
 ### 功能
 
@@ -219,17 +220,25 @@ function App() {
 | 分类 | 组件 | 主要配置项 |
 | --- | --- | --- |
 | 主题 | `ThemeSettings` | 暗黑模式、主色、字号、圆角、色弱、灰色、紧凑 |
-| 布局 | `LayoutSettings` | 布局模式、内容宽度、侧边栏宽度、头部/页脚显示、面包屑 |
+| 布局 | `LayoutSettings` | 布局模式、内容宽度、侧边栏宽度、菜单手风琴、侧边菜单类型、头部/页脚显示、面包屑 |
 | 标签页 | `TabsSettings` | 显示开关、Tab 样式、最大数量 |
 | 过渡动画 | `TransitionSettings` | 启用开关、动画类型 |
 | 表格 | `TableSettings` | 表格尺寸、边框、列宽可拖拽 |
-| 表单 | `FormSettings` | 展示模式（弹窗/抽屉）、列数 |
+| 表单 | `FormSettings` | 展示模式（弹窗/抽屉）、列数、表单尺寸 |
 | 系统 | `SystemSettings` | 语言、系统名称、Logo、水印 |
 
 ### 其他操作
 
 - **复制配置**：将当前所有设置序列化为 JSON 复制到剪贴板
 - **重置设置**：恢复 `defaultSettings.json` 中的默认值
+- **清除缓存**：清除所有 localStorage 和 sessionStorage，保留用户设置和语言配置，刷新页面
+
+### 悬浮按钮交互
+
+- **长按拖拽**：按住 100ms 后进入拖拽模式，可自由移动按钮位置
+- **点击打开**：快速点击打开设置抽屉
+- **自动吸附**：拖拽结束后自动吸附到屏幕边缘
+- **位置持久化**：按钮位置保存到 localStorage，刷新后保持
 
 ### 使用位置
 

@@ -228,11 +228,14 @@ All configurations auto-persist to localStorage, user preferences permanently sa
 #### 🧩 Functional Components
 - Multi-tabs: Enable/Disable, max tab limit, tab persistence, quick actions (close others/close all)
 - Breadcrumb navigation: Show/Hide, icon display
+- Side menu type: Classic submenu mode/Group mode, adapts to different menu hierarchies
 - Footer: Show/Hide, custom content
 - Watermark: Enable/Disable, custom text
 
 #### 📝 Forms & Tables
-- Form columns: Global config 1/2/3 column layout, supports page-level and field-level override
+- Form display mode: Modal/Drawer, global configuration
+- Form columns: Global config 1/2 column layout, supports page-level and field-level override
+- Form size: Small/Medium/Large three preset widths, adapts to different form complexities
 - Table density: Compact/Default/Comfortable three modes
 - Pagination config: Items per page, show total, quick jump
 
@@ -323,6 +326,7 @@ All configurations auto-persist to localStorage, user preferences permanently sa
 - Menu search (Ctrl+K)
 - Excel export
 - Lock screen
+- Clear cache functionality
 - Mock data service
 
     </td>

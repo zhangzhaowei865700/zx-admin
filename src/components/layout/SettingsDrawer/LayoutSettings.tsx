@@ -2,7 +2,7 @@ import React from 'react'
 import { Switch, Slider, Tooltip, Segmented, Grid, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
-import type { LayoutMode, ContentWidth } from '@/stores/useAppStore'
+import type { LayoutMode, ContentWidth, SideMenuType } from '@/stores/useAppStore'
 
 const { useBreakpoint } = Grid
 
@@ -69,6 +69,7 @@ export const LayoutSettings: React.FC = () => {
     sidebarWidth, setSidebarWidth,
     contentWidth, setContentWidth,
     menuAccordion, setMenuAccordion,
+    sideMenuType, setSideMenuType,
     contentPadding, setContentPadding,
   } = useAppStore()
   const { t } = useTranslation('settings')
@@ -122,6 +123,18 @@ export const LayoutSettings: React.FC = () => {
       </SettingRow>
       <SettingRow label={t('layout.menuAccordion')}>
         <Switch checked={menuAccordion} onChange={setMenuAccordion} disabled={layoutMode === 'top'} />
+      </SettingRow>
+      <SettingRow label={t('layout.sideMenuType')}>
+        <Segmented
+          size="small"
+          value={sideMenuType}
+          onChange={(v) => setSideMenuType(v as SideMenuType)}
+          disabled={layoutMode === 'top'}
+          options={[
+            { label: t('layout.classicMenu'), value: 'sub' },
+            { label: t('layout.groupMenu'), value: 'group' },
+          ]}
+        />
       </SettingRow>
       <SettingRow label={t('layout.showFooter')}>
         <Switch checked={showFooter} onChange={setShowFooter} />

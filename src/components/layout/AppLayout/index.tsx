@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useEffect, memo } from 'react'
+import { useMemo, useCallback, useState, useEffect, memo, type FC } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { SwapOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -13,10 +13,11 @@ const convertMenuToRoutes = (items: MenuItem[]): any[] =>
     path: item.path,
     name: item.name,
     icon: item.icon,
+    ...(item.group ? { group: item.group } : {}),
     ...(item.children ? { routes: convertMenuToRoutes(item.children) } : {}),
   }))
 
-export const AppLayout: React.FC = () => {
+export const AppLayout: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
@@ -24,6 +25,7 @@ export const AppLayout: React.FC = () => {
   const {
     showBreadcrumb,
     menuAccordion,
+    sideMenuType,
     systemName,
     systemLogo,
     collapsed,
@@ -111,6 +113,7 @@ export const AppLayout: React.FC = () => {
         itemRender: (route: any) => <span>{route.breadcrumbName}</span>,
       }}
       menuProps={menuProps}
+      siderMenuType={sideMenuType}
     />
   )
 }

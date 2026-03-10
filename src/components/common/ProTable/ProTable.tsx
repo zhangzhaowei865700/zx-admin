@@ -80,14 +80,16 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
         ...(typeof pagination === 'object' ? pagination : {}),
       }
 
-  // 可拖拽列宽：为有 width 的列注入 onHeaderCell
+  // 可拖拽列宽：为所有列注入 onHeaderCell，没有 width 的列使用默认宽度 150
   const resizableColumns = useMemo(() => {
     if (!tableResizable || !columns) return columns
     return columns.map((col) => {
       const key = String((col as any).dataIndex || (col as any).key || '')
       if (!key) return col
-      const width = columnWidths[key] ?? (col as any).width
-      if (!width) return col
+
+      // 使用已保存的宽度，或列定义的宽度，或默认宽度 150
+      const width = columnWidths[key] ?? (col as any).width ?? 150
+
       return {
         ...col,
         width,

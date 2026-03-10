@@ -8,5 +8,9 @@
   "inbox": "Inbox",
   "orderManagement": "Orders",
   "productManagement": "Products",
-  "storeSetting": "Store Settings"
+  "storeSetting": "Store Settings",
+  "dashboard": "Dashboard",
+  "business": "Business",
+  "system": "System",
+  "message": "Messages"
 }

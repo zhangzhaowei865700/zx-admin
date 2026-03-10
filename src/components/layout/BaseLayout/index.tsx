@@ -45,6 +45,8 @@ export interface BaseLayoutProps {
   menuProps?: Record<string, any>
   /** ProLayout selectedKeys override */
   selectedKeys?: string[]
+  /** ProLayout siderMenuType */
+  siderMenuType?: 'sub' | 'group'
 }
 
 export const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -60,6 +62,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   breadcrumbRender,
   breadcrumbProps,
   menuProps: extraMenuProps,
+  siderMenuType,
 }) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -247,6 +250,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         breadcrumbRender={breadcrumbRender}
         breadcrumbProps={breadcrumbProps}
         menuProps={extraMenuProps}
+        siderMenuType={siderMenuType}
         footerRender={showFooter ? () => (
           <div style={{ textAlign: 'center', padding: '16px 0', color: themeToken.colorTextSecondary }}>
             {footerText} ©{new Date().getFullYear()}

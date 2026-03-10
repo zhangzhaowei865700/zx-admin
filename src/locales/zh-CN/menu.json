@@ -8,5 +8,9 @@
   "inbox": "站内信",
   "orderManagement": "订单管理",
   "productManagement": "商品管理",
-  "storeSetting": "店铺设置"
+  "storeSetting": "店铺设置",
+  "dashboard": "工作台",
+  "business": "业务管理",
+  "system": "系统管理",
+  "message": "消息中心"
 }

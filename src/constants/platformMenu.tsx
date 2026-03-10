@@ -14,22 +14,24 @@ export interface MenuItem {
   icon: React.ReactNode
   name: string
   children?: MenuItem[]
+  group?: string
 }
 
 export const getPlatformMenuItems = (): MenuItem[] => [
-  { path: '/', icon: <DashboardOutlined />, name: i18n.t('menu:home') },
-  { path: '/tenant', icon: <ShopOutlined />, name: i18n.t('menu:tenantManagement') },
+  { path: '/', icon: <DashboardOutlined />, name: i18n.t('menu:home'), group: i18n.t('menu:dashboard') },
+  { path: '/tenant', icon: <ShopOutlined />, name: i18n.t('menu:tenantManagement'), group: i18n.t('menu:business') },
   {
     path: '/system',
     icon: <SettingOutlined />,
     name: i18n.t('menu:systemManagement'),
+    group: i18n.t('menu:system'),
     children: [
       { path: '/system/user', icon: <UserOutlined />, name: i18n.t('menu:userManagement') },
       { path: '/system/role', icon: <SafetyCertificateOutlined />, name: i18n.t('menu:roleManagement') },
       { path: '/system/menu', icon: <MenuOutlined />, name: i18n.t('menu:menuManagement') },
     ],
   },
-  { path: '/inbox', icon: <MailOutlined />, name: i18n.t('menu:inbox') },
+  { path: '/inbox', icon: <MailOutlined />, name: i18n.t('menu:inbox'), group: i18n.t('menu:message') },
 ]
 
 /** 根据路径获取菜单名称（支持子菜单） */

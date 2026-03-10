@@ -33,7 +33,8 @@
   },
   "form": {
     "formDisplayMode": "drawer",
-    "formColumns": 1
+    "formColumns": 1,
+    "formSizePreset": "medium"
   },
   "system": {
     "systemName": "ZX Admin",

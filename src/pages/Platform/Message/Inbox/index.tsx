@@ -58,6 +58,7 @@ export const InboxPage: React.FC = () => {
     {
       title: t('common:status'),
       dataIndex: 'isRead',
+      width: 100,
       search: false,
       render: (_: unknown, record: Message) =>
         !record.isRead ? (
@@ -69,6 +70,7 @@ export const InboxPage: React.FC = () => {
     {
       title: t('message:type'),
       dataIndex: 'type',
+      width: 120,
       valueType: 'select',
       valueEnum: {
         announcement: { text: t('message:announcement') },
@@ -83,6 +85,7 @@ export const InboxPage: React.FC = () => {
     {
       title: t('message:messageTitle'),
       dataIndex: 'title',
+      width: 250,
       ellipsis: true,
       render: (_: unknown, record: Message) => (
         <a
@@ -96,6 +99,7 @@ export const InboxPage: React.FC = () => {
     {
       title: t('message:priority'),
       dataIndex: 'priority',
+      width: 100,
       search: false,
       render: (_: unknown, record: Message) => (
         <Tag color={priorityMap[record.priority].color}>{priorityMap[record.priority].text}</Tag>
@@ -104,17 +108,20 @@ export const InboxPage: React.FC = () => {
     {
       title: t('message:sender'),
       dataIndex: 'senderName',
+      width: 120,
       search: false,
     },
     {
       title: t('message:time'),
       dataIndex: 'createdAt',
       valueType: 'dateTime',
+      width: 170,
       search: false,
     },
     {
       title: t('common:operation'),
       valueType: 'option',
+      width: 150,
       render: (_: unknown, record: Message) => (
         <Space size="middle">
           {!record.isRead && (
@@ -229,7 +236,7 @@ export const InboxPage: React.FC = () => {
         title={currentMessage?.title}
         open={detailVisible}
         onClose={() => setDetailVisible(false)}
-        width={520}
+        width={600}
       >
         {currentMessage && (
           <>
