@@ -13,6 +13,8 @@
 | `HasPermission` | `./HasPermission/index.tsx` | 按钮级权限控制 |
 | `ErrorBoundary` | `./ErrorBoundary/index.tsx` | 错误边界 |
 | `PageSkeleton` | `./PageSkeleton/index.tsx` | 页面级骨架屏（dashboard / table / detail 三种类型） |
+| `DictTag` | `./DictTag/index.tsx` | 字典值展示组件（自动查询字典并渲染为 Tag） |
+| `VersionUpdateBar` | `./VersionUpdateBar/index.tsx` | 版本更新提示条（检测到新版本时显示） |
 
 ---
 
@@ -335,4 +337,79 @@ if (loading) return <PageSkeleton type="detail" />
   <DashboardContent />
 )}
 ```
+
+---
+
+## DictTag
+
+字典值展示组件，根据字典类型和值自动查询字典数据，渲染为带颜色的 Tag。
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `dictType` | `string` | ✅ | 字典类型编码 |
+| `value` | `string \| number` | ✅ | 字典项值 |
+
+### 用法
+
+```tsx
+import { DictTag } from '@/components/common/DictTag'
+
+// 在表格列中使用
+{
+  title: '订单状态',
+  dataIndex: 'status',
+  render: (status) => <DictTag dictType="order_status" value={status} />
+}
+
+// 在详情页中使用
+<DictTag dictType="user_type" value={userInfo.type} />
+```
+
+### 工作原理
+
+1. 通过 `useDictionary(dictType)` hook 获取字典数据
+2. 调用 `getLabel(value)` 获取显示文本
+3. 调用 `getColor(value)` 获取标签颜色
+4. 渲染为 `<Tag color={color}>{label}</Tag>`
+
+---
+
+## VersionUpdateBar
+
+版本更新提示条，检测到新版本时在页面顶部显示提示横幅。
+
+### Props
+
+无需传入任何 props，组件内部自动检测版本更新。
+
+### 用法
+
+```tsx
+import { VersionUpdateBar } from '@/components/common/VersionUpdateBar'
+
+// 在布局组件中使用
+const AppLayout = () => (
+  <Layout>
+    <VersionUpdateBar />
+    <Header />
+    <Content />
+  </Layout>
+)
+```
+
+### 工作原理
+
+1. 通过 `useVersionCheck()` hook 检测版本更新
+2. 当 `hasNewVersion` 为 `true` 时显示 Alert 横幅
+3. 用户点击"立即刷新"按钮调用 `refresh()` 刷新页面
+4. 横幅可关闭，关闭后不再显示（直到下次检测到新版本）
+
+### 特性
+
+- **自动检测**：基于构建时间戳或版本号对比
+- **国际化支持**：提示文本支持多语言
+- **可关闭**：用户可手动关闭提示
+- **非侵入式**：以横幅形式显示，不阻塞用户操作
 
