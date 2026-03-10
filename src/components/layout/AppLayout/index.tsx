@@ -4,7 +4,7 @@ import { SwapOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { getPlatformMenuItems, type MenuItem } from '@/constants/platformMenu'
+import { getPlatformMenuItems, type MenuItem } from '@/constants/menu'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, NotificationBell, LanguageSwitch, OverflowActions } from '../HeaderActions'
 

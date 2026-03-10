@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Modal, Input, Tooltip, Grid, theme as antTheme } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { type MenuItem } from '@/constants/platformMenu'
-import { getPlatformMenuItems } from '@/constants/platformMenu'
+import { type MenuItem } from '@/constants/menu'
+import { getPlatformMenuItems } from '@/constants/menu'
 import { ActionIcon } from '../ActionIcon'
 
 // 将嵌套菜单扁平化为可搜索列表

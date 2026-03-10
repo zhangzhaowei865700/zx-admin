@@ -2,7 +2,7 @@ import { ModalForm, DrawerForm } from '@ant-design/pro-components'
 import type { ModalFormProps, DrawerFormProps } from '@ant-design/pro-components'
 import { useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { FORM_SIZE_MAP, type FormSizePreset } from '@/constants/formSize'
+import { FORM_SIZE_MAP, type FormSizePreset } from '@/constants/ui'
 
 type FormContainerProps = ModalFormProps & DrawerFormProps & {
   formSize?: FormSizePreset

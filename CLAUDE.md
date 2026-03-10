@@ -340,9 +340,14 @@ src/
 │   ├── platform/          # 平台域类型
 │   └── tenant/            # 租户域类型
 ├── constants/
-│   ├── platformMenu.tsx   # 平台菜单配置（支持分组）
-│   ├── tenantMenu.tsx     # 租户菜单配置
-│   └── formSize.ts        # 表单大小预设（宽度映射）
+│   ├── index.ts           # 全局常量（路由路径、存储键、分页默认值）
+│   ├── ui/                # UI 相关常量
+│   │   ├── formSize.ts    # 表单大小预设（宽度映射）
+│   │   └── index.ts
+│   └── menu/              # 菜单配置
+│       ├── platformMenu.tsx # 平台菜单配置（支持分组）
+│       ├── tenantMenu.tsx   # 租户菜单配置
+│       └── index.ts
 ├── routes/
 │   ├── modules/           # 路由定义
 │   │   ├── platform.tsx
@@ -394,8 +399,8 @@ mock/
 - 使用 `formSizePreset` 作为宽度，除非提供 `formSize` 或 `width` 属性
 - 宽度映射定义在 `src/constants/formSize.ts`：
     - Small：520px（modal）、480px（drawer）
-    - Medium：720px（modal）、640px（drawer）
-    - Large：920px（modal）、800px（drawer）
+    - Medium：720px（modal）、700px（drawer）
+    - Large：960px（modal）、1000px（drawer）
 
 **示例：**
 ```tsx

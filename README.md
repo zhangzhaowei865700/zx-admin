@@ -431,7 +431,10 @@ ZX-Admin/
 │   ├── components/          # 🧩 React 组件
 │   │   ├── common/          # 通用组件
 │   │   └── layout/          # 布局组件
-│   ├── constants/           # 📋 常量与菜单配置
+│   ├── constants/           # 📋 常量配置
+│   │   ├── index.ts         # 全局常量
+│   │   ├── ui/              # UI 相关常量
+│   │   └── menu/            # 菜单配置
 │   ├── hooks/               # 🪝 自定义 Hooks
 │   ├── locales/             # 🌍 国际化翻译文件
 │   ├── pages/               # 📄 页面组件
@@ -630,9 +633,9 @@ VITE_APP_SECRET=your-app-secret
 
 <br>
 
-**平台级菜单**：编辑 `src/constants/platformMenu.tsx`
+**平台级菜单**：编辑 `src/constants/menu/platformMenu.tsx`
 
-**租户级菜单**：编辑 `src/constants/tenantMenu.tsx`
+**租户级菜单**：编辑 `src/constants/menu/tenantMenu.tsx`
 
 菜单配置示例：
 
@@ -713,7 +716,7 @@ VITE_CRYPTO_ENABLED=false  # 禁用 AES 加密
 
 ### 第二步：添加菜单
 
-在 `src/constants/platformMenu.tsx` 中添加：
+在 `src/constants/menu/platformMenu.tsx` 中添加：
 
 ```tsx
 {

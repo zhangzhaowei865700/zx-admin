@@ -430,7 +430,10 @@ ZX-Admin/
 │   ├── components/          # 🧩 React components
 │   │   ├── common/          # Common components
 │   │   └── layout/          # Layout components
-│   ├── constants/           # 📋 Constants & menu config
+│   ├── constants/           # 📋 Constants configuration
+│   │   ├── index.ts         # Global constants
+│   │   ├── ui/              # UI-related constants
+│   │   └── menu/            # Menu configuration
 │   ├── hooks/               # 🪝 Custom hooks
 │   ├── locales/             # 🌍 i18n translation files
 │   ├── pages/               # 📄 Page components
@@ -631,9 +634,9 @@ All configurations are auto-saved to `localStorage` and persist after page refre
 
 <br>
 
-**Platform-level menu**: Edit `src/constants/platformMenu.tsx`
+**Platform-level menu**: Edit `src/constants/menu/platformMenu.tsx`
 
-**Tenant-level menu**: Edit `src/constants/tenantMenu.tsx`
+**Tenant-level menu**: Edit `src/constants/menu/tenantMenu.tsx`
 
 Menu configuration example:
 
@@ -714,7 +717,7 @@ Add to `src/routes/modules/platform.tsx`:
 
 ### Step 2: Add Menu
 
-Add to `src/constants/platformMenu.tsx`:
+Add to `src/constants/menu/platformMenu.tsx`:
 
 ```tsx
 {
@@ -993,7 +996,7 @@ We welcome all forms of contribution!
 - **Naming Convention**:
   - Component files: PascalCase (e.g., `UserTable.tsx`)
   - Utility functions: camelCase (e.g., `formatDate.ts`)
-  - Constant files: camelCase (e.g., `platformMenu.tsx`)
+  - Constant files: camelCase (e.g., `menu/platformMenu.tsx`)
 - **Code Review**: All PRs require approval from at least one maintainer
 
 See [Contributing Guide](CONTRIBUTING.en.md) for details
