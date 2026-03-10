@@ -1,6 +1,5 @@
 import request from '@/api/request'
-import type { PageResult } from '@/api/types'
-import type { Message, MessageListParams, UnreadCount } from '@/types/platform/message'
+import type { PageResult, Message, MessageListParams, UnreadCount } from '@/types'
 
 // 消息列表
 export const getMessageList = (params: MessageListParams) =>

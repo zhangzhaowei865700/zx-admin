@@ -4,7 +4,7 @@ import { decrypt, encrypt } from '@/utils/crypto'
 import { generateSign } from '@/utils/sign'
 import { getToken, removeToken, removeUserInfo } from '@/utils/storage'
 import i18n from '@/locales'
-import type { ApiResponse } from './types'
+import type { ApiResponse } from '@/types'
 
 let redirectTimer: ReturnType<typeof setTimeout> | null = null
 function handleUnauthorized() {
