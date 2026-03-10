@@ -97,6 +97,8 @@
 - [部署](#-部署)
 - [浏览器支持](#-浏览器支持)
 - [演示账号](#-演示账号)
+- [常见问题](#-常见问题)
+- [新增业务模块全链路指南](#-新增业务模块全链路指南)
 - [贡献指南](#-贡献指南)
 - [许可证](#-许可证)
 
@@ -676,6 +678,280 @@ VITE_CRYPTO_ENABLED=false  # 禁用 AES 加密
 ```
 
 签名功能无法禁用（安全考虑），如需修改签名逻辑，请编辑 `src/utils/sign.ts`。
+
+</details>
+
+<br>
+
+---
+
+## 🧩 新增业务模块全链路指南
+
+以新增一个「公告管理」模块为例，完整演示从路由到页面的开发流程。
+
+<details>
+<summary><b>点击展开查看完整流程</b></summary>
+
+<br>
+
+### 第一步：注册路由
+
+在 `src/routes/modules/platform.tsx` 中添加：
+
+```tsx
+{
+  path: '/notice',
+  element: <NoticePage />,
+}
+```
+
+---
+
+### 第二步：添加菜单
+
+在 `src/constants/platformMenu.tsx` 中添加：
+
+```tsx
+{
+  key: 'notice',
+  label: '公告管理',
+  icon: <NotificationOutlined />,
+  path: '/notice',
+}
+```
+
+---
+
+### 第三步：编写页面组件
+
+新建 `src/pages/Platform/Notice/index.tsx`：
+
+```tsx
+// src/pages/Platform/Notice/index.tsx
+import { useRef, useState } from 'react'
+import { Button, Popconfirm, Space } from 'antd'
+import type { ProColumns, ActionType } from '@ant-design/pro-components'
+import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
+import { ProTable } from '@/components/common/ProTable'
+import { PageContainer } from '@/components/common/PageContainer'
+import { FormContainer } from '@/components/common/FormContainer'
+import { getNoticeList, type Notice } from '@/api/modules/platform/notice'
+import { useNoticeMutations } from './hooks/useNotice'
+
+export const NoticePage: React.FC = () => {
+  const actionRef = useRef<ActionType>()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [currentRecord, setCurrentRecord] = useState<Notice>()
+
+  const { submit, remove } = useNoticeMutations(actionRef)
+
+  const columns: ProColumns<Notice>[] = [
+    { title: 'ID', dataIndex: 'id', width: 60, search: false },
+    { title: '标题', dataIndex: 'title' },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      valueType: 'select',
+      valueEnum: { 1: { text: '已发布', status: 'Success' }, 0: { text: '草稿', status: 'Default' } },
+    },
+    { title: '创建时间', dataIndex: 'createdAt', search: false },
+    {
+      title: '操作',
+      search: false,
+      render: (_, record) => (
+        <Space>
+          <Button type="link" onClick={() => { setCurrentRecord(record); setModalOpen(true) }}>编辑</Button>
+          <Popconfirm title="确认删除？" onConfirm={() => remove.mutate(record.id)}>
+            <Button type="link" danger>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <PageContainer
+      title="公告管理"
+      extra={<Button type="primary" onClick={() => { setCurrentRecord(undefined); setModalOpen(true) }}>新增公告</Button>}
+    >
+      <ProTable<Notice>
+        actionRef={actionRef}
+        columns={columns}
+        request={getNoticeList}
+      />
+
+      <FormContainer
+        title={currentRecord ? '编辑公告' : '新增公告'}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onFinish={async (values) => {
+          await submit.mutateAsync({ record: currentRecord, values })
+          return true
+        }}
+        initialValues={currentRecord}
+      >
+        <ProFormText name="title" label="标题" rules={[{ required: true }]} />
+        <ProFormTextArea name="content" label="内容" colProps={{ span: 24 }} />
+        <ProFormSelect
+          name="status"
+          label="状态"
+          initialValue={0}
+          options={[{ label: '草稿', value: 0 }, { label: '已发布', value: 1 }]}
+        />
+      </FormContainer>
+    </PageContainer>
+  )
+}
+```
+
+---
+
+### 第四步：定义 API
+
+在 `src/api/modules/platform/` 下新建 `notice.ts`：
+
+```typescript
+// src/api/modules/platform/notice.ts
+import request from '@/api/request'
+import type { PageResult, PageParams } from '@/api/types'
+
+export interface Notice {
+  id: number
+  title: string
+  content: string
+  status: number
+  createdAt: string
+}
+
+export interface NoticeParams extends PageParams {
+  title?: string
+  status?: number
+}
+
+export const getNoticeList = (params: NoticeParams) =>
+  request<PageResult<Notice>>({ url: '/api/admin/notice/list', method: 'POST', data: params })
+
+export const createNotice = (data: Partial<Notice>) =>
+  request({ url: '/api/admin/notice', method: 'POST', data })
+
+export const updateNotice = (id: number, data: Partial<Notice>) =>
+  request({ url: `/api/admin/notice/${id}`, method: 'PUT', data })
+
+export const deleteNotice = (id: number) =>
+  request({ url: `/api/admin/notice/${id}`, method: 'DELETE' })
+```
+
+---
+
+### 第五步：编写业务 Hook（可选）
+
+如果需要封装复用逻辑，新建 `src/pages/Platform/Notice/hooks/useNotice.ts`：
+
+```typescript
+// src/pages/Platform/Notice/hooks/useNotice.ts
+import { useMutation } from '@tanstack/react-query'
+import { message } from 'antd'
+import type { ActionType } from '@ant-design/pro-components'
+import type { RefObject } from 'react'
+import { createNotice, updateNotice, deleteNotice, type Notice } from '@/api/modules/platform/notice'
+
+export const useNoticeMutations = (actionRef: RefObject<ActionType | undefined>) => {
+  const submit = useMutation({
+    mutationFn: ({ record, values }: { record?: Notice; values: Record<string, any> }) =>
+      record ? updateNotice(record.id, values) : createNotice(values),
+    onSuccess: (_, { record }) => {
+      message.success(record ? '更新成功' : '创建成功')
+      actionRef.current?.reload()
+    },
+  })
+
+  const remove = useMutation({
+    mutationFn: (id: number) => deleteNotice(id),
+    onSuccess: () => {
+      message.success('删除成功')
+      actionRef.current?.reload()
+    },
+  })
+
+  return { submit, remove }
+}
+```
+
+---
+
+### 第六步：注册 QueryKey（可选）
+
+如果需要使用 `useQuery` 进行数据缓存，在 `src/hooks/query/keys.ts` 中添加：
+
+```typescript
+export const queryKeys = {
+  // ...已有的 key
+  platform: {
+    // ...已有的 key
+    notices: (params?: Record<string, any>) => ['platform', 'notices', params] as const,
+  },
+}
+```
+
+---
+
+### 第七步：添加 Mock 数据
+
+在 `mock/platform/` 下新建 `notice.ts`：
+
+```typescript
+// mock/platform/notice.ts
+import { defineMock } from 'vite-plugin-mock'
+import Mock from 'mockjs'
+
+export default defineMock([
+  {
+    url: '/api/admin/notice/list',
+    method: 'POST',
+    response: () => ({
+      code: 200,
+      data: {
+        list: Mock.mock({ 'list|10': [{ id: '@id', title: '@ctitle', status: '@integer(0,1)', createdAt: '@datetime' }] }).list,
+        total: 100,
+      },
+    }),
+  },
+  {
+    url: '/api/admin/notice',
+    method: 'POST',
+    response: () => ({ code: 200, message: '创建成功' }),
+  },
+  {
+    url: /\/api\/admin\/notice\/\d+/,
+    method: 'PUT',
+    response: () => ({ code: 200, message: '更新成功' }),
+  },
+  {
+    url: /\/api\/admin\/notice\/\d+/,
+    method: 'DELETE',
+    response: () => ({ code: 200, message: '删除成功' }),
+  },
+])
+```
+
+然后在 `mock/index.ts` 中引入：
+
+```typescript
+import './platform/notice'
+```
+
+---
+
+### 完成！目录结构如下
+
+```
+src/pages/Platform/Notice/
+├── index.tsx              # 页面主组件
+└── hooks/
+    └── useNotice.ts       # 业务 Hook（mutations）
+```
+
+**整个流程只需要关注 4-6 个步骤（根据实际需求），无需修改任何框架代码。**
 
 </details>
 

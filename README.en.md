@@ -686,6 +686,280 @@ Signing cannot be disabled (for security). To modify signing logic, edit `src/ut
 
 ---
 
+## 🧩 Adding New Business Module Guide
+
+A complete guide from routing to page implementation, using a "Notice Management" module as an example.
+
+<details>
+<summary><b>Click to expand full workflow</b></summary>
+
+<br>
+
+### Step 1: Register Route
+
+Add to `src/routes/modules/platform.tsx`:
+
+```tsx
+{
+  path: '/notice',
+  element: <NoticePage />,
+}
+```
+
+---
+
+### Step 2: Add Menu
+
+Add to `src/constants/platformMenu.tsx`:
+
+```tsx
+{
+  key: 'notice',
+  label: 'Notice Management',
+  icon: <NotificationOutlined />,
+  path: '/notice',
+}
+```
+
+---
+
+### Step 3: Create Page Component
+
+Create `src/pages/Platform/Notice/index.tsx`:
+
+```tsx
+// src/pages/Platform/Notice/index.tsx
+import { useRef, useState } from 'react'
+import { Button, Popconfirm, Space } from 'antd'
+import type { ProColumns, ActionType } from '@ant-design/pro-components'
+import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
+import { ProTable } from '@/components/common/ProTable'
+import { PageContainer } from '@/components/common/PageContainer'
+import { FormContainer } from '@/components/common/FormContainer'
+import { getNoticeList, type Notice } from '@/api/modules/platform/notice'
+import { useNoticeMutations } from './hooks/useNotice'
+
+export const NoticePage: React.FC = () => {
+  const actionRef = useRef<ActionType>()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [currentRecord, setCurrentRecord] = useState<Notice>()
+
+  const { submit, remove } = useNoticeMutations(actionRef)
+
+  const columns: ProColumns<Notice>[] = [
+    { title: 'ID', dataIndex: 'id', width: 60, search: false },
+    { title: 'Title', dataIndex: 'title' },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      valueType: 'select',
+      valueEnum: { 1: { text: 'Published', status: 'Success' }, 0: { text: 'Draft', status: 'Default' } },
+    },
+    { title: 'Created At', dataIndex: 'createdAt', search: false },
+    {
+      title: 'Actions',
+      search: false,
+      render: (_, record) => (
+        <Space>
+          <Button type="link" onClick={() => { setCurrentRecord(record); setModalOpen(true) }}>Edit</Button>
+          <Popconfirm title="Confirm delete?" onConfirm={() => remove.mutate(record.id)}>
+            <Button type="link" danger>Delete</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <PageContainer
+      title="Notice Management"
+      extra={<Button type="primary" onClick={() => { setCurrentRecord(undefined); setModalOpen(true) }}>Add Notice</Button>}
+    >
+      <ProTable<Notice>
+        actionRef={actionRef}
+        columns={columns}
+        request={getNoticeList}
+      />
+
+      <FormContainer
+        title={currentRecord ? 'Edit Notice' : 'Add Notice'}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onFinish={async (values) => {
+          await submit.mutateAsync({ record: currentRecord, values })
+          return true
+        }}
+        initialValues={currentRecord}
+      >
+        <ProFormText name="title" label="Title" rules={[{ required: true }]} />
+        <ProFormTextArea name="content" label="Content" colProps={{ span: 24 }} />
+        <ProFormSelect
+          name="status"
+          label="Status"
+          initialValue={0}
+          options={[{ label: 'Draft', value: 0 }, { label: 'Published', value: 1 }]}
+        />
+      </FormContainer>
+    </PageContainer>
+  )
+}
+```
+
+---
+
+### Step 4: Define API
+
+Create `src/api/modules/platform/notice.ts`:
+
+```typescript
+// src/api/modules/platform/notice.ts
+import request from '@/api/request'
+import type { PageResult, PageParams } from '@/api/types'
+
+export interface Notice {
+  id: number
+  title: string
+  content: string
+  status: number
+  createdAt: string
+}
+
+export interface NoticeParams extends PageParams {
+  title?: string
+  status?: number
+}
+
+export const getNoticeList = (params: NoticeParams) =>
+  request<PageResult<Notice>>({ url: '/api/admin/notice/list', method: 'POST', data: params })
+
+export const createNotice = (data: Partial<Notice>) =>
+  request({ url: '/api/admin/notice', method: 'POST', data })
+
+export const updateNotice = (id: number, data: Partial<Notice>) =>
+  request({ url: `/api/admin/notice/${id}`, method: 'PUT', data })
+
+export const deleteNotice = (id: number) =>
+  request({ url: `/api/admin/notice/${id}`, method: 'DELETE' })
+```
+
+---
+
+### Step 5: Create Business Hook (Optional)
+
+If you need to encapsulate reusable logic, create `src/pages/Platform/Notice/hooks/useNotice.ts`:
+
+```typescript
+// src/pages/Platform/Notice/hooks/useNotice.ts
+import { useMutation } from '@tanstack/react-query'
+import { message } from 'antd'
+import type { ActionType } from '@ant-design/pro-components'
+import type { RefObject } from 'react'
+import { createNotice, updateNotice, deleteNotice, type Notice } from '@/api/modules/platform/notice'
+
+export const useNoticeMutations = (actionRef: RefObject<ActionType | undefined>) => {
+  const submit = useMutation({
+    mutationFn: ({ record, values }: { record?: Notice; values: Record<string, any> }) =>
+      record ? updateNotice(record.id, values) : createNotice(values),
+    onSuccess: (_, { record }) => {
+      message.success(record ? 'Updated successfully' : 'Created successfully')
+      actionRef.current?.reload()
+    },
+  })
+
+  const remove = useMutation({
+    mutationFn: (id: number) => deleteNotice(id),
+    onSuccess: () => {
+      message.success('Deleted successfully')
+      actionRef.current?.reload()
+    },
+  })
+
+  return { submit, remove }
+}
+```
+
+---
+
+### Step 6: Register QueryKey (Optional)
+
+If you need to use `useQuery` for data caching, add to `src/hooks/query/keys.ts`:
+
+```typescript
+export const queryKeys = {
+  // ...existing keys
+  platform: {
+    // ...existing keys
+    notices: (params?: Record<string, any>) => ['platform', 'notices', params] as const,
+  },
+}
+```
+
+---
+
+### Step 7: Add Mock Data
+
+Create `mock/platform/notice.ts`:
+
+```typescript
+// mock/platform/notice.ts
+import { defineMock } from 'vite-plugin-mock'
+import Mock from 'mockjs'
+
+export default defineMock([
+  {
+    url: '/api/admin/notice/list',
+    method: 'POST',
+    response: () => ({
+      code: 200,
+      data: {
+        list: Mock.mock({ 'list|10': [{ id: '@id', title: '@ctitle', status: '@integer(0,1)', createdAt: '@datetime' }] }).list,
+        total: 100,
+      },
+    }),
+  },
+  {
+    url: '/api/admin/notice',
+    method: 'POST',
+    response: () => ({ code: 200, message: 'Created successfully' }),
+  },
+  {
+    url: /\/api\/admin\/notice\/\d+/,
+    method: 'PUT',
+    response: () => ({ code: 200, message: 'Updated successfully' }),
+  },
+  {
+    url: /\/api\/admin\/notice\/\d+/,
+    method: 'DELETE',
+    response: () => ({ code: 200, message: 'Deleted successfully' }),
+  },
+])
+```
+
+Then import in `mock/index.ts`:
+
+```typescript
+import './platform/notice'
+```
+
+---
+
+### Done! Directory structure:
+
+```
+src/pages/Platform/Notice/
+├── index.tsx              # Main page component
+└── hooks/
+    └── useNotice.ts       # Business Hook (mutations)
+```
+
+**The entire process requires only 4-6 steps (depending on your needs), without modifying any framework code.**
+
+</details>
+
+<br>
+
+---
+
 ## 🤝 Contributing
 
 We welcome all forms of contribution!
