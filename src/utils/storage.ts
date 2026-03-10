@@ -13,9 +13,15 @@ export function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY)
 }
 
-export function getUserInfo<T = any>(): T | null {
+export function getUserInfo<T = Record<string, unknown>>(): T | null {
   const userInfo = localStorage.getItem(USER_INFO_KEY)
-  return userInfo ? JSON.parse(userInfo) : null
+  if (!userInfo) return null
+  try {
+    return JSON.parse(userInfo) as T
+  } catch {
+    console.error('[storage] Failed to parse user info from localStorage')
+    return null
+  }
 }
 
 export function setUserInfo<T>(info: T): void {

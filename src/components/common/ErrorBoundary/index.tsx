@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Result } from 'antd'
+import { Button, Result, Space } from 'antd'
 import i18n from '@/locales'
 
 interface Props {
@@ -8,20 +8,21 @@ interface Props {
 
 interface State {
   hasError: boolean
+  error: Error | null
 }
 
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { hasError: false }
+    this.state = { hasError: false, error: null }
   }
 
-  static getDerivedStateFromError(): State {
-    return { hasError: true }
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, errorInfo)
+    console.error('[ErrorBoundary]', error, errorInfo)
   }
 
   render() {
@@ -30,11 +31,16 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <Result
           status="error"
           title={i18n.t('common:errorPage')}
-          subTitle={i18n.t('common:errorPageDesc')}
+          subTitle={this.state.error?.message || i18n.t('common:errorPageDesc')}
           extra={
-            <Button type="primary" onClick={() => this.setState({ hasError: false })}>
-              {i18n.t('common:retry')}
-            </Button>
+            <Space>
+              <Button type="primary" onClick={() => this.setState({ hasError: false, error: null })}>
+                {i18n.t('common:retry')}
+              </Button>
+              <Button onClick={() => window.location.reload()}>
+                {i18n.t('common:refresh') || '刷新页面'}
+              </Button>
+            </Space>
           }
         />
       )

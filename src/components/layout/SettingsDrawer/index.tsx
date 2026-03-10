@@ -18,13 +18,31 @@ export const SettingsDrawer: React.FC = () => {
   const [open, setOpen] = useState(false)
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
-    return saved ? JSON.parse(saved) : { x: window.innerWidth - 80, y: window.innerHeight - 120 }
+    if (saved) {
+      try {
+        return JSON.parse(saved) as { x: number; y: number }
+      } catch {
+        // ignore corrupted data
+      }
+    }
+    return { x: window.innerWidth - 80, y: window.innerHeight - 120 }
   })
   const [isDragging, setIsDragging] = useState(false)
   const [isLongPress, setIsLongPress] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const hasMovedRef = useRef(false)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // 组件卸载时清理长按计时器和拖拽状态
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+        longPressTimerRef.current = null
+      }
+    }
+  }, [])
+
   const buttonRef = useRef<HTMLDivElement>(null)
   const resetSettings = useAppStore((s) => s.resetSettings)
   const { token } = theme.useToken()

@@ -6,19 +6,17 @@ import { getToken, removeToken, removeUserInfo } from '@/utils/storage'
 import i18n from '@/locales'
 import type { ApiResponse } from './types'
 
-let isRedirecting = false
+let redirectTimer: ReturnType<typeof setTimeout> | null = null
 function handleUnauthorized() {
-  if (isRedirecting) return
-  isRedirecting = true
+  if (redirectTimer) return
   removeToken()
   removeUserInfo()
   message.error(i18n.t('common:loginExpired'))
-  setTimeout(() => {
+  redirectTimer = setTimeout(() => {
+    redirectTimer = null
     if (import.meta.env.MODE === 'demo') {
-      // demo 模式使用 HashRouter
       window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/#/login`
     } else {
-      // 其他环境使用 BrowserRouter
       window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/login`
     }
   }, 300)
@@ -98,6 +96,6 @@ service.interceptors.response.use(
   },
 )
 
-const request = <T = unknown>(config: AxiosRequestConfig) => service.request<any, T>(config)
+const request = <T = unknown>(config: AxiosRequestConfig) => service.request<ApiResponse, T>(config)
 
 export default request
