@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Modal, Form, Input, Select, Checkbox, Row, Col } from 'antd'
+import { Modal, Form, Input, Select, Checkbox, Row, Col, Tooltip } from 'antd'
 import { useTranslation } from 'react-i18next'
 import type { ProColumns } from '@ant-design/pro-components'
 import {
@@ -42,6 +42,8 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
   const [dataScope, setDataScope] = useState<DataScope>('current')
   const [selectedFields, setSelectedFields] = useState<string[]>(allFieldKeys)
   const [includeHeader, setIncludeHeader] = useState(true)
+  const [includeColumnHeader, setIncludeColumnHeader] = useState(true)
+  const [includeFooter, setIncludeFooter] = useState(false)
   const [rawData, setRawData] = useState(false)
   const [exporting, setExporting] = useState(false)
 
@@ -51,6 +53,8 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
     setFileType('xlsx')
     setDataScope('current')
     setIncludeHeader(true)
+    setIncludeColumnHeader(true)
+    setIncludeFooter(false)
     setRawData(false)
   }
 
@@ -80,6 +84,9 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
         fileType,
         selectedFields,
         includeHeader,
+        headerTitle: filename || t('exportData'),
+        includeColumnHeader,
+        includeFooter,
         rawData,
       }
       exportData(columns, data, options)
@@ -106,7 +113,10 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
           <Input
             placeholder={t('enterFileName')}
             value={filename}
-            onChange={(e) => setFilename(e.target.value)}
+            onChange={(e) => {
+              setFilename(e.target.value)
+              setHeaderTitle(e.target.value)
+            }}
           />
         </Form.Item>
 
@@ -174,33 +184,56 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
         <Form.Item label={t('paramSettings')} style={{ marginBottom: 0 }}>
           <Row gutter={[0, 8]}>
             <Col span={6}>
-              <Checkbox checked={includeHeader} onChange={(e) => setIncludeHeader(e.target.checked)}>
-                {t('header')}
-              </Checkbox>
+              <Tooltip title={t('headerTip')}>
+                <Checkbox checked={includeHeader} onChange={(e) => setIncludeHeader(e.target.checked)}>
+                  {t('header')}
+                </Checkbox>
+              </Tooltip>
             </Col>
             <Col span={6}>
-              <Checkbox disabled>{t('footer')}</Checkbox>
+              <Tooltip title={t('columnHeaderTip')}>
+                <Checkbox checked={includeColumnHeader} onChange={(e) => setIncludeColumnHeader(e.target.checked)}>
+                  {t('columnHeader')}
+                </Checkbox>
+              </Tooltip>
             </Col>
             <Col span={6}>
-              <Checkbox checked={rawData} onChange={(e) => setRawData(e.target.checked)}>
-                {t('sourceData')}
-              </Checkbox>
-            </Col>
-            <Col span={6} />
-            <Col span={6}>
-              <Checkbox disabled>{t('groupHeader')}</Checkbox>
+              <Tooltip title={t('footerTip')}>
+                <Checkbox checked={includeFooter} onChange={(e) => setIncludeFooter(e.target.checked)}>
+                  {t('footer')}
+                </Checkbox>
+              </Tooltip>
             </Col>
             <Col span={6}>
-              <Checkbox disabled>{t('merge')}</Checkbox>
+              <Tooltip title={t('sourceDataTip')}>
+                <Checkbox checked={rawData} onChange={(e) => setRawData(e.target.checked)}>
+                  {t('sourceData')}
+                </Checkbox>
+              </Tooltip>
             </Col>
             <Col span={6}>
-              <Checkbox disabled>{t('style')}</Checkbox>
+              <Tooltip title={t('groupHeaderTip')}>
+                <Checkbox disabled>{t('groupHeader')}</Checkbox>
+              </Tooltip>
             </Col>
             <Col span={6}>
-              <Checkbox disabled>{t('expandLevel')}</Checkbox>
+              <Tooltip title={t('mergeTip')}>
+                <Checkbox disabled>{t('merge')}</Checkbox>
+              </Tooltip>
+            </Col>
+            <Col span={6}>
+              <Tooltip title={t('styleTip')}>
+                <Checkbox disabled>{t('style')}</Checkbox>
+              </Tooltip>
+            </Col>
+            <Col span={6}>
+              <Tooltip title={t('expandLevelTip')}>
+                <Checkbox disabled>{t('expandLevel')}</Checkbox>
+              </Tooltip>
             </Col>
           </Row>
         </Form.Item>
+
       </Form>
     </Modal>
   )
