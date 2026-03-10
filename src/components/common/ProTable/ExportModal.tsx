@@ -113,10 +113,7 @@ function ExportModal<T extends Record<string, any>>(props: ExportModalProps<T>) 
           <Input
             placeholder={t('enterFileName')}
             value={filename}
-            onChange={(e) => {
-              setFilename(e.target.value)
-              setHeaderTitle(e.target.value)
-            }}
+            onChange={(e) => setFilename(e.target.value)}
           />
         </Form.Item>
 

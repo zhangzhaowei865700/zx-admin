@@ -23,7 +23,8 @@
     "borderRadius": "圆角大小",
     "colorWeak": "色弱模式",
     "grayMode": "灰色模式",
-    "compactMode": "紧凑模式"
+    "compactMode": "紧凑模式",
+    "sidebarDark": "侧边栏暗色"
   },
   "layout": {
     "sideLayout": "侧边栏布局",
@@ -51,6 +52,8 @@
     "tabStyle": "标签页风格",
     "card": "卡片",
     "line": "线条",
+    "chrome": "谷歌",
+    "rounded": "圆角",
     "tabLimit": "标签页上限",
     "unlimited": "不限制",
     "count": "{{count}} 个"
@@ -70,19 +73,32 @@
     "medium": "中",
     "small": "小",
     "tableBorder": "表格边框",
-    "tableResizable": "可拖拽列宽"
+    "tableResizable": "可拖拽列宽",
+    "tableStriped": "斑马纹",
+    "tableShowIndex": "显示序号列",
+    "tableDefaultPageSize": "默认每页条数",
+    "tableFixedHeader": "固定表头",
+    "tableMaxHeight": "表格最大高度"
   },
   "form": {
     "formDisplay": "表单展示",
     "modal": "弹窗",
     "drawer": "抽屉",
+    "formLayout": "表单布局",
+    "horizontal": "水平",
+    "vertical": "垂直",
     "formColumns": "表单列数",
     "singleColumn": "单列",
     "doubleColumn": "双列",
     "formSize": "表单尺寸",
     "small": "小",
     "medium": "中",
-    "large": "大"
+    "large": "大",
+    "formLabelAlign": "标签对齐",
+    "alignLeft": "左对齐",
+    "alignRight": "右对齐",
+    "formComponentSize": "组件尺寸",
+    "formColon": "标签冒号"
   },
   "system": {
     "systemName": "系统名称",

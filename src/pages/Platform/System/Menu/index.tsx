@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space, Tag } from 'antd'
+import { Button, Popconfirm, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import {
   ProFormText,
@@ -100,18 +100,17 @@ export const MenuPage: React.FC = () => {
       title: t('common:operation'),
       valueType: 'option',
       width: 200,
-      render: (_: unknown, record: Menu) => (
-        <Space size="middle">
-          <a onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>
-          <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
-          <Popconfirm
-            title={t('system:menu.confirmDeleteMenu')}
-            onConfirm={() => remove.mutate(record.id)}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_: unknown, record: Menu) => [
+        <a key="add" onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>,
+        <a key="edit" onClick={() => handleEdit(record)}>{t('common:edit')}</a>,
+        <Popconfirm
+          key="delete"
+          title={t('system:menu.confirmDeleteMenu')}
+          onConfirm={() => remove.mutate(record.id)}
+        >
+          <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+        </Popconfirm>,
+      ],
     },
   ]
 

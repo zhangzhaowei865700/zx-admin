@@ -24,12 +24,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   if (compactMode) algorithms.push(antTheme.compactAlgorithm)
   if (algorithms.length === 0) algorithms.push(antTheme.defaultAlgorithm)
 
-  // CSS 滤镜模式（灰色/色弱）
+  // CSS 滤镜模式（灰色/色弱）和暗黑模式类名
   useEffect(() => {
     const root = document.documentElement
     root.classList.toggle('gray-mode', grayMode)
     root.classList.toggle('color-weak', colorWeak)
-  }, [grayMode, colorWeak])
+    root.classList.toggle('dark', darkMode)
+  }, [grayMode, colorWeak, darkMode])
 
   // 暗黑模式 body 背景色（同步更新，避免 View Transition 闪烁）
   useMemo(() => {

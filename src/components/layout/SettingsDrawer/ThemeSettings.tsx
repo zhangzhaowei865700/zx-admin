@@ -20,6 +20,8 @@ export const ThemeSettings: React.FC = () => {
     compactMode, setCompactMode,
     fontSize, setFontSize,
     borderRadius, setBorderRadius,
+    sidebarDark, setSidebarDark,
+    layoutMode,
   } = useAppStore(useShallow((s) => ({
     darkMode: s.darkMode, setDarkMode: s.setDarkMode,
     primaryColor: s.primaryColor, setPrimaryColor: s.setPrimaryColor,
@@ -28,6 +30,8 @@ export const ThemeSettings: React.FC = () => {
     compactMode: s.compactMode, setCompactMode: s.setCompactMode,
     fontSize: s.fontSize, setFontSize: s.setFontSize,
     borderRadius: s.borderRadius, setBorderRadius: s.setBorderRadius,
+    sidebarDark: s.sidebarDark, setSidebarDark: s.setSidebarDark,
+    layoutMode: s.layoutMode,
   })))
   const { t } = useTranslation('settings')
 
@@ -84,6 +88,9 @@ export const ThemeSettings: React.FC = () => {
       </SettingRow>
       <SettingRow label={t('theme.compactMode')}>
         <Switch checked={compactMode} onChange={setCompactMode} />
+      </SettingRow>
+      <SettingRow label={t('theme.sidebarDark')}>
+        <Switch checked={sidebarDark} onChange={setSidebarDark} disabled={darkMode || layoutMode === 'mix'} />
       </SettingRow>
     </>
   )

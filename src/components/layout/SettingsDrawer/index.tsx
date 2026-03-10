@@ -201,6 +201,7 @@ export const SettingsDrawer: React.FC = () => {
         compactMode: state.compactMode,
         fontSize: state.fontSize,
         borderRadius: state.borderRadius,
+        sidebarDark: state.sidebarDark,
       },
       layout: {
         layoutMode: state.layoutMode,
@@ -227,6 +228,8 @@ export const SettingsDrawer: React.FC = () => {
       },
       form: {
         formDisplayMode: state.formDisplayMode,
+        formColumns: state.formColumns,
+        formSizePreset: state.formSizePreset,
       },
       system: {
         systemName: state.systemName,
@@ -238,6 +241,11 @@ export const SettingsDrawer: React.FC = () => {
         tableSize: state.tableSize,
         tableBordered: state.tableBordered,
         tableResizable: state.tableResizable,
+        tableStriped: state.tableStriped,
+        tableDefaultPageSize: state.tableDefaultPageSize,
+        tableShowIndex: state.tableShowIndex,
+        tableFixedHeader: state.tableFixedHeader,
+        tableMaxHeight: state.tableMaxHeight,
       },
     }
     navigator.clipboard.writeText(JSON.stringify(settingsJson, null, 2)).then(() => {

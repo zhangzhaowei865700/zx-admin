@@ -23,7 +23,8 @@
     "borderRadius": "Border Radius",
     "colorWeak": "Color Weak",
     "grayMode": "Gray Mode",
-    "compactMode": "Compact Mode"
+    "compactMode": "Compact Mode",
+    "sidebarDark": "Sidebar Dark"
   },
   "layout": {
     "sideLayout": "Side Layout",
@@ -51,6 +52,8 @@
     "tabStyle": "Tab Style",
     "card": "Card",
     "line": "Line",
+    "chrome": "Chrome",
+    "rounded": "Rounded",
     "tabLimit": "Tab Limit",
     "unlimited": "Unlimited",
     "count": "{{count}}"
@@ -70,19 +73,32 @@
     "medium": "Medium",
     "small": "Small",
     "tableBorder": "Table Border",
-    "tableResizable": "Resizable Columns"
+    "tableResizable": "Resizable Columns",
+    "tableStriped": "Striped Rows",
+    "tableShowIndex": "Show Index Column",
+    "tableDefaultPageSize": "Default Page Size",
+    "tableFixedHeader": "Fixed Header",
+    "tableMaxHeight": "Max Height"
   },
   "form": {
     "formDisplay": "Form Display",
     "modal": "Modal",
     "drawer": "Drawer",
+    "formLayout": "Form Layout",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
     "formColumns": "Form Columns",
     "singleColumn": "Single",
     "doubleColumn": "Double",
     "formSize": "Form Size",
     "small": "Small",
     "medium": "Medium",
-    "large": "Large"
+    "large": "Large",
+    "formLabelAlign": "Label Align",
+    "alignLeft": "Left",
+    "alignRight": "Right",
+    "formComponentSize": "Component Size",
+    "formColon": "Label Colon"
   },
   "system": {
     "systemName": "System Name",

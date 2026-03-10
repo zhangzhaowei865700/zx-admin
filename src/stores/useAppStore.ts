@@ -14,7 +14,10 @@ export type PageTransition = 'fade' | 'slide-left' | 'slide-up' | 'zoom' | 'none
 export type FormDisplayMode = 'modal' | 'drawer'
 export type FormColumns = 1 | 2
 export type FormSizePreset = 'small' | 'medium' | 'large'
-export type TabStyle = 'card' | 'line'
+export type FormLabelAlign = 'left' | 'right'
+export type FormComponentSize = 'small' | 'middle' | 'large'
+export type FormLayout = 'horizontal' | 'vertical'
+export type TabStyle = 'card' | 'line' | 'chrome' | 'rounded'
 export type ContentWidth = 'fluid' | 'fixed'
 export type TableSize = 'large' | 'middle' | 'small'
 export type SideMenuType = 'sub' | 'group'
@@ -34,6 +37,7 @@ interface AppSettings {
   compactMode: boolean
   fontSize: number
   borderRadius: number
+  sidebarDark: boolean
 
   // 布局
   layoutMode: LayoutMode
@@ -69,6 +73,10 @@ interface AppSettings {
   formDisplayMode: FormDisplayMode
   formColumns: FormColumns
   formSizePreset: FormSizePreset
+  formLabelAlign: FormLabelAlign
+  formComponentSize: FormComponentSize
+  formColon: boolean
+  formLayout: FormLayout
 
   // 系统
   systemName: string
@@ -80,6 +88,11 @@ interface AppSettings {
   tableSize: TableSize
   tableBordered: boolean
   tableResizable: boolean
+  tableStriped: boolean
+  tableDefaultPageSize: number
+  tableShowIndex: boolean
+  tableFixedHeader: boolean
+  tableMaxHeight: number
 
   // 国际化
   locale: LocaleType
@@ -94,6 +107,7 @@ interface AppActions {
   setCompactMode: (v: boolean) => void
   setFontSize: (v: number) => void
   setBorderRadius: (v: number) => void
+  setSidebarDark: (v: boolean) => void
 
   // 布局
   setLayoutMode: (v: LayoutMode) => void
@@ -132,6 +146,10 @@ interface AppActions {
   setFormDisplayMode: (v: FormDisplayMode) => void
   setFormColumns: (v: FormColumns) => void
   setFormSizePreset: (v: FormSizePreset) => void
+  setFormLabelAlign: (v: FormLabelAlign) => void
+  setFormComponentSize: (v: FormComponentSize) => void
+  setFormColon: (v: boolean) => void
+  setFormLayout: (v: FormLayout) => void
 
   // 系统
   setSystemName: (v: string) => void
@@ -143,6 +161,11 @@ interface AppActions {
   setTableSize: (v: TableSize) => void
   setTableBordered: (v: boolean) => void
   setTableResizable: (v: boolean) => void
+  setTableStriped: (v: boolean) => void
+  setTableDefaultPageSize: (v: number) => void
+  setTableShowIndex: (v: boolean) => void
+  setTableFixedHeader: (v: boolean) => void
+  setTableMaxHeight: (v: number) => void
 
   // 国际化
   setLocale: (v: LocaleType) => void
@@ -164,6 +187,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   compactMode: settings.theme.compactMode,
   fontSize: settings.theme.fontSize,
   borderRadius: settings.theme.borderRadius,
+  sidebarDark: (settings.theme as { sidebarDark?: boolean }).sidebarDark ?? false,
 
   // 布局
   layoutMode: settings.layout.layoutMode as LayoutMode,
@@ -199,6 +223,10 @@ const DEFAULT_SETTINGS: AppSettings = {
   formDisplayMode: settings.form.formDisplayMode as FormDisplayMode,
   formColumns: (settings.form as { formColumns?: number }).formColumns as FormColumns ?? 1,
   formSizePreset: (settings.form as { formSizePreset?: string }).formSizePreset as FormSizePreset ?? 'medium',
+  formLabelAlign: (settings.form as { formLabelAlign?: string }).formLabelAlign as FormLabelAlign ?? 'right',
+  formComponentSize: (settings.form as { formComponentSize?: string }).formComponentSize as FormComponentSize ?? 'middle',
+  formColon: (settings.form as { formColon?: boolean }).formColon ?? true,
+  formLayout: (settings.form as { formLayout?: string }).formLayout as FormLayout ?? 'horizontal',
 
   // 系统
   systemName: settings.system.systemName,
@@ -210,6 +238,11 @@ const DEFAULT_SETTINGS: AppSettings = {
   tableSize: settings.table.tableSize as TableSize,
   tableBordered: settings.table.tableBordered,
   tableResizable: settings.table.tableResizable,
+  tableStriped: (settings.table as any).tableStriped ?? false,
+  tableDefaultPageSize: (settings.table as any).tableDefaultPageSize ?? 20,
+  tableShowIndex: (settings.table as any).tableShowIndex ?? false,
+  tableFixedHeader: (settings.table as any).tableFixedHeader ?? false,
+  tableMaxHeight: (settings.table as any).tableMaxHeight ?? 600,
 
   // 国际化
   locale: (i18n.language || 'zh-CN') as LocaleType,
@@ -252,6 +285,7 @@ export const useAppStore = create<AppState>()(
       setCompactMode: (compactMode) => withViewTransition(() => set({ compactMode })),
       setFontSize: (fontSize) => set({ fontSize }),
       setBorderRadius: (borderRadius) => set({ borderRadius }),
+      setSidebarDark: (sidebarDark) => withViewTransition(() => set({ sidebarDark }), 'dark-transition'),
 
       // 布局
       setLayoutMode: (layoutMode) => set({ layoutMode }),
@@ -330,6 +364,10 @@ export const useAppStore = create<AppState>()(
       setFormDisplayMode: (formDisplayMode) => set({ formDisplayMode }),
       setFormColumns: (formColumns) => set({ formColumns }),
       setFormSizePreset: (formSizePreset) => set({ formSizePreset }),
+      setFormLabelAlign: (formLabelAlign) => set({ formLabelAlign }),
+      setFormComponentSize: (formComponentSize) => set({ formComponentSize }),
+      setFormColon: (formColon) => set({ formColon }),
+      setFormLayout: (formLayout) => set({ formLayout }),
 
       // 系统
       setSystemName: (systemName) => set({ systemName }),
@@ -341,6 +379,11 @@ export const useAppStore = create<AppState>()(
       setTableSize: (tableSize) => set({ tableSize }),
       setTableBordered: (tableBordered) => set({ tableBordered }),
       setTableResizable: (tableResizable) => set({ tableResizable }),
+      setTableStriped: (tableStriped) => set({ tableStriped }),
+      setTableDefaultPageSize: (tableDefaultPageSize) => set({ tableDefaultPageSize }),
+      setTableShowIndex: (tableShowIndex) => set({ tableShowIndex }),
+      setTableFixedHeader: (tableFixedHeader) => set({ tableFixedHeader }),
+      setTableMaxHeight: (tableMaxHeight) => set({ tableMaxHeight }),
 
       // 国际化
       setLocale: (locale) => {
@@ -377,6 +420,7 @@ export const useAppStore = create<AppState>()(
         compactMode: state.compactMode,
         fontSize: state.fontSize,
         borderRadius: state.borderRadius,
+        sidebarDark: state.sidebarDark,
         layoutMode: state.layoutMode,
         collapsed: state.collapsed,
         sidebarWidth: state.sidebarWidth,
@@ -406,9 +450,18 @@ export const useAppStore = create<AppState>()(
         formDisplayMode: state.formDisplayMode,
         formColumns: state.formColumns,
         formSizePreset: state.formSizePreset,
+        formLabelAlign: state.formLabelAlign,
+        formComponentSize: state.formComponentSize,
+        formColon: state.formColon,
+        formLayout: state.formLayout,
         tableSize: state.tableSize,
         tableBordered: state.tableBordered,
         tableResizable: state.tableResizable,
+        tableStriped: state.tableStriped,
+        tableDefaultPageSize: state.tableDefaultPageSize,
+        tableShowIndex: state.tableShowIndex,
+        tableFixedHeader: state.tableFixedHeader,
+        tableMaxHeight: state.tableMaxHeight,
         locale: state.locale,
       }),
     }

@@ -11,3 +11,66 @@
   padding: 0 4px;
   user-select: none;
 }
+
+/* Chrome style - slanted trapezoid tabs */
+.multi-tabs-chrome .ant-tabs-nav::before {
+  border-bottom: none;
+}
+
+.multi-tabs-chrome .ant-tabs-tab {
+  position: relative;
+  border: none !important;
+  background: transparent !important;
+  margin: 0 -2px !important;
+  padding: 6px 20px !important;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+  transition: background-color 0.2s;
+}
+
+.multi-tabs-chrome .ant-tabs-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+  background: transparent;
+  z-index: -1;
+  transition: background-color 0.2s;
+}
+
+.multi-tabs-chrome .ant-tabs-tab:hover::before {
+  background: var(--ant-color-bg-text-hover, rgba(0, 0, 0, 0.06));
+}
+
+.multi-tabs-chrome .ant-tabs-tab-active {
+  z-index: 1;
+}
+
+.multi-tabs-chrome .ant-tabs-tab-active::before {
+  background: var(--ant-color-bg-container, #fff) !important;
+}
+
+/* Rounded / pill style tabs */
+.multi-tabs-rounded .ant-tabs-nav::before {
+  border-bottom: none;
+}
+
+.multi-tabs-rounded .ant-tabs-tab {
+  border: none !important;
+  border-radius: 6px !important;
+  margin: 4px 3px !important;
+  padding: 2px 12px !important;
+  background: transparent !important;
+  transition: background-color 0.2s;
+}
+
+.multi-tabs-rounded .ant-tabs-tab:hover {
+  background: var(--ant-color-bg-text-hover, rgba(0, 0, 0, 0.06)) !important;
+}
+
+.multi-tabs-rounded .ant-tabs-tab-active {
+  background: var(--ant-color-primary-bg, #e6f4ff) !important;
+}
+
+.multi-tabs-rounded .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--ant-color-primary, #1677ff) !important;
+}

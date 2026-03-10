@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space, Tag, Tabs, Input, Checkbox, Tree, theme } from 'antd'
+import { Button, Popconfirm, Tag, Tabs, Input, Checkbox, Tree, theme } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
 import type { DataNode } from 'antd/es/tree'
@@ -216,18 +216,17 @@ export const RolePage: React.FC = () => {
       title: t('common:operation'),
       valueType: 'option',
       width: 200,
-      render: (_: unknown, record: Role) => (
-        <Space size="middle">
-          <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
-          <a onClick={() => handlePermission(record)}>{t('system:role.configPermission')}</a>
-          <Popconfirm
-            title={t('system:role.confirmDeleteRole')}
-            onConfirm={() => remove.mutate(record.id)}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_: unknown, record: Role) => [
+        <a key="edit" onClick={() => handleEdit(record)}>{t('common:edit')}</a>,
+        <a key="permission" onClick={() => handlePermission(record)}>{t('system:role.configPermission')}</a>,
+        <Popconfirm
+          key="delete"
+          title={t('system:role.confirmDeleteRole')}
+          onConfirm={() => remove.mutate(record.id)}
+        >
+          <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+        </Popconfirm>,
+      ],
     },
   ]
 
@@ -250,26 +249,23 @@ export const RolePage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
-          <Space>
-            <span>{t('common:selected', { count: keys.length })}</span>
-            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
-          </Space>
-        )}
-        tableAlertOptionRender={({ onCleanSelected }) => (
-          <Space>
-            <Popconfirm
-              title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
-              onConfirm={() => {
-                batchRemove.mutate(selectedRowKeys)
-                setSelectedRowKeys([])
-                onCleanSelected()
-              }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </Space>
-        )}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
+          <span key="text">{t('common:selected', { count: keys.length })}</span>,
+          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
+        ]}
+        tableAlertOptionRender={({ onCleanSelected }) => [
+          <Popconfirm
+            key="delete"
+            title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
+            onConfirm={() => {
+              batchRemove.mutate(selectedRowKeys)
+              setSelectedRowKeys([])
+              onCleanSelected()
+            }}
+          >
+            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+          </Popconfirm>,
+        ]}
         toolBarRender={() => [
           <Button key="add" type="primary" onClick={handleAdd}>
             {t('system:role.addRole')}

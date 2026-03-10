@@ -37,6 +37,8 @@ export const TabsSettings: React.FC = () => {
           options={[
             { label: t('tabs.card'), value: 'card' },
             { label: t('tabs.line'), value: 'line' },
+            { label: t('tabs.chrome'), value: 'chrome' },
+            { label: t('tabs.rounded'), value: 'rounded' },
           ]}
           disabled={!showTabs}
         />

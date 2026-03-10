@@ -25,7 +25,25 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
 ) {
   const { exportable, exportFileName, onExportAllData, postData, columns, rowSelection, optionsRender, pagination, scroll, ...restProps } = props
   const { t } = useTranslation()
-  const { tableSize, tableBordered, tableResizable } = useAppStore(useShallow((s) => ({ tableSize: s.tableSize, tableBordered: s.tableBordered, tableResizable: s.tableResizable })))
+  const {
+    tableSize,
+    tableBordered,
+    tableResizable,
+    tableStriped,
+    tableDefaultPageSize,
+    tableShowIndex,
+    tableFixedHeader,
+    tableMaxHeight
+  } = useAppStore(useShallow((s) => ({
+    tableSize: s.tableSize,
+    tableBordered: s.tableBordered,
+    tableResizable: s.tableResizable,
+    tableStriped: s.tableStriped,
+    tableDefaultPageSize: s.tableDefaultPageSize,
+    tableShowIndex: s.tableShowIndex,
+    tableFixedHeader: s.tableFixedHeader,
+    tableMaxHeight: s.tableMaxHeight,
+  })))
   const dataRef = useRef<T[]>([])
   const [exportOpen, setExportOpen] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
@@ -78,6 +96,8 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
         showSizeChanger: true,
         showQuickJumper: true,
         pageSizeOptions: PAGINATION.PAGE_SIZE_OPTIONS.map(String),
+        defaultPageSize: tableDefaultPageSize,
+        pageSize: tableDefaultPageSize,
         ...(typeof pagination === 'object' ? pagination : {}),
       }
 
@@ -105,26 +125,64 @@ function ProTable<T extends Record<string, any>, U extends Record<string, any> =
     })
   }, [tableResizable, columns, columnWidths])
 
+  // 添加序号列
+  const finalColumns = useMemo(() => {
+    if (!tableShowIndex || !resizableColumns) return resizableColumns
+
+    const indexColumn: ProColumns<T> = {
+      title: t('common:index'),
+      dataIndex: '__index__',
+      key: '__index__',
+      width: 60,
+      align: 'center',
+      fixed: 'left',
+      render: (_: any, __: T, index: number) => {
+        // 计算全局索引（考虑分页）
+        const current = (typeof pagination === 'object' && pagination.current) || 1
+        const pageSize = (typeof pagination === 'object' && pagination.pageSize) || tableDefaultPageSize
+        return (current - 1) * pageSize + index + 1
+      },
+    }
+
+    return [indexColumn, ...resizableColumns]
+  }, [tableShowIndex, resizableColumns, t, pagination, tableDefaultPageSize])
+
   const resizableComponents = useMemo(
     () => (tableResizable ? { header: { cell: ResizableHeaderCell } } : undefined),
     [tableResizable]
   )
 
   // 默认启用横向滚动，防止移动端表格挤压变形
-  const defaultScroll = scroll ?? { x: 'max-content' }
+  const defaultScroll = useMemo(() => {
+    const baseScroll = scroll ?? { x: 'max-content' }
+    // 如果启用固定表头，添加 y 轴滚动
+    if (tableFixedHeader) {
+      return { ...baseScroll, y: tableMaxHeight }
+    }
+    return baseScroll
+  }, [scroll, tableFixedHeader, tableMaxHeight])
+
+  // 斑马纹样式
+  const rowClassName = useCallback(
+    (_record: T, index: number) => {
+      return tableStriped && index % 2 === 1 ? 'table-row-striped' : ''
+    },
+    [tableStriped]
+  )
 
   return (
     <>
       <AntProTable<T, U>
         size={tableSize}
         bordered={tableBordered}
-        columns={resizableColumns}
+        columns={finalColumns}
         components={resizableComponents}
         postData={handlePostData}
         rowSelection={mergedRowSelection}
         optionsRender={mergedOptionsRender}
         pagination={defaultPagination}
         scroll={defaultScroll}
+        rowClassName={rowClassName}
         {...restProps}
       />
       {exportable && columns && (
