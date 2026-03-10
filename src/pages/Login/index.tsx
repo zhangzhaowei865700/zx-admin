@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { preLogin, loginPlatform, getPlatforms, switchPlatform } from '@/api/modules/platform/auth'
 import { useUserStore, useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { setToken, setUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent } from '@/utils/authChannel'
 import { LanguageSwitch } from '@/components/layout/HeaderActions/LanguageSwitch'
@@ -17,7 +18,7 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { token, setToken: setGlobalToken, setUserInfo: setGlobalUserInfo, setSaasName } = useUserStore()
-  const { setSystemName, removeAllTabs } = useAppStore()
+  const { setSystemName, removeAllTabs } = useAppStore(useShallow((s) => ({ setSystemName: s.setSystemName, removeAllTabs: s.removeAllTabs })))
   const { token: themeToken } = theme.useToken()
   const { t } = useTranslation('login')
 

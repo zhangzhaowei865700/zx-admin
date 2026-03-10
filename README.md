@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/ZX--Admin-v1.0.0-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/ZX--Admin-v1.2.0-blue?style=for-the-badge" alt="Version">
   <a href="https://github.com/zhangzhaowei865700/ZX-Admin">
     <img src="https://img.shields.io/github/stars/zhangzhaowei865700/ZX-Admin?style=for-the-badge&logo=github" alt="Stars">
   </a>

@@ -1,5 +1,34 @@
 # Changelog
 
+## v1.2.0 (2026-03-10)
+
+安全加固、性能优化与代码质量提升。
+
+### 安全加固 (Security)
+
+- **CSP 策略**: `index.html` 添加 Content-Security-Policy meta 标签，限制脚本、样式、连接等资源来源
+- **decrypt 错误处理**: `crypto.ts` 的 `decrypt()` 失败时抛出错误而非静默返回原文，防止安全问题被掩盖
+- **路由权限匹配加固**: `Guard.tsx` 权限路径匹配增加尾部斜杠归一化，防止 `/admin` 误匹配 `/admin-panel`
+- **环境变量密钥清理**: 所有 `.env.*` 文件的 `VITE_APP_SECRET` 替换为占位符，新增 `.env.example` 模板
+
+### 性能优化 (Performance)
+
+- **Vite 代码分割**: 添加 `manualChunks` 配置，将 react、antd、pro-components、react-query、i18n 拆分为独立 chunk
+- **Store 订阅优化**: 所有 `useAppStore()` 调用改用 `useShallow` 选择器（19 个组件），避免无关属性变更触发重渲染
+- **字典缓存优化**: `useDictionary` 的 `options` 数组用 `useMemo` 包裹，避免每次渲染重建
+
+### 代码质量 (Code Quality)
+
+- **竞态条件修复**: `request.ts` 的 `isRedirecting` 布尔标志改为 `redirectTimer` 自动重置机制，修复并发 401 竞态
+- **TypeScript 类型安全**: 消除 `crypto.ts`、`storage.ts`、`ProTable.tsx` 中的 `any` 类型，改用泛型和具体类型
+- **内存泄漏修复**: `SettingsDrawer` 添加 `useEffect` 清理拖拽 timer，防止组件卸载时泄漏
+- **JSON.parse 安全**: `storage.ts` 和 `SettingsDrawer` 的 `JSON.parse` 添加 try-catch 防护
+- **ErrorBoundary 增强**: 展示错误信息详情，增加"刷新页面"按钮作为兜底恢复手段
+
+### 工程化 (Chore)
+
+- **环境变量模板**: 新增 `.env.example` 文件，方便新开发者快速配置
+
 ## v1.1.0 (2026-03-10)
 
 基于 v1.0.0 的全面优化版本，涵盖架构重构、新功能、问题修复和工程化改进。

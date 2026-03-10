@@ -68,6 +68,7 @@ npm run lint             # 运行 ESLint 检查
 
 - **签名头**：`X-App-Key`、`X-Timestamp`、`X-Nonce`、`X-Sign`（通过 `src/utils/sign.ts` 生成）
 - **可选 AES 加密**：由 `VITE_CRYPTO_ENABLED` 环境变量控制（使用 `src/utils/crypto.ts`）
+- **解密失败处理**：`decrypt()` 失败时抛出错误（不再静默返回原文），调用方需处理异常
 - **Token 认证**：`Authorization` 头中的 Bearer token
 - **401 处理**：自动登出并重定向到登录页
 
@@ -147,6 +148,26 @@ pages/ModuleName/
 </FormContainer>
 ```
 
+### Store 订阅规范
+
+所有 `useAppStore()` 调用必须使用 `useShallow` 选择器，避免无关属性变更触发组件重渲染：
+
+```tsx
+import { useShallow } from 'zustand/react/shallow'
+
+// ✅ 正确：使用 useShallow 选择器
+const { tableSize, tableBordered } = useAppStore(useShallow((s) => ({
+  tableSize: s.tableSize,
+  tableBordered: s.tableBordered,
+})))
+
+// ✅ 正确：单个属性可以直接用选择器
+const systemLogo = useAppStore((s) => s.systemLogo)
+
+// ❌ 错误：直接解构会订阅整个 store
+const { tableSize, tableBordered } = useAppStore()
+```
+
 ### 环境变量
 
 开发环境默认使用 mock：
@@ -159,6 +180,12 @@ VITE_APP_SECRET=dev-secret   # 用于请求签名
 ```
 
 对于真实 API，将 `VITE_API_BASE_URL` 设置为后端 URL。
+
+新开发者请复制 `.env.example` 为 `.env.local` 并填入实际密钥：
+
+```bash
+cp .env.example .env.local
+```
 
 ### 菜单配置
 
@@ -263,7 +290,7 @@ src/
 │   │   ├── DictTag/       # 字典驱动的标签显示
 │   │   ├── VersionUpdateBar/ # 版本更新通知栏
 │   │   ├── HasPermission/ # 基于权限的渲染
-│   │   ├── ErrorBoundary/ # 错误边界包装器
+│   │   ├── ErrorBoundary/ # 错误边界包装器（展示错误详情，支持重试和刷新）
 │   │   └── PageSkeleton/  # 加载骨架屏
 │   └── layout/            # 布局组件
 │       ├── AppLayout/     # 平台布局
