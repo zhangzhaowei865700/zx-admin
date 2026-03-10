@@ -1,5 +1,5 @@
 import request from '@/api/request'
-import type { TenantOrder, DashboardStats } from '@/types/tenant'
+import type { TenantOrder, DashboardStats } from '@/types'
 
 export const getDashboardStats = () =>
   request<DashboardStats>({

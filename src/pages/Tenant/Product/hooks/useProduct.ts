@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import type { ActionType } from '@ant-design/pro-components'
 import type { RefObject } from 'react'
-import type { TenantProduct } from '@/types/tenant'
+import type { TenantProduct } from '@/types'
 import {
   createProduct,
   updateProduct,

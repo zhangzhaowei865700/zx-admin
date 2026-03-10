@@ -5,7 +5,7 @@ import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
 import { useTranslation } from 'react-i18next'
 import { getOrderList } from '@/api/modules/tenant'
-import type { TenantOrder } from '@/types/tenant'
+import type { TenantOrder } from '@/types'
 import { useOrderMutations } from './hooks/useOrder'
 
 export const TenantOrderPage: React.FC = () => {

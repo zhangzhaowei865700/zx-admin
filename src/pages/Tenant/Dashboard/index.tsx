@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { PageContainer } from '@/components/common/PageContainer'
 import { ProTable } from '@/components/common/ProTable'
-import type { TenantOrder } from '@/types/tenant'
+import type { TenantOrder } from '@/types'
 import { useDashboardStatsQuery, useRecentOrdersQuery } from './hooks/useDashboard'
 
 export const TenantDashboardPage: React.FC = () => {

@@ -63,6 +63,7 @@ export * from './platform/message'
 export * from './platform/dictionary'
 
 // 租户域类型
-export * from './tenant'
 export * from './tenant/order'
 export * from './tenant/product'
+export * from './tenant/setting'
+export * from './tenant/dashboard'

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { PageContainer } from '@/components/common/PageContainer'
 import { PageSkeleton } from '@/components/common/PageSkeleton'
 import { getStoreSetting, updateStoreSetting } from '@/api/modules/tenant'
-import type { StoreSetting } from '@/types/tenant'
+import type { StoreSetting } from '@/types'
 
 export const TenantSettingPage: React.FC = () => {
   const [form] = Form.useForm()

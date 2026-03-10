@@ -1,5 +1,5 @@
 import request from '@/api/request'
-import type { StoreSetting } from '@/types/tenant'
+import type { StoreSetting } from '@/types'
 
 export const getStoreSetting = () =>
   request<StoreSetting>({

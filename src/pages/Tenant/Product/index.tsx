@@ -5,7 +5,7 @@ import { PageContainer } from '@/components/common/PageContainer'
 import { EditableProTable } from '@/components/common/ProTable'
 import { useTranslation } from 'react-i18next'
 import { getProductList } from '@/api/modules/tenant'
-import type { TenantProduct } from '@/types/tenant'
+import type { TenantProduct } from '@/types'
 import { useProductMutations } from './hooks/useProduct'
 
 export const TenantProductPage: React.FC = () => {
