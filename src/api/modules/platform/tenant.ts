@@ -1,22 +1,5 @@
 import request from '@/api/request'
-import type { PageResult, PageParams } from '@/api/types'
-
-export interface Tenant {
-  id: number
-  name: string
-  code?: string
-  contact?: string
-  phone?: string
-  email?: string
-  address?: string
-  status: number
-  createdAt: string
-}
-
-export interface TenantParams extends PageParams {
-  name?: string
-  status?: number
-}
+import type { PageResult, Tenant, TenantParams } from '@/types'
 
 export const getTenantList = (params: TenantParams) =>
   request<PageResult<Tenant>>({
@@ -64,3 +47,5 @@ export const batchUpdateTenantStatus = (ids: number[], status: number) =>
     method: 'PUT',
     data: { ids, status },
   })
+
+export type { Tenant, TenantParams } from '@/types'

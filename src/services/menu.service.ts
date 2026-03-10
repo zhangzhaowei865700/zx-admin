@@ -1,4 +1,4 @@
-import type { Menu } from '@/api/modules/platform/system'
+import type { Menu } from '@/types'
 
 /** 递归在菜单树中按 id 查找节点 */
 export function findMenuById(menus: Menu[], targetId: number): Menu | undefined {

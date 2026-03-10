@@ -45,15 +45,24 @@ export interface Platform {
 export interface Tenant {
   id: number
   name: string
-  code: string
+  code?: string
   status: number
   contact?: string
   phone?: string
+  email?: string
   address?: string
   createdAt?: string
   updatedAt?: string
 }
 
+// 平台域类型
+export * from './platform/auth'
+export * from './platform/system'
+export * from './platform/tenant'
 export * from './platform/message'
 export * from './platform/dictionary'
+
+// 租户域类型
 export * from './tenant'
+export * from './tenant/order'
+export * from './tenant/product'

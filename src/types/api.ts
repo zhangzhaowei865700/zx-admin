@@ -1,13 +1,3 @@
+// 此文件保留用于向后兼容，所有类型已迁移到对应的领域文件
 export type { PageParams, PageResult, ApiResponse, User, Tenant } from './index'
-
-// 登录请求
-export interface LoginParams {
-  username: string
-  password: string
-}
-
-// 登录响应
-export interface LoginResult {
-  token: string
-  user: import('./index').User
-}
+export type { LoginParams, LoginResult } from './platform/auth'

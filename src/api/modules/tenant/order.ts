@@ -1,12 +1,5 @@
 import request from '@/api/request'
-import type { PageResult, PageParams } from '@/api/types'
-import type { TenantOrder } from '@/types/tenant'
-
-export interface OrderParams extends PageParams {
-  orderNo?: string
-  customerName?: string
-  status?: number
-}
+import type { PageResult, TenantOrder, OrderParams } from '@/types'
 
 export const getOrderList = (params: OrderParams) =>
   request<PageResult<TenantOrder>>({
@@ -27,3 +20,5 @@ export const batchDeleteOrders = (ids: number[]) =>
     method: 'DELETE',
     data: { ids },
   })
+
+export type { OrderParams } from '@/types'

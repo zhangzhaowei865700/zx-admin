@@ -1,12 +1,5 @@
 import request from '@/api/request'
-import type { PageResult, PageParams } from '@/api/types'
-import type { TenantProduct } from '@/types/tenant'
-
-export interface ProductParams extends PageParams {
-  name?: string
-  category?: string
-  status?: number
-}
+import type { PageResult, TenantProduct, ProductParams } from '@/types'
 
 export const getProductList = (params: ProductParams) =>
   request<PageResult<TenantProduct>>({
@@ -48,3 +41,5 @@ export const batchUpdateProductStatus = (ids: number[], status: number) =>
     method: 'PUT',
     data: { ids, status },
   })
+
+export type { ProductParams } from '@/types'

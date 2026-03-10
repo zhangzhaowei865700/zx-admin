@@ -1,28 +1,5 @@
 import request from '@/api/request'
-import type { Platform } from '@/types'
-
-export interface LoginParams {
-  username: string
-  password: string
-}
-
-// 第一阶段登录：返回临时 token + 可选平台列表
-export interface PreLoginResult {
-  tempToken: string
-  platforms: Platform[]
-}
-
-// 第二阶段登录：选择平台后返回正式 token + 用户信息
-export interface LoginResult {
-  token: string
-  saasName: string
-  userInfo: {
-    id: number
-    username: string
-    nickname: string
-    avatar?: string
-  }
-}
+import type { LoginParams, PreLoginResult, LoginResult, Platform } from '@/types'
 
 // 第一阶段：账号密码登录，获取临时 token 和平台列表
 export const preLogin = (data: LoginParams) =>

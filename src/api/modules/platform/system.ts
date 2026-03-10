@@ -1,28 +1,7 @@
 import request from '@/api/request'
-import type { PageResult, PageParams } from '@/api/types'
+import type { PageResult, SystemUser, SystemUserParams, Role, RoleParams, Menu, Dept } from '@/types'
 
 // ==================== 用户管理 ====================
-
-export interface SystemUser {
-  id: number
-  username: string
-  nickname: string
-  phone?: string
-  email?: string
-  avatar?: string
-  roleId?: number
-  roleName?: string
-  status: number
-  createdAt: string
-  updatedAt?: string
-}
-
-export interface SystemUserParams extends PageParams {
-  username?: string
-  nickname?: string
-  phone?: string
-  status?: number
-}
 
 export const getUserList = (params: SystemUserParams) =>
   request<PageResult<SystemUser>>({
@@ -80,24 +59,6 @@ export const resetUserPassword = (id: number, password: string) =>
 
 // ==================== 角色管理 ====================
 
-export interface Role {
-  id: number
-  name: string
-  code: string
-  description?: string
-  menuIds?: number[] // 菜单权限
-  deptIds?: number[] // 数据权限（部门树选择）
-  status: number
-  createdAt: string
-  updatedAt?: string
-}
-
-export interface RoleParams extends PageParams {
-  name?: string
-  code?: string
-  status?: number
-}
-
 export const getRoleList = (params: RoleParams) =>
   request<PageResult<Role>>({
     url: '/api/admin/system/role/list',
@@ -153,23 +114,6 @@ export const getAllRoles = () =>
 
 // ==================== 菜单管理 ====================
 
-export interface Menu {
-  id: number
-  parentId: number
-  name: string
-  path?: string
-  icon?: string
-  component?: string
-  permission?: string
-  type: number // 1:目录 2:菜单 3:按钮
-  sort: number
-  visible: number // 1:显示 0:隐藏
-  status: number
-  children?: Menu[]
-  createdAt: string
-  updatedAt?: string
-}
-
 export const getMenuTree = () =>
   request<Menu[]>({
     url: '/api/admin/system/menu/tree',
@@ -204,17 +148,10 @@ export const deleteMenu = (id: number) =>
 
 // ==================== 部门管理 ====================
 
-export interface Dept {
-  id: number
-  parentId: number
-  name: string
-  sort: number
-  status: number
-  children?: Dept[]
-}
-
 export const getDeptTree = () =>
   request<Dept[]>({
     url: '/api/admin/system/dept/tree',
     method: 'GET',
   })
+
+export type { SystemUser, SystemUserParams, Role, RoleParams, Menu, Dept } from '@/types'

@@ -1,5 +1,5 @@
 import type React from 'react'
-import type { Menu, Dept } from '@/api/modules/platform/system'
+import type { Menu, Dept } from '@/types'
 
 function convertAllMenus(items: Menu[]): { title: string; key: number; children: any[] }[] {
   return items.map((menu) => ({
