@@ -23,7 +23,11 @@ export const Guard = memo(function Guard({ children }: { children: React.ReactNo
 
   // 权限校验：permissions 为空时视为拥有全部权限（兼容后端未对接的情况）
   if (token && permissions.length > 0 && !WHITE_LIST.includes(location.pathname)) {
-    const hasPermission = permissions.some((p) => location.pathname === p || location.pathname.startsWith(p + '/'))
+    const hasPermission = permissions.some((p) => {
+      const normalizedPath = location.pathname.replace(/\/+$/, '')
+      const normalizedPerm = p.replace(/\/+$/, '')
+      return normalizedPath === normalizedPerm || normalizedPath.startsWith(normalizedPerm + '/')
+    })
     if (!hasPermission) {
       return <Navigate to="/403" replace />
     }
