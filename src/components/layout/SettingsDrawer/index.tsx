@@ -29,9 +29,10 @@ export const SettingsDrawer: React.FC = () => {
   })
   const [isDragging, setIsDragging] = useState(false)
   const [isLongPress, setIsLongPress] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const hasMovedRef = useRef(false)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const isDraggingRef = useRef(false)
+  const dragStartRef = useRef({ x: 0, y: 0 })
 
   // 组件卸载时清理长按计时器和拖拽状态
   useEffect(() => {
@@ -70,81 +71,90 @@ export const SettingsDrawer: React.FC = () => {
     return { x: newX, y: newY }
   }
 
+  const handleEnd = () => {
+    // 清除长按计时器
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+
+    // flushSync 强制同步渲染，让 transition 先生效，再更新吸附位置
+    flushSync(() => {
+      setIsDragging(false)
+      setIsLongPress(false)
+    })
+
+    if (hasMovedRef.current) {
+      setPosition((prev) => {
+        const snapped = snapToEdge(prev.x, prev.y)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapped))
+        return snapped
+      })
+    }
+  }
+
+  const handleMouseMoveDoc = (e: MouseEvent) => {
+    if (!isDraggingRef.current) return
+    hasMovedRef.current = true
+    setPosition({ x: e.clientX - dragStartRef.current.x, y: e.clientY - dragStartRef.current.y })
+  }
+
+  const handleTouchMoveDoc = (e: TouchEvent) => {
+    if (!isDraggingRef.current) return
+    hasMovedRef.current = true
+    const touch = e.touches[0]
+    setPosition({ x: touch.clientX - dragStartRef.current.x, y: touch.clientY - dragStartRef.current.y })
+  }
+
+  // 全局事件监听器始终挂载，通过 ref 判断是否处于拖拽状态
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMoveDoc)
+    document.addEventListener('mouseup', handleEnd)
+    document.addEventListener('touchmove', handleTouchMoveDoc, { passive: false })
+    document.addEventListener('touchend', handleEnd)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMoveDoc)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleTouchMoveDoc)
+      document.removeEventListener('touchend', handleEnd)
+    }
+  }, [])
+
+  const startDrag = () => {
+    isDraggingRef.current = true
+    setIsLongPress(true)
+    setIsDragging(true)
+  }
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return
     hasMovedRef.current = false
 
+    dragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y }
+
     // 启动长按计时器
     longPressTimerRef.current = setTimeout(() => {
-      setIsLongPress(true)
-      setIsDragging(true)
+      startDrag()
     }, 100) // 100ms 后进入拖拽模式
-
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0]
     hasMovedRef.current = false
 
+    dragStartRef.current = { x: touch.clientX - position.x, y: touch.clientY - position.y }
+
     // 启动长按计时器
     longPressTimerRef.current = setTimeout(() => {
-      setIsLongPress(true)
-      setIsDragging(true)
+      startDrag()
     }, 100)
 
-    setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y })
     e.preventDefault()
   }
-
-  useEffect(() => {
-    if (!isDragging) return
-
-    const handleMove = (clientX: number, clientY: number) => {
-      hasMovedRef.current = true
-      setPosition({ x: clientX - dragStart.x, y: clientY - dragStart.y })
-    }
-
-    const handleMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY)
-    const handleTouchMove = (e: TouchEvent) => {
-      const touch = e.touches[0]
-      handleMove(touch.clientX, touch.clientY)
-    }
-
-  const handleEnd = () => {
-      // 清除长按计时器
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current)
-        longPressTimerRef.current = null
-      }
-
-      // flushSync 强制同步渲染，让 transition 先生效，再更新吸附位置
-      flushSync(() => {
-        setIsDragging(false)
-        setIsLongPress(false)
-      })
-
-      if (hasMovedRef.current) {
-        setPosition((prev) => {
-          const snapped = snapToEdge(prev.x, prev.y)
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(snapped))
-          return snapped
-        })
-      }
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleEnd)
-    document.addEventListener('touchmove', handleTouchMove, { passive: false })
-    document.addEventListener('touchend', handleEnd)
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleEnd)
-      document.removeEventListener('touchmove', handleTouchMove)
-      document.removeEventListener('touchend', handleEnd)
-    }
-  }, [isDragging, dragStart])
 
   const handleClick = (e: React.MouseEvent) => {
     // 清除长按计时器
