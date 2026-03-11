@@ -37,6 +37,15 @@ export const LoginPage: React.FC = () => {
   const [fetchingPlatforms, setFetchingPlatforms] = useState(false)
   const [captchaVerified, setCaptchaVerified] = useState(false)
   const [hoveredPlatformId, setHoveredPlatformId] = useState<number | null>(null)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [stepTransition, setStepTransition] = useState(false)
+  const [exiting, setExiting] = useState(false)
+
+  /** 淡出整个页面后再跳转 */
+  const navigateWithTransition = (path: string) => {
+    setExiting(true)
+    setTimeout(() => navigate(path), 350)
+  }
 
   // 切换平台模式：用正式 token 获取平台列表
   useEffect(() => {
@@ -55,6 +64,7 @@ export const LoginPage: React.FC = () => {
   }, [])
 
   const handleSubmit = async (values: { username: string; password: string }) => {
+    setLoginLoading(true)
     try {
       const { tempToken: token, platforms: list } = await preLogin(values)
       setTempToken(token)
@@ -71,14 +81,21 @@ export const LoginPage: React.FC = () => {
         removeAllTabs()
         message.success(`${t('entered')}${list[0].name}`)
         setSystemName(list[0].name)
-        navigate(list[0].path)
+        navigateWithTransition(list[0].path)
         setPlatformLoading(null)
       } else {
         setPlatforms(list)
-        setStep('selectPlatform')
+        // 先淡出，再切换步骤并淡入
+        setStepTransition(true)
+        setTimeout(() => {
+          setStep('selectPlatform')
+          setStepTransition(false)
+        }, 250)
       }
     } catch {
       // 错误消息已在 request.ts 中显示
+    } finally {
+      setLoginLoading(false)
     }
   }
 
@@ -115,7 +132,7 @@ export const LoginPage: React.FC = () => {
 
       message.success(`${t('entered')}${platform.name}`)
       setSystemName(platform.name)
-      navigate(platform.path)
+      navigateWithTransition(platform.path)
     } catch {
       // 错误消息已在 request.ts 中显示
     } finally {
@@ -131,36 +148,86 @@ export const LoginPage: React.FC = () => {
 
   const renderLoginForm = () => (
     <div style={{ width: '100%', maxWidth: 360 }}>
-      <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 8 }}>{t('welcome')}</h2>
-      <p style={{ color: '#999', marginBottom: 40 }}>{t('subtitle')}</p>
+      {/* 标题 */}
+      <div style={{ marginBottom: 40 }}>
+        <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 8, color: themeToken.colorText, letterSpacing: -0.5 }}>
+          {t('welcome')}
+        </h2>
+        <p style={{ color: themeToken.colorTextDescription, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+          {t('subtitle')}
+        </p>
+      </div>
 
-      <Form onFinish={handleSubmit} size="large" layout="vertical">
-        <Form.Item name="username" rules={[{ required: true, message: t('enterUsername') }]} >
-          <Input prefix={<UserOutlined style={{ color: '#bbb' }} />} placeholder={t('usernamePlaceholder')} />
+      <Form onFinish={handleSubmit} size="large" layout="vertical" className="login-form">
+        <Form.Item name="username" rules={[{ required: true, message: t('enterUsername') }]}>
+          <Input
+            prefix={<UserOutlined />}
+            placeholder={t('usernamePlaceholder')}
+          />
         </Form.Item>
         <Form.Item name="password" rules={[{ required: true, message: t('enterPassword') }]}>
-          <Input.Password prefix={<LockOutlined style={{ color: '#bbb' }} />} placeholder={t('passwordPlaceholder')} />
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder={t('passwordPlaceholder')}
+          />
         </Form.Item>
-        <Form.Item>
+        <Form.Item style={{ marginBottom: 28 }}>
           <SliderCaptcha onVerified={() => setCaptchaVerified(true)} />
         </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block style={{ height: 44 }} disabled={!captchaVerified}>
+        <Form.Item style={{ marginBottom: 16 }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            disabled={!captchaVerified}
+            loading={loginLoading}
+            className="login-submit-btn"
+            style={{
+              height: 44,
+              borderRadius: 10,
+              fontWeight: 500,
+              fontSize: 15,
+              transition: 'all 0.3s',
+            }}
+          >
             {t('loginBtn')}
           </Button>
         </Form.Item>
       </Form>
 
-      <div style={{ textAlign: 'center', color: '#bbb', fontSize: 12 }}>
+      <div
+        style={{
+          textAlign: 'center',
+          color: themeToken.colorTextQuaternary,
+          fontSize: 12,
+          padding: '12px 0',
+          borderTop: `1px solid ${themeToken.colorBorderSecondary}`,
+          marginTop: 8,
+        }}
+      >
         {t('defaultAccount')}
       </div>
     </div>
   )
 
   const loginStyles = `
+    @keyframes login-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes login-slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .login-container {
       display: flex;
       height: 100vh;
+      animation: login-fade-in 0.5s ease-out;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .login-container.login-exiting {
+      opacity: 0;
+      transform: scale(1.02);
     }
     .login-brand {
       flex: 1;
@@ -181,7 +248,56 @@ export const LoginPage: React.FC = () => {
       padding: 0 60px;
       background: #fff;
       position: relative;
+      animation: login-slide-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
     }
+
+    /* 表单样式优化 */
+    .login-form .ant-form-item {
+      margin-bottom: 20px;
+    }
+    .login-form .ant-input-affix-wrapper,
+    .login-form .ant-input {
+      border-radius: 10px;
+      padding: 10px 14px;
+      border-color: ${themeToken.colorBorderSecondary};
+      transition: all 0.25s;
+    }
+    .login-form .ant-input-affix-wrapper:hover,
+    .login-form .ant-input:hover {
+      border-color: ${themeToken.colorPrimaryBorderHover};
+    }
+    .login-form .ant-input-affix-wrapper-focused,
+    .login-form .ant-input-affix-wrapper:focus,
+    .login-form .ant-input:focus {
+      border-color: ${themeToken.colorPrimary};
+      box-shadow: 0 0 0 3px ${themeToken.colorPrimary}12;
+    }
+    .login-form .ant-input-prefix {
+      margin-inline-end: 10px;
+      color: ${themeToken.colorTextQuaternary};
+      font-size: 16px;
+    }
+    .login-form .ant-input-affix-wrapper-focused .ant-input-prefix,
+    .login-form .ant-input-affix-wrapper:focus .ant-input-prefix {
+      color: ${themeToken.colorPrimary};
+    }
+    .login-form .ant-form-item-label > label {
+      font-weight: 500;
+    }
+
+    /* 登录按钮 */
+    .login-submit-btn.ant-btn-primary {
+      box-shadow: 0 4px 12px ${themeToken.colorPrimary}40;
+    }
+    .login-submit-btn.ant-btn-primary:disabled {
+      background: ${themeToken.colorPrimary};
+      color: #fff;
+      opacity: 0.45;
+      border-color: ${themeToken.colorPrimary};
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
     .platform-card.disabled {
       cursor: not-allowed;
       opacity: 0.5;
@@ -293,7 +409,7 @@ export const LoginPage: React.FC = () => {
   )
 
   return (
-    <div className="login-container">
+    <div className={`login-container${exiting ? ' login-exiting' : ''}`}>
       <style>{loginStyles}</style>
       {/* 左侧品牌区 */}
       <div
@@ -357,7 +473,18 @@ export const LoginPage: React.FC = () => {
         <div style={{ position: 'absolute', top: 16, right: 16 }}>
           <LanguageSwitch />
         </div>
-        {step === 'login' ? renderLoginForm() : renderPlatformSelect()}
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            opacity: stepTransition ? 0 : 1,
+            transform: stepTransition ? 'translateY(10px)' : 'translateY(0)',
+            transition: 'opacity 0.25s ease, transform 0.25s ease',
+          }}
+        >
+          {step === 'login' ? renderLoginForm() : renderPlatformSelect()}
+        </div>
       </div>
     </div>
   )

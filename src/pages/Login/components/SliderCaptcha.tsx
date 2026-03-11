@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { theme as antTheme } from 'antd'
 import { CheckOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -16,25 +16,34 @@ export const SliderCaptcha: React.FC<SliderCaptchaProps> = ({ onVerified, style 
   const { token: themeToken } = antTheme.useToken()
   const { t } = useTranslation('login')
   const { verified, dragging, offsetX, trackRef, onDragStart } = useSliderCaptcha({ thumbWidth: THUMB_WIDTH })
+  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     if (verified) onVerified()
   }, [verified, onVerified])
 
-  const progress = trackRef.current ? offsetX / (trackRef.current.offsetWidth - THUMB_WIDTH) : 0
+  const maxOffset = trackRef.current ? trackRef.current.offsetWidth - THUMB_WIDTH : 1
+  const progress = maxOffset > 0 ? offsetX / maxOffset : 0
+
+  const springTransition = 'all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)'
+  const noTransition = 'none'
+  const baseTransition = dragging ? noTransition : springTransition
 
   return (
     <div
       ref={trackRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { if (!dragging) setHovered(false) }}
       style={{
         position: 'relative',
         height: TRACK_HEIGHT,
-        borderRadius: themeToken.borderRadiusLG,
-        background: verified ? themeToken.colorSuccessBg : themeToken.colorFillAlter,
-        border: `1px solid ${verified ? themeToken.colorSuccessBorder : themeToken.colorBorder}`,
+        borderRadius: TRACK_HEIGHT / 2,
+        background: verified
+          ? themeToken.colorSuccessBg
+          : themeToken.colorFillTertiary,
         userSelect: 'none',
         overflow: 'hidden',
-        transition: 'all 0.3s',
+        transition: 'background 0.3s',
         ...style,
       }}
     >
@@ -46,8 +55,12 @@ export const SliderCaptcha: React.FC<SliderCaptchaProps> = ({ onVerified, style 
           left: 0,
           height: '100%',
           width: offsetX + THUMB_WIDTH,
-          background: verified ? themeToken.colorSuccessBg : themeToken.colorPrimaryBg,
-          transition: dragging ? 'none' : 'width 0.3s ease',
+          borderRadius: TRACK_HEIGHT / 2,
+          background: verified
+            ? themeToken.colorSuccess
+            : themeToken.colorPrimaryBgHover,
+          opacity: verified ? 0.18 : 1,
+          transition: dragging ? noTransition : 'all 0.4s ease',
         }}
       />
 
@@ -60,14 +73,15 @@ export const SliderCaptcha: React.FC<SliderCaptchaProps> = ({ onVerified, style 
           alignItems: 'center',
           justifyContent: 'center',
           gap: 6,
-          fontSize: 14,
-          color: verified ? themeToken.colorSuccess : themeToken.colorTextQuaternary,
+          fontSize: 13,
+          letterSpacing: 1,
+          color: verified ? themeToken.colorSuccess : themeToken.colorTextTertiary,
           pointerEvents: 'none',
-          transition: 'opacity 0.2s, color 0.3s',
-          opacity: (progress < 0.15 || verified) ? 1 : 0,
+          transition: 'opacity 0.25s, color 0.3s',
+          opacity: (progress < 0.12 || verified) ? 1 : 0,
         }}
       >
-        {verified && <CheckOutlined style={{ fontSize: 13 }} />}
+        {verified && <CheckOutlined style={{ fontSize: 12 }} />}
         {verified ? t('captchaVerified') : t('captchaSlideToVerify')}
       </span>
 
@@ -77,40 +91,41 @@ export const SliderCaptcha: React.FC<SliderCaptchaProps> = ({ onVerified, style 
         onTouchStart={onDragStart}
         style={{
           position: 'absolute',
-          top: 0,
-          left: 0,
-          width: THUMB_WIDTH,
-          height: TRACK_HEIGHT,
+          top: 2,
+          left: 2,
+          width: THUMB_WIDTH - 4,
+          height: TRACK_HEIGHT - 4,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: verified ? themeToken.colorSuccess : themeToken.colorBgContainer,
-          borderRadius: themeToken.borderRadiusLG,
-          boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+          background: verified
+            ? themeToken.colorSuccess
+            : '#fff',
+          borderRadius: (TRACK_HEIGHT - 4) / 2,
+          boxShadow: verified
+            ? 'none'
+            : dragging
+              ? `0 2px 12px ${themeToken.colorPrimary}30`
+              : hovered
+                ? '0 2px 8px rgba(0,0,0,0.1)'
+                : '0 1px 4px rgba(0,0,0,0.08)',
           cursor: verified ? 'default' : dragging ? 'grabbing' : 'grab',
           transform: `translateX(${offsetX}px)`,
-          transition: dragging ? 'none' : 'all 0.3s ease',
+          transition: verified ? 'all 0.3s ease' : baseTransition,
           zIndex: 1,
         }}
       >
         {verified ? (
-          <CheckOutlined style={{ fontSize: 16, color: '#fff' }} />
+          <CheckOutlined style={{ fontSize: 15, color: '#fff' }} />
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
             <path
-              d="M9 6l6 6-6 6"
-              stroke={dragging ? themeToken.colorPrimary : themeToken.colorTextSecondary}
-              strokeWidth="2"
+              d="M1 7h12M9 2l5 5-5 5"
+              stroke={dragging ? themeToken.colorPrimary : hovered ? themeToken.colorPrimary : themeToken.colorTextTertiary}
+              strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
-            />
-            <path
-              d="M14 6l6 6-6 6"
-              stroke={dragging ? themeToken.colorPrimary : themeToken.colorTextSecondary}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.4"
+              style={{ transition: 'stroke 0.2s' }}
             />
           </svg>
         )}
