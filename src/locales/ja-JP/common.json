@@ -1,4 +1,4 @@
-{
+﻿{
   "confirm": "確認",
   "cancel": "キャンセル",
   "delete": "削除",
@@ -66,8 +66,8 @@
   "selectData": "データ選択",
   "selectFields": "フィールド選択",
   "allFields": "全フィールド",
-  "paramSettings": "パラメータ設定",
-  "header": "ヘッダー",
+  "paramSettings": "大タイトル",
+  "header": "大見出し",
   "columnHeader": "列ヘッダー",
   "headerTitle": "ヘッダータイトル",
   "headerTitlePlaceholder": "ヘッダータイトルを入力（結合セルで表示）",

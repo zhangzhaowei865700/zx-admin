@@ -1,4 +1,4 @@
-{
+﻿{
   "confirm": "OK",
   "cancel": "Cancel",
   "delete": "Delete",
@@ -66,8 +66,8 @@
   "selectData": "Select Data",
   "selectFields": "Select Fields",
   "allFields": "All Fields",
-  "paramSettings": "Parameters",
-  "header": "Header",
+  "paramSettings": "Big Title",
+  "header": "Main Title",
   "columnHeader": "Column Header",
   "headerTitle": "Header Title",
   "headerTitlePlaceholder": "Enter header title (merged cells display)",
