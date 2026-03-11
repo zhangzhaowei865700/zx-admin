@@ -59,8 +59,8 @@ export default [
   {
     url: '/api/admin/system/user/:id',
     method: 'GET',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const user = users.find((u) => u.id === Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      const user = users.find((u) => u.id === Number(query?.id))
       return { code: 200, data: user ? toSystemUser(user) : null, msg: 'success' }
     },
   },
@@ -117,8 +117,8 @@ export default [
   {
     url: '/api/admin/system/user/:id/reset-password',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: { password?: string } }) => {
-      const user = users.find((u) => u.id === Number(params?.id))
+    response: ({ query, body }: { query: Record<string, string>; body: { password?: string } }) => {
+      const user = users.find((u) => u.id === Number(query?.id))
       if (user) {
         user.password = body?.password || '123456'
         user.updatedAt = now()
@@ -129,8 +129,8 @@ export default [
   {
     url: '/api/admin/system/user/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Record<string, any> }) => {
-      const user = users.find((u) => u.id === Number(params?.id))
+    response: ({ query, body }: { query: Record<string, string>; body: Record<string, any> }) => {
+      const user = users.find((u) => u.id === Number(query?.id))
       if (!user) return { code: 404, data: null, msg: '用户不存在' }
       if (body.nickname !== undefined) user.nickname = body.nickname
       if (body.phone !== undefined) user.phone = body.phone
@@ -146,8 +146,8 @@ export default [
   {
     url: '/api/admin/system/user/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const idx = users.findIndex((u) => u.id === Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      const idx = users.findIndex((u) => u.id === Number(query?.id))
       if (idx !== -1) users.splice(idx, 1)
       return { code: 200, data: null, msg: '删除成功' }
     },
@@ -179,8 +179,8 @@ export default [
   {
     url: '/api/admin/system/role/:id',
     method: 'GET',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const role = roles.find((r) => r.id === Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      const role = roles.find((r) => r.id === Number(query?.id))
       return { code: 200, data: role ? toRole(role) : null, msg: 'success' }
     },
   },
@@ -218,8 +218,8 @@ export default [
   {
     url: '/api/admin/system/role/:id/permission',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: { menuIds?: number[]; deptIds?: number[] } }) => {
-      const role = roles.find((r) => r.id === Number(params?.id))
+    response: ({ query, body }: { query: Record<string, string>; body: { menuIds?: number[]; deptIds?: number[] } }) => {
+      const role = roles.find((r) => r.id === Number(query?.id))
       if (!role) return { code: 404, data: null, msg: '角色不存在' }
       if (body.menuIds !== undefined) role.menuIds = body.menuIds
       if (body.deptIds !== undefined) role.deptIds = body.deptIds
@@ -230,8 +230,8 @@ export default [
   {
     url: '/api/admin/system/role/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Record<string, any> }) => {
-      const role = roles.find((r) => r.id === Number(params?.id))
+    response: ({ query, body }: { query: Record<string, string>; body: Record<string, any> }) => {
+      const role = roles.find((r) => r.id === Number(query?.id))
       if (!role) return { code: 404, data: null, msg: '角色不存在' }
       if (body.name !== undefined) role.name = body.name
       if (body.description !== undefined) role.description = body.description
@@ -243,8 +243,8 @@ export default [
   {
     url: '/api/admin/system/role/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const idx = roles.findIndex((r) => r.id === Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      const idx = roles.findIndex((r) => r.id === Number(query?.id))
       if (idx !== -1) roles.splice(idx, 1)
       return { code: 200, data: null, msg: '删除成功' }
     },
@@ -259,8 +259,8 @@ export default [
   {
     url: '/api/admin/system/menu/:id',
     method: 'GET',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const menu = findMenuInTree(menus, Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      const menu = findMenuInTree(menus, Number(query?.id))
       return { code: 200, data: menu || null, msg: 'success' }
     },
   },
@@ -296,8 +296,8 @@ export default [
   {
     url: '/api/admin/system/menu/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Record<string, any> }) => {
-      const id = Number(params?.id)
+    response: ({ query, body }: { query: Record<string, string>; body: Record<string, any> }) => {
+      const id = Number(query?.id)
       const updates: Partial<StoreMenu> = {}
       if (body.name !== undefined) updates.name = body.name
       if (body.path !== undefined) updates.path = body.path
@@ -316,8 +316,8 @@ export default [
   {
     url: '/api/admin/system/menu/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      deleteMenuFromTree(menus, Number(params?.id))
+    response: ({ query }: { query: Record<string, string> }) => {
+      deleteMenuFromTree(menus, Number(query?.id))
       return { code: 200, data: null, msg: '删除成功' }
     },
   },

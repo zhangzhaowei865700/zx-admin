@@ -349,8 +349,8 @@ export default [
   {
     url: '/api/tenant/auth/user/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Partial<UserRecord> }) => {
-      const id = Number(params?.id)
+    response: ({ query, body }: { query: Record<string, string>; body: Partial<UserRecord> }) => {
+      const id = Number(query?.id)
       userData = userData.map((item) => {
         if (item.id !== id) return item
         const roleIds = body.roleIds ?? item.roleIds
@@ -368,8 +368,8 @@ export default [
   {
     url: '/api/tenant/auth/user/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const id = Number(params?.id)
+    response: ({ query }: { query: Record<string, string> }) => {
+      const id = Number(query?.id)
       userData = userData.filter((item) => item.id !== id)
       return { code: 200, data: null, msg: '删除用户成功' }
     },
@@ -415,8 +415,8 @@ export default [
   {
     url: '/api/tenant/auth/role/:id/permission',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: { clientType: ClientType; menuIds: number[]; deptIds: number[] } }) => {
-      const id = Number(params?.id)
+    response: ({ query, body }: { query: Record<string, string>; body: { clientType: ClientType; menuIds: number[]; deptIds: number[] } }) => {
+      const id = Number(query?.id)
       roleData = roleData.map((item) => {
         if (item.id !== id) return item
         if (body.clientType === 'admin') {
@@ -450,8 +450,8 @@ export default [
   {
     url: '/api/tenant/auth/role/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Partial<RoleRecord> }) => {
-      const id = Number(params?.id)
+    response: ({ query, body }: { query: Record<string, string>; body: Partial<RoleRecord> }) => {
+      const id = Number(query?.id)
       roleData = roleData.map((item) => (item.id === id ? { ...item, ...body, id: item.id } : item))
       userData = userData.map((user) => ({ ...user, roleNames: hydrateRoleNames(user.roleIds) }))
       return { code: 200, data: null, msg: '更新角色成功' }
@@ -460,9 +460,8 @@ export default [
   {
     url: '/api/tenant/auth/role/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const id = Number(params?.id)
-      roleData = roleData.filter((item) => item.id !== id)
+    response: ({ query }: { query: Record<string, string> }) => {
+      const id = Number(query?.id)
       userData = userData.map((user) => {
         const roleIds = user.roleIds.filter((roleId) => roleId !== id)
         return { ...user, roleIds, roleNames: hydrateRoleNames(roleIds) }
@@ -513,8 +512,8 @@ export default [
   {
     url: '/api/tenant/auth/menu/:id',
     method: 'PUT',
-    response: ({ params, body }: { params: Record<string, string>; body: Partial<MenuRecord> }) => {
-      const id = Number(params?.id)
+    response: ({ query, body }: { query: Record<string, string>; body: Partial<MenuRecord> }) => {
+      const id = Number(query?.id)
       updateMenuInTree(adminMenuData, id, body)
       updateMenuInTree(miniappMenuData, id, body)
       return { code: 200, data: null, msg: '更新菜单成功' }
@@ -523,8 +522,8 @@ export default [
   {
     url: '/api/tenant/auth/menu/:id',
     method: 'DELETE',
-    response: ({ params }: { params: Record<string, string> }) => {
-      const id = Number(params?.id)
+    response: ({ query }: { query: Record<string, string> }) => {
+      const id = Number(query?.id)
       deleteMenuFromTree(adminMenuData, id)
       deleteMenuFromTree(miniappMenuData, id)
       return { code: 200, data: null, msg: '删除菜单成功' }

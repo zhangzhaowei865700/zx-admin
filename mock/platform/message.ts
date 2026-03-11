@@ -103,8 +103,8 @@ export default [
   {
     url: '/api/admin/message/:id',
     method: 'GET',
-    response: ({ params }: any) => {
-      const msg = mockMessages.find((m) => m.id === Number(params?.id))
+    response: ({ query }: any) => {
+      const msg = mockMessages.find((m) => m.id === Number(query?.id))
       if (msg) msg.isRead = true
       return { code: 200, data: msg || null, msg: 'success' }
     },
