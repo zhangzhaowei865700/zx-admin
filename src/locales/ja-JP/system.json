@@ -16,7 +16,9 @@
     "confirmPassword": "パスワード確認",
     "enterConfirmPassword": "パスワードを確認",
     "passwordMismatch": "パスワードが一致しません",
-    "resetPasswordTitle": "パスワードリセット - {{name}}"
+    "resetPasswordTitle": "パスワードリセット - {{name}}",
+    "viewPermission": "権限確認",
+    "viewPermissionTitle": "権限プレビュー - {{name}}"
   },
   "role": {
     "title": "ロール管理",

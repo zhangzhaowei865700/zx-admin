@@ -77,6 +77,8 @@ npm run lint             # 运行 ESLint 检查
 - 未登录访问非 `/login` 会跳转登录
 - 已登录访问 `/login` 仅在 `?switch=1` 时允许（用于平台切换）
 - 权限校验：`permissions` 为空视为全量权限
+- 路由权限来源：路由 `handle.permission`（见 `src/routes/modules/*.tsx`）
+- 权限模型：统一使用权限码（`module:resource:action`），不再使用路径前缀做权限判断
 - 403/404 页面位于 `src/pages/Exception/`
 
 ## 国际化（i18n）
@@ -92,6 +94,9 @@ npm run lint             # 运行 ESLint 检查
 - 侧边栏分组：`sideMenuType = group` 使用 `group` 字段
 - 用户偏好：`localStorage['app-settings']`，默认值：`src/config/defaultSettings.json`
 - 清缓存按钮保留 `app-settings` 与 `app-locale`
+- 菜单与路由当前为“两套静态配置”：改菜单常量不会自动新增可访问页面路由
+- 新增菜单若指向“已有页面组件”可仅改配置；若需要“新页面组件”仍需前端发版
+- 若要做后端驱动路由，推荐后端下发 `componentKey`，前端用白名单 `componentMap` 映射组件，禁止后端直接下发可执行导入路径
 
 ## 项目结构（详细）
 
@@ -266,6 +271,7 @@ npm run lint             # 运行 ESLint 检查
 
 - 权限代码：`module:resource:action`
 - 空权限数组表示全量权限（后端兼容）
+- 路由新增/调整时必须同时补充 `handle.permission`，保持与按钮级权限（`HasPermission`）一致
 - 复杂逻辑优先放 `services/`
 - API 调用集中在 `src/api/modules/`
 - 组件尽量小而专注
