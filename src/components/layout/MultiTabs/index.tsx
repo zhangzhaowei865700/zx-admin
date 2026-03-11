@@ -146,7 +146,7 @@ export const MultiTabs: React.FC = () => {
 
   if (!showTabs) return null
 
-  const isCardStyle = tabStyle === 'card'
+  const isClosableStyle = tabStyle === 'card' || tabStyle === 'chrome'
 
   const tabItems = filteredTabs.map((tab) => ({
     key: tab.key,
@@ -158,12 +158,12 @@ export const MultiTabs: React.FC = () => {
         <span className="multi-tab-label">{getTabLabel(tab.key)}</span>
       </Dropdown>
     ),
-    closable: isCardStyle ? tab.closable : false,
+    closable: isClosableStyle ? tab.closable : false,
   }))
 
   return (
     <div
-      className="multi-tabs-wrapper"
+      className={`multi-tabs-wrapper multi-tabs-${tabStyle}`}
       style={{
         padding: '0 8px',
         background: themeToken.colorBgContainer,
@@ -171,11 +171,11 @@ export const MultiTabs: React.FC = () => {
       }}
     >
       <Tabs
-        type={isCardStyle ? 'editable-card' : 'line'}
+        type={isClosableStyle ? 'editable-card' : 'line'}
         size="small"
         activeKey={activeTabKey}
         onChange={handleTabChange}
-        onEdit={isCardStyle ? handleTabEdit : undefined}
+        onEdit={isClosableStyle ? handleTabEdit : undefined}
         hideAdd
         items={tabItems}
       />

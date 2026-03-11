@@ -184,3 +184,12 @@ html.color-weak {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* 表格斑马纹 */
+.table-row-striped {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+html.dark .table-row-striped {
+  background-color: rgba(255, 255, 255, 0.04);
+}

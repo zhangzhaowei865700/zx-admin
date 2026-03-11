@@ -1,5 +1,4 @@
 import { forwardRef } from 'react'
-import { theme as antTheme } from 'antd'
 
 interface ActionIconProps {
   children: React.ReactNode
@@ -14,8 +13,6 @@ interface ActionIconProps {
  */
 export const ActionIcon = forwardRef<HTMLSpanElement, ActionIconProps>(
   ({ children, onClick, style }, ref) => {
-    const { token } = antTheme.useToken()
-
     return (
       <span
         ref={ref}
@@ -32,17 +29,18 @@ export const ActionIcon = forwardRef<HTMLSpanElement, ActionIconProps>(
           borderRadius: 6,
           cursor: 'pointer',
           fontSize: 16,
-          color: token.colorTextSecondary,
+          color: 'inherit',
+          opacity: 0.65,
           transition: 'all 0.2s',
           ...style,
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = token.colorFillTertiary
-          e.currentTarget.style.color = token.colorText
+          e.currentTarget.style.backgroundColor = 'color-mix(in srgb, currentColor 8%, transparent)'
+          e.currentTarget.style.opacity = '1'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'transparent'
-          e.currentTarget.style.color = token.colorTextSecondary
+          e.currentTarget.style.opacity = '0.65'
         }}
       >
         {children}

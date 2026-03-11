@@ -23,7 +23,8 @@
     "borderRadius": "角丸サイズ",
     "colorWeak": "色弱モード",
     "grayMode": "グレーモード",
-    "compactMode": "コンパクトモード"
+    "compactMode": "コンパクトモード",
+    "sidebarDark": "サイドバーダーク"
   },
   "layout": {
     "sideLayout": "サイドバーレイアウト",
@@ -51,6 +52,8 @@
     "tabStyle": "タブスタイル",
     "card": "カード",
     "line": "ライン",
+    "chrome": "Chrome風",
+    "rounded": "丸角",
     "tabLimit": "タブ上限",
     "unlimited": "無制限",
     "count": "{{count}} 個"
@@ -70,19 +73,32 @@
     "medium": "中",
     "small": "小",
     "tableBorder": "テーブル枠線",
-    "tableResizable": "列幅のドラッグ変更"
+    "tableResizable": "列幅のドラッグ変更",
+    "tableStriped": "ストライプ",
+    "tableShowIndex": "序号列を表示",
+    "tableDefaultPageSize": "デフォルトページサイズ",
+    "tableFixedHeader": "ヘッダー固定",
+    "tableMaxHeight": "最大高さ"
   },
   "form": {
     "formDisplay": "フォーム表示",
     "modal": "モーダル",
     "drawer": "ドロワー",
+    "formLayout": "フォームレイアウト",
+    "horizontal": "水平",
+    "vertical": "垂直",
     "formColumns": "フォーム列数",
     "singleColumn": "1列",
     "doubleColumn": "2列",
     "formSize": "フォームサイズ",
     "small": "小",
     "medium": "中",
-    "large": "大"
+    "large": "大",
+    "formLabelAlign": "ラベル配置",
+    "alignLeft": "左揃え",
+    "alignRight": "右揃え",
+    "formComponentSize": "コンポーネントサイズ",
+    "formColon": "ラベルコロン"
   },
   "system": {
     "systemName": "システム名",

@@ -86,6 +86,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     showWatermark,
     contentWidth,
     contentPadding,
+    sidebarDark,
   } = useAppStore(useShallow((s) => ({
     collapsed: s.collapsed, setCollapsed: s.setCollapsed,
     layoutMode: s.layoutMode, setLayoutMode: s.setLayoutMode,
@@ -101,12 +102,13 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     showWatermark: s.showWatermark,
     contentWidth: s.contentWidth,
     contentPadding: s.contentPadding,
+    sidebarDark: s.sidebarDark,
   })))
 
   const { userInfo: storeUserInfo, setUserInfo: setStoreUserInfo, logout: storeLogout } = useUserStore()
   const [profileVisible, setProfileVisible] = useState(false)
   const screens = Grid.useBreakpoint()
-  const isMobile = !screens.md
+  const isMobile = screens.md !== undefined && !screens.md
 
   // 移动端自动回退为 mix 布局
   useEffect(() => {
@@ -203,10 +205,14 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     { key: 'logout', label: t('common:logoutBtn'), icon: <LogoutOutlined />, danger: true },
   ], [t, extraMenuItems])
 
+  // 导航栏暗色模式（sidebarDark 开启且非全局暗黑时）
+  // side 布局下 ProLayout 将 header 操作渲染在侧边栏底部，同样需要暗色文字
+  const isNavDark = sidebarDark && !darkMode && layoutMode !== 'mix'
+
   const rightContentRender = useCallback(() => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', overflow: 'hidden', color: isNavDark ? 'rgba(255,255,255,0.65)' : undefined }}>
       {headerActions}
-      <span style={{ width: 1, height: 20, flexShrink: 0, background: themeToken.colorBorderSecondary, margin: isMobile ? '0 4px' : '0 8px' }} />
+      <span style={{ width: 1, height: 20, flexShrink: 0, background: isNavDark ? 'rgba(255,255,255,0.2)' : themeToken.colorBorderSecondary, margin: isMobile ? '0 4px' : '0 8px' }} />
       <Dropdown
         menu={{ items: dropdownItems, onClick: handleMenuClick }}
         trigger={['click']}
@@ -223,7 +229,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
             transition: 'background-color 0.2s',
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = themeToken.colorFillTertiary }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isNavDark ? 'rgba(255,255,255,0.08)' : themeToken.colorFillTertiary }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
         >
           <Avatar
@@ -234,14 +240,14 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
             {userInfo?.nickname?.[0] || userInfo?.username?.[0] || 'A'}
           </Avatar>
           {!isMobile && (
-            <span style={{ color: themeToken.colorText, fontSize: 14, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ color: isNavDark ? '#ffffff' : themeToken.colorText, fontSize: 14, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {userInfo?.nickname || userInfo?.username || t('common:admin')}
             </span>
           )}
         </div>
       </Dropdown>
     </div>
-  ), [userInfo, dropdownItems, handleMenuClick, headerActions, themeToken, isMobile, t])
+  ), [userInfo, dropdownItems, handleMenuClick, headerActions, themeToken, isMobile, t, isNavDark])
 
   return (
     <>
@@ -275,10 +281,34 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         ) : false}
         navTheme={darkMode ? 'realDark' : 'light'}
         token={{
-          header: {
+          header: sidebarDark && !darkMode && layoutMode === 'top' ? {
+            colorBgHeader: '#001529',
+            colorBgScrollHeader: '#001529',
+            colorHeaderTitle: '#ffffff',
+            colorTextMenu: 'rgba(255, 255, 255, 0.65)',
+            colorTextMenuSelected: '#ffffff',
+            colorTextMenuActive: '#ffffff',
+            colorBgMenuItemSelected: 'rgba(255, 255, 255, 0.15)',
+            colorBgMenuItemHover: 'rgba(255, 255, 255, 0.08)',
+            colorTextRightActionsItem: 'rgba(255, 255, 255, 0.65)',
+          } : {
             colorBgHeader: darkMode ? '#141414' : '#ffffff',
             colorBgScrollHeader: darkMode ? '#141414' : '#ffffff',
           },
+          sider: sidebarDark && !darkMode ? {
+            colorMenuBackground: '#001529',
+            colorBgMenuItemHover: 'rgba(255, 255, 255, 0.08)',
+            colorBgMenuItemSelected: primaryColor,
+            colorTextMenu: 'rgba(255, 255, 255, 0.65)',
+            colorTextMenuSelected: '#ffffff',
+            colorTextMenuActive: '#ffffff',
+            colorTextMenuItemHover: '#ffffff',
+            colorMenuItemDivider: 'rgba(255, 255, 255, 0.15)',
+            colorBgCollapsedButton: '#001529',
+            colorTextCollapsedButton: 'rgba(255, 255, 255, 0.65)',
+            colorTextCollapsedButtonHover: '#ffffff',
+            colorTextMenuTitle: '#ffffff',
+          } : {},
           pageContainer: {
             paddingBlockPageContainerContent: contentPadding,
             paddingInlinePageContainerContent: contentPadding,

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, Children, isValidElement, cloneElement } from 'react'
-import { Popover, theme as antTheme } from 'antd'
+import { Popover } from 'antd'
 import { EllipsisOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 
@@ -24,7 +24,6 @@ export const OverflowActions: React.FC<OverflowActionsProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const [visibleCount, setVisibleCount] = useState<number | null>(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
-  const { token } = antTheme.useToken()
   const location = useLocation()
 
   // 路由变化时关闭省略号弹窗
@@ -116,7 +115,7 @@ export const OverflowActions: React.FC<OverflowActionsProps> = ({
           open={popoverOpen}
           onOpenChange={setPopoverOpen}
           content={
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '4px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '4px 0', color: 'var(--ant-color-text)' }}>
               {overflowItems.map((child, i) =>
                 isValidElement(child) ? cloneElement(child, { key: i }) : child,
               )}
@@ -137,17 +136,18 @@ export const OverflowActions: React.FC<OverflowActionsProps> = ({
                 borderRadius: 6,
                 cursor: 'pointer',
                 fontSize: 16,
-                color: token.colorTextSecondary,
+                color: 'inherit',
+                opacity: 0.65,
                 transition: 'all 0.2s',
                 flexShrink: 0,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = token.colorFillTertiary
-                e.currentTarget.style.color = token.colorText
+                e.currentTarget.style.backgroundColor = 'color-mix(in srgb, currentColor 8%, transparent)'
+                e.currentTarget.style.opacity = '1'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = 'transparent'
-                e.currentTarget.style.color = token.colorTextSecondary
+                e.currentTarget.style.opacity = '0.65'
               }}
             >
               <EllipsisOutlined />

@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo } from 'react'
-import { Button, Popconfirm, Tag, Space } from 'antd'
+import { Button, Popconfirm, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { PageContainer } from '@/components/common/PageContainer'
 import { EditableProTable } from '@/components/common/ProTable'
@@ -142,42 +142,41 @@ export const TenantProductPage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
-          <Space>
-            <span>{t('common:selected', { count: keys.length })}</span>
-            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
-          </Space>
-        )}
-        tableAlertOptionRender={({ onCleanSelected }) => (
-          <Space>
-            <a
-              onClick={() => {
-                batchStatus.mutate({ ids: selectedRowKeys as number[], status: 1 })
-                onCleanSelected()
-              }}
-            >
-              {t('product:batchOnSale')}
-            </a>
-            <a
-              onClick={() => {
-                batchStatus.mutate({ ids: selectedRowKeys as number[], status: 0 })
-                onCleanSelected()
-              }}
-            >
-              {t('product:batchOffSale')}
-            </a>
-            <Popconfirm
-              title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
-              onConfirm={() => {
-                batchRemove.mutate(selectedRowKeys as number[])
-                setEditableRowKeys((prev) => prev.filter((key) => !selectedRowKeys.includes(key)))
-                onCleanSelected()
-              }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </Space>
-        )}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
+          <span key="text">{t('common:selected', { count: keys.length })}</span>,
+          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
+        ]}
+        tableAlertOptionRender={({ onCleanSelected }) => [
+          <a
+            key="onSale"
+            onClick={() => {
+              batchStatus.mutate({ ids: selectedRowKeys as number[], status: 1 })
+              onCleanSelected()
+            }}
+          >
+            {t('product:batchOnSale')}
+          </a>,
+          <a
+            key="offSale"
+            onClick={() => {
+              batchStatus.mutate({ ids: selectedRowKeys as number[], status: 0 })
+              onCleanSelected()
+            }}
+          >
+            {t('product:batchOffSale')}
+          </a>,
+          <Popconfirm
+            key="delete"
+            title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
+            onConfirm={() => {
+              batchRemove.mutate(selectedRowKeys as number[])
+              setEditableRowKeys((prev) => prev.filter((key) => !selectedRowKeys.includes(key)))
+              onCleanSelected()
+            }}
+          >
+            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+          </Popconfirm>,
+        ]}
         toolBarRender={() => [
           <Button
             key="add"

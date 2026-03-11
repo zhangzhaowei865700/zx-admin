@@ -9,7 +9,15 @@ type FormContainerProps = ModalFormProps & DrawerFormProps & {
 }
 
 export const FormContainer: React.FC<FormContainerProps> = (props) => {
-  const { formDisplayMode, formColumns, formSizePreset } = useAppStore(useShallow((s) => ({ formDisplayMode: s.formDisplayMode, formColumns: s.formColumns, formSizePreset: s.formSizePreset })))
+  const { formDisplayMode, formColumns, formSizePreset, formLabelAlign, formComponentSize, formColon, formLayout } = useAppStore(useShallow((s) => ({
+    formDisplayMode: s.formDisplayMode,
+    formColumns: s.formColumns,
+    formSizePreset: s.formSizePreset,
+    formLabelAlign: s.formLabelAlign,
+    formComponentSize: s.formComponentSize,
+    formColon: s.formColon,
+    formLayout: s.formLayout,
+  })))
 
   const isDrawer = formDisplayMode === 'drawer'
   const Form = isDrawer ? DrawerForm : ModalForm
@@ -27,5 +35,10 @@ export const FormContainer: React.FC<FormContainerProps> = (props) => {
     ? { grid: true as const, colProps: { span: 12, ...props.colProps } }
     : {}
 
-  return <Form {...props} {...containerProps} {...gridProps} />
+  // 水平布局时需要设置 labelCol，标签对齐才会生效
+  const layoutProps = formLayout === 'horizontal'
+    ? { layout: formLayout, labelAlign: formLabelAlign, labelCol: { flex: '0 0 100px' } }
+    : { layout: formLayout }
+
+  return <Form {...props} {...containerProps} {...gridProps} {...layoutProps} size={formComponentSize} colon={formColon} />
 }

@@ -6,7 +6,8 @@
     "grayMode": false,
     "compactMode": false,
     "fontSize": 14,
-    "borderRadius": 6
+    "borderRadius": 6,
+    "sidebarDark": false
   },
   "layout": {
     "layoutMode": "mix",
@@ -34,7 +35,11 @@
   "form": {
     "formDisplayMode": "drawer",
     "formColumns": 1,
-    "formSizePreset": "medium"
+    "formSizePreset": "medium",
+    "formLabelAlign": "right",
+    "formComponentSize": "middle",
+    "formColon": true,
+    "formLayout": "vertical"
   },
   "system": {
     "systemName": "ZX Admin",
@@ -45,6 +50,11 @@
   "table": {
     "tableSize": "large",
     "tableBordered": false,
-    "tableResizable": false
+    "tableResizable": false,
+    "tableStriped": false,
+    "tableDefaultPageSize": 20,
+    "tableShowIndex": false,
+    "tableFixedHeader": false,
+    "tableMaxHeight": 600
   }
 }
