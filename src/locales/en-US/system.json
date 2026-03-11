@@ -38,7 +38,9 @@
     "searchMenu": "Search menus...",
     "searchDept": "Search departments...",
     "noMenuData": "No menu data",
-    "noDeptData": "No department data"
+    "noDeptData": "No department data",
+    "parentChildLinked": "Parent-child linked",
+    "linked": "Linked"
   },
   "menu": {
     "title": "Menu Management",

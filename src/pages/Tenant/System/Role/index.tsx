@@ -15,6 +15,7 @@ import {
   convertDeptToTreeData,
   getAllLeafKeys,
   getAllTreeKeys,
+  splitLeafAndParentKeys,
 } from '@/services/role.service'
 
 /** 将租户菜单树转换为 role.service 兼容的格式 */
@@ -44,6 +45,8 @@ export const TenantRolePage: React.FC = () => {
   const [permissionClientType, setPermissionClientType] = useState<TenantClientType>('admin')
   const [checkedMenuKeys, setCheckedMenuKeys] = useState<number[]>([])
   const [checkedDeptKeys, setCheckedDeptKeys] = useState<number[]>([])
+  const [halfCheckedMenuKeys, setHalfCheckedMenuKeys] = useState<number[]>([])
+  const [halfCheckedDeptKeys, setHalfCheckedDeptKeys] = useState<number[]>([])
   const [menuSearch, setMenuSearch] = useState('')
   const [deptSearch, setDeptSearch] = useState('')
   const [expandedMenuKeys, setExpandedMenuKeys] = useState<number[]>([])
@@ -80,12 +83,18 @@ export const TenantRolePage: React.FC = () => {
     const deptTree = clientType === 'admin' ? adminDeptTree : miniappDeptTree
     const menuIds = clientType === 'admin' ? (record.adminMenuIds || []) : (record.miniappMenuIds || [])
     const deptIds = clientType === 'admin' ? (record.adminDeptIds || []) : (record.miniappDeptIds || [])
-    setCheckedMenuKeys(menuIds)
-    setCheckedDeptKeys(deptIds)
     const menuServiceData = convertTenantMenuToRoleServiceFormat(menuTree)
     const deptServiceData = convertTenantDeptToRoleServiceFormat(deptTree)
-    setExpandedMenuKeys(getAllTreeKeys(convertMenuToTreeData(menuServiceData, '')))
-    setExpandedDeptKeys(getAllTreeKeys(convertDeptToTreeData(deptServiceData, '')))
+    const menuTreeData = convertMenuToTreeData(menuServiceData, '')
+    const deptTreeData = convertDeptToTreeData(deptServiceData, '')
+    const menuSplit = splitLeafAndParentKeys(menuTreeData, menuIds)
+    const deptSplit = splitLeafAndParentKeys(deptTreeData, deptIds)
+    setCheckedMenuKeys(menuSplit.leafKeys)
+    setHalfCheckedMenuKeys(menuSplit.parentKeys)
+    setCheckedDeptKeys(deptSplit.leafKeys)
+    setHalfCheckedDeptKeys(deptSplit.parentKeys)
+    setExpandedMenuKeys(getAllTreeKeys(menuTreeData))
+    setExpandedDeptKeys(getAllTreeKeys(deptTreeData))
     setMenuAllExpanded(true)
     setDeptAllExpanded(true)
     setMenuSearch('')
@@ -95,10 +104,12 @@ export const TenantRolePage: React.FC = () => {
 
   const handleMenuSelectAll = (checked: boolean) => {
     setCheckedMenuKeys(checked ? getAllLeafKeys(convertMenuToTreeData(getMenuTreeForService(), menuSearch)) as number[] : [])
+    setHalfCheckedMenuKeys([])
   }
 
   const handleDeptSelectAll = (checked: boolean) => {
     setCheckedDeptKeys(checked ? getAllLeafKeys(convertDeptToTreeData(getDeptTreeForService(), deptSearch)) as number[] : [])
+    setHalfCheckedDeptKeys([])
   }
 
   const handleToggleExpand = (type: 'menu' | 'dept') => {
@@ -267,8 +278,8 @@ export const TenantRolePage: React.FC = () => {
           await savePermission.mutateAsync({
             roleId: currentRecord!.id,
             clientType: permissionClientType,
-            menuIds: checkedMenuKeys,
-            deptIds: checkedDeptKeys,
+            menuIds: [...checkedMenuKeys, ...halfCheckedMenuKeys],
+            deptIds: [...checkedDeptKeys, ...halfCheckedDeptKeys],
           })
           return true
         }}
@@ -317,9 +328,10 @@ export const TenantRolePage: React.FC = () => {
                     searchPlaceholder={t('system:role.searchMenu')}
                     onSearchChange={setMenuSearch}
                     onCheckedChange={setCheckedMenuKeys}
+                    onHalfCheckedChange={setHalfCheckedMenuKeys}
                     onExpandedChange={(keys) => setExpandedMenuKeys(keys)}
                     onSelectAll={handleMenuSelectAll}
-                    onClear={() => setCheckedMenuKeys([])}
+                    onClear={() => { setCheckedMenuKeys([]); setHalfCheckedMenuKeys([]) }}
                     onToggleExpand={() => handleToggleExpand('menu')}
                     emptyText={t('system:role.noMenuData')}
                   />
@@ -347,9 +359,10 @@ export const TenantRolePage: React.FC = () => {
                     searchPlaceholder={t('system:role.searchDept')}
                     onSearchChange={setDeptSearch}
                     onCheckedChange={setCheckedDeptKeys}
+                    onHalfCheckedChange={setHalfCheckedDeptKeys}
                     onExpandedChange={(keys) => setExpandedDeptKeys(keys)}
                     onSelectAll={handleDeptSelectAll}
-                    onClear={() => setCheckedDeptKeys([])}
+                    onClear={() => { setCheckedDeptKeys([]); setHalfCheckedDeptKeys([]) }}
                     onToggleExpand={() => handleToggleExpand('dept')}
                     emptyText={t('system:role.noDeptData')}
                   />

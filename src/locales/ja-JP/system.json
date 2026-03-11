@@ -38,7 +38,9 @@
     "searchMenu": "メニュー検索...",
     "searchDept": "部門検索...",
     "noMenuData": "メニューデータなし",
-    "noDeptData": "部門データなし"
+    "noDeptData": "部門データなし",
+    "parentChildLinked": "親子連動",
+    "linked": "連動"
   },
   "menu": {
     "title": "メニュー管理",

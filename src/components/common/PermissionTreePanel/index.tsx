@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
-import { Button, Checkbox, Input, Tree, theme } from 'antd'
+import { useMemo, useState } from 'react'
+import { Button, Checkbox, Input, Tooltip, Tree, theme } from 'antd'
 import type { DataNode } from 'antd/es/tree'
-import { getAllLeafKeys } from '@/services/role.service'
+import { getAllLeafKeys, getAllTreeKeys } from '@/services/role.service'
 import { useTranslation } from 'react-i18next'
 
 export interface PermissionTreePanelProps {
@@ -19,6 +19,8 @@ export interface PermissionTreePanelProps {
   onToggleExpand: () => void
   emptyText: string
   readonly?: boolean
+  /** 联动模式下半选父级 key 变化回调 */
+  onHalfCheckedChange?: (keys: number[]) => void
 }
 
 /** 收集所有叶子节点的 key */
@@ -101,9 +103,11 @@ export const PermissionTreePanel: React.FC<PermissionTreePanelProps> = ({
   onToggleExpand,
   emptyText,
   readonly = false,
+  onHalfCheckedChange,
 }) => {
   const { token } = theme.useToken()
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'system'])
+  const [checkStrictly, setCheckStrictly] = useState(false)
 
   const allLeafCount = getAllLeafKeys(treeData).length
 
@@ -121,6 +125,15 @@ export const PermissionTreePanel: React.FC<PermissionTreePanelProps> = ({
       token.colorTextDisabled,
     )
   }, [readonly, treeData, checkedSet, leafKeys, token.colorText, token.colorSuccess, token.colorTextDisabled])
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checkStrictly) {
+      // 非联动模式：全选所有节点（含父级）
+      onCheckedChange(checked ? getAllTreeKeys(treeData as any) : [])
+    } else {
+      onSelectAll(checked)
+    }
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', gap: 8 }}>
@@ -152,17 +165,25 @@ export const PermissionTreePanel: React.FC<PermissionTreePanelProps> = ({
             <Checkbox
               checked={checkedKeys.length > 0}
               indeterminate={checkedKeys.length > 0 && checkedKeys.length < allLeafCount}
-              onChange={(e) => onSelectAll(e.target.checked)}
+              onChange={(e) => handleSelectAll(e.target.checked)}
             >
-              <span style={{ fontSize: 13 }}>{t('selectAll')}</span>
+              <span style={{ fontSize: 13 }}>{t('common:selectAll')}</span>
             </Checkbox>
+            <Tooltip title={t('system:role.parentChildLinked')}>
+              <Checkbox
+                checked={!checkStrictly}
+                onChange={(e) => setCheckStrictly(!e.target.checked)}
+              >
+                <span style={{ fontSize: 13 }}>{t('system:role.linked')}</span>
+              </Checkbox>
+            </Tooltip>
             <Button type="link" size="small" style={{ padding: '0 4px' }} onClick={onClear}>
-              {t('clear')}
+              {t('common:clear')}
             </Button>
           </>
         )}
         <Button type="link" size="small" style={{ padding: '0 4px' }} onClick={onToggleExpand}>
-          {allExpanded ? t('collapse') : t('expand')}
+          {allExpanded ? t('common:collapse') : t('common:expand')}
         </Button>
       </div>
 
@@ -193,10 +214,21 @@ export const PermissionTreePanel: React.FC<PermissionTreePanelProps> = ({
         ) : (
           <Tree
             checkable
+            checkStrictly={checkStrictly}
             expandedKeys={expandedKeys}
             onExpand={(keys) => onExpandedChange(keys as number[])}
             checkedKeys={checkedKeys}
-            onCheck={(keys) => onCheckedChange(keys as number[])}
+            onCheck={(keys, info) => {
+              if (Array.isArray(keys)) {
+                // 联动模式：keys 是 Key[]，halfCheckedKeys 在 info 中
+                onCheckedChange(keys as number[])
+                onHalfCheckedChange?.(info.halfCheckedKeys as number[])
+              } else {
+                // 非联动模式：keys 是 { checked, halfChecked }
+                onCheckedChange(keys.checked as number[])
+                onHalfCheckedChange?.([])
+              }
+            }}
             treeData={treeData}
           />
         )}
