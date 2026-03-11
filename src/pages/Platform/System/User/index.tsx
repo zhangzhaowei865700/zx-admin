@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Tag, message } from 'antd'
+import { Button, Drawer, Popconfirm, Tag, message } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components'
 import { useMutation } from '@tanstack/react-query'
@@ -6,6 +6,7 @@ import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
 import { FormContainer } from '@/components/common/FormContainer'
 import { HasPermission } from '@/components/common/HasPermission'
+import { PermissionTreePanel } from '@/components/common/PermissionTreePanel'
 import {
   getUserList,
   createUser,
@@ -17,19 +18,32 @@ import {
   type SystemUser,
 } from '@/api/modules/platform'
 import { useSystemRolesQuery } from '../hooks'
-import { useRef, useState } from 'react'
+import { useMenuTreeQuery } from '../hooks/useRole'
+import { convertMenuToTreeData, getAllTreeKeys } from '@/services/role.service'
+import { useRef, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export const UserPage: React.FC = () => {
   const actionRef = useRef<ActionType>()
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [resetPwdModalOpen, setResetPwdModalOpen] = useState(false)
+  const [permissionDrawerOpen, setPermissionDrawerOpen] = useState(false)
+  const [permissionMenuKeys, setPermissionMenuKeys] = useState<number[]>([])
+  const [permissionUserName, setPermissionUserName] = useState('')
   const [currentRecord, setCurrentRecord] = useState<SystemUser>()
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([])
   const { t } = useTranslation(['system', 'common'])
 
   const { data: roles = [] } = useSystemRolesQuery()
   const roleOptions = roles.map((r) => ({ label: r.name, value: r.id }))
+  const { data: menuTree = [] } = useMenuTreeQuery()
+
+  const menuTreeData = useMemo(() => convertMenuToTreeData(menuTree, ''), [menuTree])
+  const allMenuExpandedKeys = useMemo(() => getAllTreeKeys(menuTreeData), [menuTreeData])
+
+  const [expandedMenuKeys, setExpandedMenuKeys] = useState<number[]>([])
+  const [menuAllExpanded, setMenuAllExpanded] = useState(true)
+  const [menuSearch, setMenuSearch] = useState('')
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
@@ -87,13 +101,31 @@ export const UserPage: React.FC = () => {
     setResetPwdModalOpen(true)
   }
 
+  const handleViewPermission = (record: SystemUser) => {
+    const userRoleIds = record.roleIds || []
+    const mergedMenuIds = new Set<number>()
+    for (const role of roles) {
+      if (userRoleIds.includes(role.id) && role.menuIds) {
+        for (const menuId of role.menuIds) {
+          mergedMenuIds.add(menuId)
+        }
+      }
+    }
+    setPermissionMenuKeys(Array.from(mergedMenuIds))
+    setPermissionUserName(record.nickname || record.username)
+    setExpandedMenuKeys(allMenuExpandedKeys)
+    setMenuAllExpanded(true)
+    setMenuSearch('')
+    setPermissionDrawerOpen(true)
+  }
+
   const columns: ProColumns<SystemUser>[] = [
     { title: t('common:id'), dataIndex: 'id', width: 80, search: false },
     { title: t('common:username'), dataIndex: 'username', width: 120 },
     { title: t('common:nickname'), dataIndex: 'nickname', width: 120 },
     { title: t('common:phone'), dataIndex: 'phone', width: 130 },
     { title: t('common:email'), dataIndex: 'email', width: 180, search: false },
-    { title: t('system:user.role'), dataIndex: 'roleName', width: 120, search: false },
+    { title: t('system:user.role'), dataIndex: 'roleNames', width: 200, search: false, render: (_, record) => record.roleNames?.join(', ') || '-' },
     {
       title: t('common:status'),
       dataIndex: 'status',
@@ -113,11 +145,12 @@ export const UserPage: React.FC = () => {
     {
       title: t('common:operation'),
       valueType: 'option',
-      width: 200,
+      width: 250,
       render: (_: unknown, record: SystemUser) => [
         <HasPermission key="edit" code="system:user:edit">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
+        <a key="viewPerm" onClick={() => handleViewPermission(record)}>{t('system:user.viewPermission')}</a>,
         <HasPermission key="reset" code="system:user:resetPwd">
           <a onClick={() => handleResetPwd(record)}>{t('system:user.resetPassword')}</a>
         </HasPermission>,
@@ -205,7 +238,7 @@ export const UserPage: React.FC = () => {
         )}
         <ProFormText name="phone" label={t('common:phone')} />
         <ProFormText name="email" label={t('common:email')} />
-        <ProFormSelect name="roleId" label={t('system:user.role')} options={roleOptions} />
+        <ProFormSelect name="roleIds" label={t('system:user.role')} mode="multiple" options={roleOptions} />
         <ProFormSelect
           name="status"
           label={t('common:status')}
@@ -250,6 +283,36 @@ export const UserPage: React.FC = () => {
           ]}
         />
       </FormContainer>
+
+      {/* 权限预览 */}
+      <Drawer
+        title={t('system:user.viewPermissionTitle', { name: permissionUserName })}
+        open={permissionDrawerOpen}
+        onClose={() => setPermissionDrawerOpen(false)}
+        width={480}
+        styles={{ body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+      >
+        <PermissionTreePanel
+          readonly
+          treeData={convertMenuToTreeData(menuTree, menuSearch)}
+          checkedKeys={permissionMenuKeys}
+          expandedKeys={expandedMenuKeys}
+          allExpanded={menuAllExpanded}
+          searchValue={menuSearch}
+          searchPlaceholder={t('system:role.searchMenu')}
+          onSearchChange={setMenuSearch}
+          onCheckedChange={() => {}}
+          onExpandedChange={(keys) => setExpandedMenuKeys(keys)}
+          onSelectAll={() => {}}
+          onClear={() => {}}
+          onToggleExpand={() => {
+            const allKeys = getAllTreeKeys(convertMenuToTreeData(menuTree, menuSearch))
+            setExpandedMenuKeys(menuAllExpanded ? [] : allKeys)
+            setMenuAllExpanded(!menuAllExpanded)
+          }}
+          emptyText={t('system:role.noMenuData')}
+        />
+      </Drawer>
     </PageContainer>
   )
 }

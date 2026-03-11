@@ -9,6 +9,7 @@ import {
 import { PageContainer } from '@/components/common/PageContainer'
 import { ProTable } from '@/components/common/ProTable'
 import { FormContainer } from '@/components/common/FormContainer'
+import { HasPermission } from '@/components/common/HasPermission'
 import { type Menu } from '@/api/modules/platform'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -101,15 +102,20 @@ export const MenuPage: React.FC = () => {
       valueType: 'option',
       width: 200,
       render: (_: unknown, record: Menu) => [
-        <a key="add" onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>,
-        <a key="edit" onClick={() => handleEdit(record)}>{t('common:edit')}</a>,
-        <Popconfirm
-          key="delete"
-          title={t('system:menu.confirmDeleteMenu')}
-          onConfirm={() => remove.mutate(record.id)}
-        >
-          <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-        </Popconfirm>,
+        <HasPermission key="add" code="system:menu:create">
+          <a onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>
+        </HasPermission>,
+        <HasPermission key="edit" code="system:menu:update">
+          <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
+        </HasPermission>,
+        <HasPermission key="delete" code="system:menu:delete">
+          <Popconfirm
+            title={t('system:menu.confirmDeleteMenu')}
+            onConfirm={() => remove.mutate(record.id)}
+          >
+            <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+          </Popconfirm>
+        </HasPermission>,
       ],
     },
   ]
@@ -127,9 +133,11 @@ export const MenuPage: React.FC = () => {
         search={false}
         pagination={false}
         toolBarRender={() => [
-          <Button key="add" type="primary" onClick={() => handleEdit()}>
-            {t('system:menu.addMenu')}
-          </Button>,
+          <HasPermission key="add" code="system:menu:create">
+            <Button type="primary" onClick={() => handleEdit()}>
+              {t('system:menu.addMenu')}
+            </Button>
+          </HasPermission>,
         ]}
       />
 

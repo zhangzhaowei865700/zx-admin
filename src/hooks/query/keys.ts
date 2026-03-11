@@ -34,5 +34,15 @@ export const queryKeys = {
     dashboardStats: ['tenant', 'dashboard', 'stats'] as const,
     /** 仪表盘近期订单 */
     recentOrders: ['tenant', 'dashboard', 'recentOrders'] as const,
+    /** 所有角色列表（下拉选项用） */
+    allRoles: ['tenant', 'auth', 'roles', 'all'] as const,
+    /** 后台端菜单树 */
+    adminMenuTree: ['tenant', 'auth', 'menus', 'admin'] as const,
+    /** 小程序端菜单树 */
+    miniappMenuTree: ['tenant', 'auth', 'menus', 'miniapp'] as const,
+    /** 后台端部门树 */
+    adminDeptTree: ['tenant', 'auth', 'depts', 'admin'] as const,
+    /** 小程序端部门树 */
+    miniappDeptTree: ['tenant', 'auth', 'depts', 'miniapp'] as const,
   },
 } as const

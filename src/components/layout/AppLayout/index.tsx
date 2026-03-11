@@ -2,9 +2,10 @@ import { useMemo, useCallback, useState, useEffect, memo, type FC } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { SwapOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useAppStore } from '@/stores'
+import { useAppStore, useUserStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
 import { getPlatformMenuItems, type MenuItem } from '@/constants/menu'
+import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, NotificationBell, LanguageSwitch, OverflowActions } from '../HeaderActions'
 
@@ -22,6 +23,7 @@ export const AppLayout: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
+  const permissions = useUserStore((s) => s.permissions)
 
   const {
     showBreadcrumb,
@@ -40,8 +42,13 @@ export const AppLayout: FC = () => {
   })))
 
   // 根据当前路径提取应该展开的父菜单 key
+  const filteredMenuItems = useMemo(
+    () => filterMenuByPermissions(getPlatformMenuItems(), permissions),
+    [permissions, t]
+  )
+
   const getParentKeys = useCallback((path: string): string[] => {
-    const menuItems = getPlatformMenuItems()
+    const menuItems = filteredMenuItems
     for (const item of menuItems) {
       if (item.children) {
         const hasChild = item.children.some((child) => path.startsWith(child.path))
@@ -49,7 +56,7 @@ export const AppLayout: FC = () => {
       }
     }
     return []
-  }, [])
+  }, [filteredMenuItems])
 
   const [menuOpenKeys, setMenuOpenKeys] = useState<string[]>(() => getParentKeys(location.pathname))
 
@@ -68,8 +75,8 @@ export const AppLayout: FC = () => {
   // 动态生成路由配置（语言切换时 menu name 会更新）
   const staticRoute = useMemo(() => ({
     path: '/',
-    routes: convertMenuToRoutes(getPlatformMenuItems()),
-  }), [t])
+    routes: convertMenuToRoutes(filteredMenuItems),
+  }), [filteredMenuItems])
 
   const handleExtraMenuClick = useCallback((key: string) => {
     if (key === 'switchPlatform') {
@@ -85,13 +92,13 @@ export const AppLayout: FC = () => {
   const headerActions = useMemo(() => (
     <OverflowActions gap={4}>
       <NotificationBell />
-      <MenuSearch />
+      <MenuSearch menuItems={filteredMenuItems} />
       <DarkModeToggle />
       <LanguageSwitch />
       <LockScreenButton />
       <FullScreen />
     </OverflowActions>
-  ), [])
+  ), [filteredMenuItems])
 
   const menuProps = useMemo(() => ({
     ...(menuAccordion ? {

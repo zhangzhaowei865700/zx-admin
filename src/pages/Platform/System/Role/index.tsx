@@ -1,10 +1,11 @@
-import { Button, Popconfirm, Tag, Tabs, Input, Checkbox, Tree, theme } from 'antd'
+import { Button, Popconfirm, Tag, Tabs } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
-import type { DataNode } from 'antd/es/tree'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
 import { FormContainer } from '@/components/common/FormContainer'
+import { HasPermission } from '@/components/common/HasPermission'
+import { PermissionTreePanel } from '@/components/common/PermissionTreePanel'
 import { getRoleList, type Role } from '@/api/modules/platform'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -15,114 +16,6 @@ import {
   getAllLeafKeys,
   getAllTreeKeys,
 } from '@/services/role.service'
-
-interface PermissionTreePanelProps {
-  treeData: DataNode[]
-  checkedKeys: number[]
-  expandedKeys: number[]
-  allExpanded: boolean
-  searchValue: string
-  searchPlaceholder: string
-  onSearchChange: (v: string) => void
-  onCheckedChange: (keys: number[]) => void
-  onExpandedChange: (keys: number[]) => void
-  onSelectAll: (checked: boolean) => void
-  onClear: () => void
-  onToggleExpand: () => void
-  emptyText: string
-}
-
-const PermissionTreePanel: React.FC<PermissionTreePanelProps> = ({
-  treeData,
-  checkedKeys,
-  expandedKeys,
-  allExpanded,
-  searchValue,
-  searchPlaceholder,
-  onSearchChange,
-  onCheckedChange,
-  onExpandedChange,
-  onSelectAll,
-  onClear,
-  onToggleExpand,
-  emptyText,
-}) => {
-  const { token } = theme.useToken()
-  const { t } = useTranslation('common')
-
-  const allLeafCount = getAllLeafKeys(treeData).length
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', gap: 8 }}>
-      {/* 工具栏 */}
-      <div
-        style={{
-          flexShrink: 0,
-          padding: '8px 12px',
-          background: token.colorFillAlter,
-          border: `1px solid ${token.colorBorderSecondary}`,
-          borderRadius: token.borderRadiusSM,
-          display: 'flex',
-          gap: 6,
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Input
-          placeholder={searchPlaceholder}
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
-          allowClear
-          size="small"
-          style={{ width: 170, flex: '0 0 auto' }}
-        />
-        <div style={{ width: 1, height: 16, background: token.colorBorderSecondary, flexShrink: 0 }} />
-        <Checkbox
-          checked={checkedKeys.length > 0}
-          indeterminate={checkedKeys.length > 0 && checkedKeys.length < allLeafCount}
-          onChange={(e) => onSelectAll(e.target.checked)}
-        >
-          <span style={{ fontSize: 13 }}>{t('selectAll')}</span>
-        </Checkbox>
-        <Button type="link" size="small" style={{ padding: '0 4px' }} onClick={onClear}>
-          {t('clear')}
-        </Button>
-        <Button type="link" size="small" style={{ padding: '0 4px' }} onClick={onToggleExpand}>
-          {allExpanded ? t('collapse') : t('expand')}
-        </Button>
-      </div>
-
-      {/* 树容器 */}
-      <div
-        style={{
-          flex: 1,
-          overflow: 'auto',
-          minHeight: 0,
-          border: `1px solid ${token.colorBorderSecondary}`,
-          borderRadius: token.borderRadiusSM,
-          padding: '6px 4px',
-          background: token.colorBgContainer,
-          display: 'flex',
-          alignItems: treeData.length === 0 ? 'center' : undefined,
-          justifyContent: treeData.length === 0 ? 'center' : undefined,
-        }}
-      >
-        {treeData.length === 0 ? (
-          <span style={{ color: token.colorTextDisabled }}>{emptyText}</span>
-        ) : (
-          <Tree
-            checkable
-            expandedKeys={expandedKeys}
-            onExpand={(keys) => onExpandedChange(keys as number[])}
-            checkedKeys={checkedKeys}
-            onCheck={(keys) => onCheckedChange(keys as number[])}
-            treeData={treeData}
-          />
-        )}
-      </div>
-    </div>
-  )
-}
 
 export const RolePage: React.FC = () => {
   const actionRef = useRef<ActionType>()
@@ -217,15 +110,20 @@ export const RolePage: React.FC = () => {
       valueType: 'option',
       width: 200,
       render: (_: unknown, record: Role) => [
-        <a key="edit" onClick={() => handleEdit(record)}>{t('common:edit')}</a>,
-        <a key="permission" onClick={() => handlePermission(record)}>{t('system:role.configPermission')}</a>,
-        <Popconfirm
-          key="delete"
-          title={t('system:role.confirmDeleteRole')}
-          onConfirm={() => remove.mutate(record.id)}
-        >
-          <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-        </Popconfirm>,
+        <HasPermission key="edit" code="system:role:update">
+          <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
+        </HasPermission>,
+        <HasPermission key="permission" code="system:role:permission">
+          <a onClick={() => handlePermission(record)}>{t('system:role.configPermission')}</a>
+        </HasPermission>,
+        <HasPermission key="delete" code="system:role:delete">
+          <Popconfirm
+            title={t('system:role.confirmDeleteRole')}
+            onConfirm={() => remove.mutate(record.id)}
+          >
+            <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+          </Popconfirm>
+        </HasPermission>,
       ],
     },
   ]
@@ -254,22 +152,25 @@ export const RolePage: React.FC = () => {
           <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
         ]}
         tableAlertOptionRender={({ onCleanSelected }) => [
-          <Popconfirm
-            key="delete"
-            title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
-            onConfirm={() => {
-              batchRemove.mutate(selectedRowKeys)
-              setSelectedRowKeys([])
-              onCleanSelected()
-            }}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-          </Popconfirm>,
+          <HasPermission key="delete" code="system:role:delete">
+            <Popconfirm
+              title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
+              onConfirm={() => {
+                batchRemove.mutate(selectedRowKeys)
+                setSelectedRowKeys([])
+                onCleanSelected()
+              }}
+            >
+              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+            </Popconfirm>
+          </HasPermission>,
         ]}
         toolBarRender={() => [
-          <Button key="add" type="primary" onClick={handleAdd}>
-            {t('system:role.addRole')}
-          </Button>,
+          <HasPermission key="add" code="system:role:create">
+            <Button type="primary" onClick={handleAdd}>
+              {t('system:role.addRole')}
+            </Button>
+          </HasPermission>,
         ]}
       />
 
