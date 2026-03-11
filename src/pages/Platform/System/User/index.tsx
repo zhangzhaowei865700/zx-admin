@@ -19,7 +19,7 @@ import {
 } from '@/api/modules/platform'
 import { useSystemRolesQuery } from '../hooks'
 import { useMenuTreeQuery } from '../hooks/useRole'
-import { convertMenuToTreeData, getAllTreeKeys } from '@/services/role.service'
+import { convertMenuToTreeData, getAllTreeKeys, filterTreeByCheckedKeys } from '@/services/role.service'
 import { useRef, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -294,7 +294,7 @@ export const UserPage: React.FC = () => {
       >
         <PermissionTreePanel
           readonly
-          treeData={convertMenuToTreeData(menuTree, menuSearch)}
+          treeData={filterTreeByCheckedKeys(convertMenuToTreeData(menuTree, menuSearch), new Set(permissionMenuKeys))}
           checkedKeys={permissionMenuKeys}
           expandedKeys={expandedMenuKeys}
           allExpanded={menuAllExpanded}
@@ -306,7 +306,7 @@ export const UserPage: React.FC = () => {
           onSelectAll={() => {}}
           onClear={() => {}}
           onToggleExpand={() => {
-            const allKeys = getAllTreeKeys(convertMenuToTreeData(menuTree, menuSearch))
+            const allKeys = getAllTreeKeys(filterTreeByCheckedKeys(convertMenuToTreeData(menuTree, menuSearch), new Set(permissionMenuKeys)))
             setExpandedMenuKeys(menuAllExpanded ? [] : allKeys)
             setMenuAllExpanded(!menuAllExpanded)
           }}

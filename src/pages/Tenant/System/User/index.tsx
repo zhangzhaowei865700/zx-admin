@@ -19,6 +19,7 @@ import { useTenantSystemRolesQuery, useTenantMenuTreeQuery } from '../hooks'
 import {
   convertMenuToTreeData,
   getAllTreeKeys,
+  filterTreeByCheckedKeys,
 } from '@/services/role.service'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -242,7 +243,7 @@ export const TenantUserPage: React.FC = () => {
       >
         <PermissionTreePanel
           readonly
-          treeData={convertMenuToTreeData(getPermissionMenuTree(), menuSearch)}
+          treeData={filterTreeByCheckedKeys(convertMenuToTreeData(getPermissionMenuTree(), menuSearch), new Set(permissionMenuKeys))}
           checkedKeys={permissionMenuKeys}
           expandedKeys={expandedMenuKeys}
           allExpanded={menuAllExpanded}
@@ -254,7 +255,7 @@ export const TenantUserPage: React.FC = () => {
           onSelectAll={() => {}}
           onClear={() => {}}
           onToggleExpand={() => {
-            const allKeys = getAllTreeKeys(convertMenuToTreeData(getPermissionMenuTree(), menuSearch))
+            const allKeys = getAllTreeKeys(filterTreeByCheckedKeys(convertMenuToTreeData(getPermissionMenuTree(), menuSearch), new Set(permissionMenuKeys)))
             setExpandedMenuKeys(menuAllExpanded ? [] : allKeys)
             setMenuAllExpanded(!menuAllExpanded)
           }}
