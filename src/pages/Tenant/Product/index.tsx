@@ -3,6 +3,7 @@ import { Button, Popconfirm, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { PageContainer } from '@/components/common/PageContainer'
 import { EditableProTable } from '@/components/common/ProTable'
+import { HasPermission } from '@/components/common/HasPermission'
 import { useTranslation } from 'react-i18next'
 import { getProductList } from '@/api/modules/tenant'
 import type { TenantProduct } from '@/types'
@@ -91,16 +92,14 @@ export const TenantProductPage: React.FC = () => {
         valueType: 'option',
         width: 160,
         render: (_text, record, _, action) => [
-          <a key="editable" onClick={() => action?.startEditable?.(record.id)}>
-            {t('common:edit')}
-          </a>,
-          <Popconfirm
-            key="delete"
-            title={t('common:confirmDelete')}
-            onConfirm={() => remove.mutate(record.id)}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
-          </Popconfirm>,
+          <HasPermission key="edit" code="tenant:admin:product:update">
+            <a onClick={() => action?.startEditable?.(record.id)}>{t('common:edit')}</a>
+          </HasPermission>,
+          <HasPermission key="delete" code="tenant:admin:product:delete">
+            <Popconfirm title={t('common:confirmDelete')} onConfirm={() => remove.mutate(record.id)}>
+              <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
+            </Popconfirm>
+          </HasPermission>,
         ],
       },
     ],
@@ -147,55 +146,59 @@ export const TenantProductPage: React.FC = () => {
           <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
         ]}
         tableAlertOptionRender={({ onCleanSelected }) => [
-          <a
-            key="onSale"
-            onClick={() => {
-              batchStatus.mutate({ ids: selectedRowKeys as number[], status: 1 })
-              onCleanSelected()
-            }}
-          >
-            {t('product:batchOnSale')}
-          </a>,
-          <a
-            key="offSale"
-            onClick={() => {
-              batchStatus.mutate({ ids: selectedRowKeys as number[], status: 0 })
-              onCleanSelected()
-            }}
-          >
-            {t('product:batchOffSale')}
-          </a>,
-          <Popconfirm
-            key="delete"
-            title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
-            onConfirm={() => {
-              batchRemove.mutate(selectedRowKeys as number[])
-              setEditableRowKeys((prev) => prev.filter((key) => !selectedRowKeys.includes(key)))
-              onCleanSelected()
-            }}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-          </Popconfirm>,
+          <HasPermission key="onSale" code="tenant:admin:product:update">
+            <a
+              onClick={() => {
+                batchStatus.mutate({ ids: selectedRowKeys as number[], status: 1 })
+                onCleanSelected()
+              }}
+            >
+              {t('product:batchOnSale')}
+            </a>
+          </HasPermission>,
+          <HasPermission key="offSale" code="tenant:admin:product:update">
+            <a
+              onClick={() => {
+                batchStatus.mutate({ ids: selectedRowKeys as number[], status: 0 })
+                onCleanSelected()
+              }}
+            >
+              {t('product:batchOffSale')}
+            </a>
+          </HasPermission>,
+          <HasPermission key="delete" code="tenant:admin:product:delete">
+            <Popconfirm
+              title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
+              onConfirm={() => {
+                batchRemove.mutate(selectedRowKeys as number[])
+                setEditableRowKeys((prev) => prev.filter((key) => !selectedRowKeys.includes(key)))
+                onCleanSelected()
+              }}
+            >
+              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+            </Popconfirm>
+          </HasPermission>,
         ]}
         toolBarRender={() => [
-          <Button
-            key="add"
-            type="primary"
-            onClick={async () => {
-              const result = await create.mutateAsync({
-                name: '',
-                category: '电子产品',
-                price: 0,
-                stock: 0,
-                status: 1,
-              })
-              if (result && typeof result === 'object' && 'id' in result) {
-                setEditableRowKeys((prev) => [...prev, (result as { id: number }).id])
-              }
-            }}
-          >
-            {t('product:addProduct')}
-          </Button>,
+          <HasPermission key="add" code="tenant:admin:product:create">
+            <Button
+              type="primary"
+              onClick={async () => {
+                const result = await create.mutateAsync({
+                  name: '',
+                  category: '电子产品',
+                  price: 0,
+                  stock: 0,
+                  status: 1,
+                })
+                if (result && typeof result === 'object' && 'id' in result) {
+                  setEditableRowKeys((prev) => [...prev, (result as { id: number }).id])
+                }
+              }}
+            >
+              {t('product:addProduct')}
+            </Button>
+          </HasPermission>,
         ]}
       />
     </PageContainer>

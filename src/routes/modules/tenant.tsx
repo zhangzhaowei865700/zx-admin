@@ -13,10 +13,32 @@ const TenantProduct = lazy(() =>
 const TenantSetting = lazy(() =>
   import('@/pages/Tenant/Setting').then((m) => ({ default: m.TenantSettingPage }))
 )
+const TenantSystem = lazy(() =>
+  import('@/pages/Tenant/System').then((m) => ({ default: m.TenantSystemPage }))
+)
+const TenantSystemUser = lazy(() =>
+  import('@/pages/Tenant/System').then((m) => ({ default: m.TenantUserPage }))
+)
+const TenantSystemRole = lazy(() =>
+  import('@/pages/Tenant/System').then((m) => ({ default: m.TenantRolePage }))
+)
+const TenantSystemMenu = lazy(() =>
+  import('@/pages/Tenant/System').then((m) => ({ default: m.TenantMenuPage }))
+)
 
 export const tenantRoutes: RouteObject[] = [
-  { index: true, element: <TenantDashboard /> },
-  { path: 'order', element: <TenantOrder /> },
-  { path: 'product', element: <TenantProduct /> },
-  { path: 'setting', element: <TenantSetting /> },
+  { index: true, element: <TenantDashboard />, handle: { permission: 'tenant:admin:dashboard:view' } },
+  { path: 'order', element: <TenantOrder />, handle: { permission: 'tenant:admin:order:view' } },
+  { path: 'product', element: <TenantProduct />, handle: { permission: 'tenant:admin:product:view' } },
+  { path: 'setting', element: <TenantSetting />, handle: { permission: 'tenant:admin:setting:view' } },
+  {
+    path: 'system',
+    element: <TenantSystem />,
+    children: [
+      { index: true, element: <TenantSystemUser />, handle: { permission: 'tenant:admin:auth:user:view' } },
+      { path: 'user', element: <TenantSystemUser />, handle: { permission: 'tenant:admin:auth:user:view' } },
+      { path: 'role', element: <TenantSystemRole />, handle: { permission: 'tenant:admin:auth:role:view' } },
+      { path: 'menu', element: <TenantSystemMenu />, handle: { permission: 'tenant:admin:auth:menu:view' } },
+    ],
+  },
 ]
