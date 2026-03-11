@@ -71,9 +71,9 @@ export interface StoreDept {
 // ==================== 平台数据（只读） ====================
 
 export const platforms: StorePlatform[] = [
-  { id: 1, name: 'Liuhe Resort', code: 'platform', description: 'Platform admin site', path: '/' },
-  { id: 2, name: 'Shanyue Hotel', code: 'shanyue', description: 'Hotel admin site', path: '/' },
-  { id: 3, name: 'Xinghai Hostel', code: 'xinghai', description: 'Hostel admin site', path: '/' },
+  { id: 1, name: '六合山庄', code: 'platform', description: '山庄管理后台', path: '/' },
+  { id: 2, name: '山悦酒店', code: 'shanyue', description: '酒店管理后台', path: '/' },
+  { id: 3, name: '星海民宿', code: 'xinghai', description: '民宿管理后台', path: '/' },
 ]
 
 // ==================== 菜单树（可变） ====================
@@ -257,9 +257,9 @@ export let roles: StoreRole[] = [
 // ==================== 用户数据（可变） ====================
 
 export let users: StoreUser[] = [
-  { id: 1, username: 'admin', password: '123456', nickname: 'Super Admin', phone: '13800000001', email: 'admin@test.com', avatar: '', status: 1, platformIds: [1, 2, 3], roleIds: [1], createdAt: ts, updatedAt: ts },
-  { id: 2, username: 'operator', password: '123456', nickname: 'Ops Manager', phone: '13800000002', email: 'operator@test.com', avatar: '', status: 1, platformIds: [1, 2], roleIds: [2], createdAt: ts, updatedAt: ts },
-  { id: 3, username: 'viewer', password: '123456', nickname: 'Read Only', phone: '13800000003', email: 'viewer@test.com', avatar: '', status: 1, platformIds: [1], roleIds: [3], createdAt: ts, updatedAt: ts },
+  { id: 1, username: 'admin', password: '123456', nickname: '超级管理员', phone: '13800000001', email: 'admin@test.com', avatar: '', status: 1, platformIds: [1, 2, 3], roleIds: [1], createdAt: ts, updatedAt: ts },
+  { id: 2, username: 'operator', password: '123456', nickname: '运营主管', phone: '13800000002', email: 'operator@test.com', avatar: '', status: 1, platformIds: [1, 2], roleIds: [2], createdAt: ts, updatedAt: ts },
+  { id: 3, username: 'viewer', password: '123456', nickname: '只读用户', phone: '13800000003', email: 'viewer@test.com', avatar: '', status: 1, platformIds: [1], roleIds: [3], createdAt: ts, updatedAt: ts },
   { id: 4, username: 'zhangsan', password: '123456', nickname: '张三', phone: '13800000004', email: 'zhangsan@test.com', avatar: '', status: 1, platformIds: [1, 2], roleIds: [2], createdAt: '2024-01-05', updatedAt: '2024-01-05' },
   { id: 5, username: 'lisi', password: '123456', nickname: '李四', phone: '13800000005', email: 'lisi@test.com', avatar: '', status: 0, platformIds: [1], roleIds: [3], createdAt: '2024-02-10', updatedAt: '2024-02-10' },
 ]
