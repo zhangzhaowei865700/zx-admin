@@ -1,33 +1,62 @@
 import { useRef, useState, useMemo } from 'react'
 import { Button, Popconfirm, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
+import { ProFormText, ProFormDigit, ProFormSelect, ProFormTextArea, ProFormMoney } from '@ant-design/pro-components'
 import { PageContainer } from '@/components/common/PageContainer'
-import { EditableProTable } from '@/components/common/ProTable'
+import { ProTable } from '@/components/common/ProTable'
+import { FormContainer } from '@/components/common/FormContainer'
 import { HasPermission } from '@/components/common/HasPermission'
 import { useTranslation } from 'react-i18next'
 import { getProductList } from '@/api/modules/tenant'
 import type { TenantProduct } from '@/types'
 import { useProductMutations } from './hooks/useProduct'
+import { SpecDrawer } from './components'
 
 export const TenantProductPage: React.FC = () => {
   const { t } = useTranslation(['product', 'common'])
   const actionRef = useRef<ActionType>()
-  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([])
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  const [formOpen, setFormOpen] = useState(false)
+  const [currentRecord, setCurrentRecord] = useState<TenantProduct>()
+  const [specOpen, setSpecOpen] = useState(false)
+  const [specProduct, setSpecProduct] = useState<TenantProduct>()
 
   const clearSelection = () => setSelectedRowKeys([])
-  const { save, create, remove, batchRemove, batchStatus } = useProductMutations(actionRef, clearSelection)
+  const { submit, remove, batchRemove, batchStatus } = useProductMutations(actionRef, clearSelection)
+
+  const handleEdit = (record?: TenantProduct) => {
+    setCurrentRecord(record)
+    setFormOpen(true)
+  }
+
+  const categoryOptions = useMemo(
+    () => [
+      { label: t('product:categoryElectronics'), value: '电子产品' },
+      { label: t('product:categoryFood'), value: '食品' },
+      { label: t('product:categoryClothing'), value: '服装' },
+      { label: t('product:categoryHome'), value: '家居' },
+    ],
+    [t],
+  )
+
+  const unitOptions = useMemo(
+    () => [
+      { label: t('product:unitPiece'), value: '个' },
+      { label: t('product:unitItem'), value: '件' },
+      { label: t('product:unitBox'), value: '箱' },
+      { label: t('product:unitKg'), value: 'kg' },
+      { label: t('product:unitSet'), value: '台' },
+    ],
+    [t],
+  )
 
   const columns: ProColumns<TenantProduct>[] = useMemo(
     () => [
-      { title: t('common:id'), dataIndex: 'id', width: 60, editable: false, search: false },
+      { title: t('common:id'), dataIndex: 'id', width: 60, search: false },
       {
         title: t('product:productName'),
         dataIndex: 'name',
         width: 180,
-        formItemProps: {
-          rules: [{ required: true, message: t('product:productNameRequired', '请输入商品名称') }],
-        },
       },
       {
         title: t('product:category'),
@@ -40,9 +69,6 @@ export const TenantProductPage: React.FC = () => {
           服装: { text: t('product:categoryClothing') },
           家居: { text: t('product:categoryHome') },
         },
-        formItemProps: {
-          rules: [{ required: true, message: t('product:categoryRequired', '请选择分类') }],
-        },
       },
       {
         title: t('product:price'),
@@ -50,9 +76,6 @@ export const TenantProductPage: React.FC = () => {
         valueType: 'money',
         width: 120,
         search: false,
-        formItemProps: {
-          rules: [{ required: true, message: t('product:priceRequired', '请输入价格') }],
-        },
       },
       {
         title: t('product:stock'),
@@ -60,9 +83,12 @@ export const TenantProductPage: React.FC = () => {
         valueType: 'digit',
         width: 100,
         search: false,
-        formItemProps: {
-          rules: [{ required: true, message: t('product:stockRequired', '请输入库存') }],
-        },
+      },
+      {
+        title: t('product:unit'),
+        dataIndex: 'unit',
+        width: 80,
+        search: false,
       },
       {
         title: t('common:status'),
@@ -84,16 +110,20 @@ export const TenantProductPage: React.FC = () => {
         dataIndex: 'createdAt',
         valueType: 'dateTime',
         width: 160,
-        editable: false,
         search: false,
       },
       {
         title: t('common:operation'),
         valueType: 'option',
-        width: 160,
-        render: (_text, record, _, action) => [
+        width: 200,
+        render: (_text, record) => [
           <HasPermission key="edit" code="tenant:admin:product:update">
-            <a onClick={() => action?.startEditable?.(record.id)}>{t('common:edit')}</a>
+            <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
+          </HasPermission>,
+          <HasPermission key="spec" code="tenant:admin:product:update">
+            <a onClick={() => { setSpecProduct(record); setSpecOpen(true) }}>
+              {t('product:spec')}
+            </a>
           </HasPermission>,
           <HasPermission key="delete" code="tenant:admin:product:delete">
             <Popconfirm title={t('common:confirmDelete')} onConfirm={() => remove.mutate(record.id)}>
@@ -108,7 +138,7 @@ export const TenantProductPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <EditableProTable<TenantProduct>
+      <ProTable<TenantProduct>
         rowKey="id"
         actionRef={actionRef}
         headerTitle={t('product:title')}
@@ -122,15 +152,6 @@ export const TenantProductPage: React.FC = () => {
             status: params.status,
           })
           return { data: result.list, success: true, total: result.total }
-        }}
-        recordCreatorProps={false}
-        editable={{
-          type: 'multiple',
-          editableKeys,
-          onSave: async (_key, row) => {
-            await save.mutateAsync({ id: row.id, data: row })
-          },
-          onChange: setEditableRowKeys,
         }}
         search={{ labelWidth: 'auto' }}
         options={{ density: true, setting: true, reload: true }}
@@ -171,7 +192,6 @@ export const TenantProductPage: React.FC = () => {
               title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
               onConfirm={() => {
                 batchRemove.mutate(selectedRowKeys as number[])
-                setEditableRowKeys((prev) => prev.filter((key) => !selectedRowKeys.includes(key)))
                 onCleanSelected()
               }}
             >
@@ -181,25 +201,77 @@ export const TenantProductPage: React.FC = () => {
         ]}
         toolBarRender={() => [
           <HasPermission key="add" code="tenant:admin:product:create">
-            <Button
-              type="primary"
-              onClick={async () => {
-                const result = await create.mutateAsync({
-                  name: '',
-                  category: '电子产品',
-                  price: 0,
-                  stock: 0,
-                  status: 1,
-                })
-                if (result && typeof result === 'object' && 'id' in result) {
-                  setEditableRowKeys((prev) => [...prev, (result as { id: number }).id])
-                }
-              }}
-            >
+            <Button type="primary" onClick={() => handleEdit()}>
               {t('product:addProduct')}
             </Button>
           </HasPermission>,
         ]}
+      />
+
+      {/* 新增/编辑商品弹窗 */}
+      <FormContainer
+        title={currentRecord ? t('product:editProduct') : t('product:addProduct')}
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        initialValues={currentRecord}
+        onFinish={async (values) => {
+          await submit.mutateAsync({ record: currentRecord, values })
+          return true
+        }}
+      >
+        <ProFormText
+          name="name"
+          label={t('product:productName')}
+          rules={[{ required: true, message: t('product:productNameRequired') }]}
+        />
+        <ProFormSelect
+          name="category"
+          label={t('product:category')}
+          options={categoryOptions}
+          rules={[{ required: true, message: t('product:categoryRequired') }]}
+        />
+        <ProFormMoney
+          name="price"
+          label={t('product:price')}
+          locale="zh-CN"
+          min={0}
+          rules={[{ required: true, message: t('product:priceRequired') }]}
+        />
+        <ProFormDigit
+          name="stock"
+          label={t('product:stock')}
+          min={0}
+          fieldProps={{ precision: 0 }}
+          rules={[{ required: true, message: t('product:stockRequired') }]}
+        />
+        <ProFormSelect
+          name="unit"
+          label={t('product:unit')}
+          options={unitOptions}
+          initialValue="个"
+        />
+        <ProFormSelect
+          name="status"
+          label={t('common:status')}
+          initialValue={1}
+          options={[
+            { label: t('product:onSale'), value: 1 },
+            { label: t('product:offSale'), value: 0 },
+          ]}
+        />
+        <ProFormTextArea
+          name="description"
+          label={t('product:description')}
+          colProps={{ span: 24 }}
+          fieldProps={{ rows: 3 }}
+        />
+      </FormContainer>
+
+      {/* 规格管理抽屉（可编辑表格） */}
+      <SpecDrawer
+        open={specOpen}
+        product={specProduct}
+        onClose={() => setSpecOpen(false)}
       />
     </PageContainer>
   )
