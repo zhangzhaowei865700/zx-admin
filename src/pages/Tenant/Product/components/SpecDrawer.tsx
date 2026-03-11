@@ -1,11 +1,14 @@
 import { useState, useMemo, useRef } from 'react'
-import { Drawer, Button, Popconfirm, message } from 'antd'
+import { Drawer, Modal, Button, Popconfirm, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { EditableProTable } from '@/components/common/ProTable'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProductSpecs, saveProductSpec, deleteProductSpec } from '@/api/modules/tenant'
+import { useAppStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
+import { FORM_SIZE_MAP } from '@/constants/ui'
 import type { ProductSpec, TenantProduct } from '@/types'
 
 interface SpecDrawerProps {
@@ -20,6 +23,15 @@ export const SpecDrawer: React.FC<SpecDrawerProps> = ({ open, product, onClose }
   const queryClient = useQueryClient()
   const [editableKeys, setEditableKeys] = useState<React.Key[]>([])
   const [dataSource, setDataSource] = useState<ProductSpec[]>([])
+
+  const { formDisplayMode, formSizePreset } = useAppStore(useShallow((s) => ({
+    formDisplayMode: s.formDisplayMode,
+    formSizePreset: s.formSizePreset,
+  })))
+
+  const isDrawer = formDisplayMode === 'drawer'
+  const sizeKey = formSizePreset === 'small' ? 'medium' : formSizePreset
+  const width = isDrawer ? FORM_SIZE_MAP[sizeKey].drawer : FORM_SIZE_MAP[sizeKey].modal
 
   const productId = product?.id ?? 0
 
@@ -112,60 +124,84 @@ export const SpecDrawer: React.FC<SpecDrawerProps> = ({ open, product, onClose }
     [t, deleteMutation],
   )
 
-  return (
-    <Drawer
-      title={t('product:specManagement', { name: product?.name })}
-      open={open}
-      onClose={() => {
-        setEditableKeys([])
-        onClose()
+  const handleClose = () => {
+    setEditableKeys([])
+    onClose()
+  }
+
+  const tableContent = (
+    <EditableProTable<ProductSpec>
+      rowKey="id"
+      actionRef={actionRef}
+      columns={columns}
+      value={dataSource}
+      onChange={(value) => setDataSource([...value])}
+      search={false}
+      options={false}
+      pagination={false}
+      recordCreatorProps={false}
+      editable={{
+        type: 'multiple',
+        editableKeys,
+        onSave: async (_key, row) => {
+          await saveMutation.mutateAsync(row)
+        },
+        onChange: setEditableKeys,
+        actionRender: (_row, _config, defaultDoms) => [defaultDoms.save, defaultDoms.cancel],
       }}
-      width={800}
+      toolBarRender={() => [
+        <Button
+          key="add"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            const tempId = -(Date.now())
+            const newRow: ProductSpec = {
+              id: tempId,
+              productId,
+              specName: '',
+              specValue: '',
+              price: 0,
+              stock: 0,
+              sort: dataSource.length + 1,
+            }
+            setDataSource([...dataSource, newRow])
+            setEditableKeys([...editableKeys, tempId])
+          }}
+        >
+          {t('product:addSpec')}
+        </Button>,
+      ]}
+    />
+  )
+
+  const title = t('product:specManagement', { name: product?.name })
+
+  if (isDrawer) {
+    return (
+      <Drawer
+        title={title}
+        open={open}
+        onClose={handleClose}
+        width={width}
+        destroyOnClose
+      >
+        {tableContent}
+      </Drawer>
+    )
+  }
+
+  return (
+    <Modal
+      title={title}
+      open={open}
+      onCancel={handleClose}
+      width={width}
+      footer={null}
+      centered
       destroyOnClose
     >
-      <EditableProTable<ProductSpec>
-        rowKey="id"
-        actionRef={actionRef}
-        columns={columns}
-        value={dataSource}
-        onChange={(value) => setDataSource([...value])}
-        search={false}
-        options={false}
-        pagination={false}
-        recordCreatorProps={false}
-        editable={{
-          type: 'multiple',
-          editableKeys,
-          onSave: async (_key, row) => {
-            await saveMutation.mutateAsync(row)
-          },
-          onChange: setEditableKeys,
-          actionRender: (_row, _config, defaultDoms) => [defaultDoms.save, defaultDoms.cancel],
-        }}
-        toolBarRender={() => [
-          <Button
-            key="add"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              const tempId = -(Date.now())
-              const newRow: ProductSpec = {
-                id: tempId,
-                productId,
-                specName: '',
-                specValue: '',
-                price: 0,
-                stock: 0,
-                sort: dataSource.length + 1,
-              }
-              setDataSource([...dataSource, newRow])
-              setEditableKeys([...editableKeys, tempId])
-            }}
-          >
-            {t('product:addSpec')}
-          </Button>,
-        ]}
-      />
-    </Drawer>
+      {tableContent}
+    </Modal>
   )
 }
