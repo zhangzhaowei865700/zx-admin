@@ -29,7 +29,11 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: 'user-storage',
-      partialize: (state) => ({ token: state.token, saasName: state.saasName }),
+      partialize: (state) => ({
+        token: state.token,
+        saasName: state.saasName,
+        permissions: state.permissions,
+      }),
     }
   )
 )

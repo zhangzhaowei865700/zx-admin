@@ -9,8 +9,8 @@ export interface SystemUser {
   phone?: string
   email?: string
   avatar?: string
-  roleId?: number
-  roleName?: string
+  roleIds?: number[]
+  roleNames?: string[]
   status: number
   createdAt: string
   updatedAt?: string

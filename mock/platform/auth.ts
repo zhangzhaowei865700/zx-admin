@@ -1,161 +1,169 @@
-const platformNameMap: Record<number, string> = {
-  1: '六合山庄',
-  2: '山悦酒店',
-  3: '星海民宿',
+import { users, platforms, computeUserPermissions, type StoreUser } from './_store'
+
+interface TempSession {
+  username: string
+  createdAt: number
 }
 
+interface AccessSession {
+  username: string
+  platformId: number
+  createdAt: number
+}
+
+const LOGIN_CODE = 401
+const TEMP_TOKEN_EXPIRE_MS = 5 * 60 * 1000
+const ACCESS_TOKEN_EXPIRE_MS = 2 * 60 * 60 * 1000
+
+const tempSessions = new Map<string, TempSession>()
+const accessSessions = new Map<string, AccessSession>()
+let latestAccessToken = ''
+
+const buildTempToken = () => `temp-token-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+const buildAccessToken = (platformId: number) =>
+  `token-platform-${platformId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
+const buildLoginPayload = (user: StoreUser, platformId: number, token: string) => {
+  const platform = platforms.find((p) => p.id === platformId)
+  return {
+    token,
+    saasName: platform?.name || 'Unknown Platform',
+    permissions: computeUserPermissions(user),
+    userInfo: { id: user.id, username: user.username, nickname: user.nickname, avatar: user.avatar },
+  }
+}
+
+const getAuthorizationToken = (headers?: Record<string, string>) => {
+  if (!headers) return ''
+  return headers.Authorization || headers.authorization || ''
+}
+
+const getSessionByAuth = (headers?: Record<string, string>) => {
+  const auth = getAuthorizationToken(headers) || latestAccessToken
+  if (!auth) return null
+  const session = accessSessions.get(auth)
+  if (!session) return null
+  if (Date.now() - session.createdAt > ACCESS_TOKEN_EXPIRE_MS) {
+    accessSessions.delete(auth)
+    return null
+  }
+  return session
+}
+
+const unauthorized = (msg: string) => ({ code: LOGIN_CODE, data: null, msg })
+
 export default [
-  // 第一阶段：预登录，返回临时 token + 可选平台列表
   {
     url: '/api/admin/auth/pre-login',
     method: 'POST',
-    response: ({ body }: { body: { username: string; password: string } }) => {
-      const { username, password } = body
-      if (username === 'admin' && password === '123456') {
-        return {
-          code: 200,
-          data: {
-            tempToken: 'temp-token-' + Date.now(),
-            platforms: [
-              {
-                id: 1,
-                name: '六合山庄',
-                code: 'platform',
-                description: '六合山庄独立管理后台',
-                path: '/',
-              },
-              {
-                id: 2,
-                name: '山悦酒店',
-                code: 'shanyue',
-                description: '山悦酒店独立管理后台',
-                path: '/',
-              },
-              {
-                id: 3,
-                name: '星海民宿',
-                code: 'xinghai',
-                description: '星海民宿独立管理后台',
-                path: '/',
-              },
-            ],
-          },
-          msg: '验证成功',
-        }
+    response: ({ body }: { body: { username?: string; password?: string } }) => {
+      const username = body?.username?.trim() || ''
+      const password = body?.password || ''
+      const user = users.find((u) => u.username === username)
+
+      if (!user || user.password !== password) {
+        return unauthorized('用户名或密码错误')
       }
-      return {
-        code: 401,
-        data: null,
-        msg: '用户名或密码错误',
+      if (user.status !== 1) {
+        return unauthorized('账号已被禁用')
       }
+
+      const tempToken = buildTempToken()
+      tempSessions.set(tempToken, { username, createdAt: Date.now() })
+      const availablePlatforms = platforms.filter((p) => user.platformIds.includes(p.id))
+
+      return { code: 200, data: { tempToken, platforms: availablePlatforms }, msg: '预登录成功' }
     },
   },
-  // 第二阶段：选择平台登录，返回正式 token + 用户信息
   {
     url: '/api/admin/auth/login-platform',
     method: 'POST',
-    response: ({ body }: { body: { tempToken: string; platformId: number } }) => {
-      const { tempToken, platformId } = body
-      if (!tempToken || !tempToken.startsWith('temp-token-')) {
-        return {
-          code: 401,
-          data: null,
-          msg: '临时凭证无效或已过期',
-        }
+    response: ({ body }: { body: { tempToken?: string; platformId?: number } }) => {
+      const tempToken = body?.tempToken || ''
+      const platformId = Number(body?.platformId || 0)
+      const session = tempSessions.get(tempToken)
+
+      if (!session) return unauthorized('临时令牌无效或已过期')
+      if (Date.now() - session.createdAt > TEMP_TOKEN_EXPIRE_MS) {
+        tempSessions.delete(tempToken)
+        return unauthorized('临时令牌已过期')
       }
-      return {
-        code: 200,
-        data: {
-          token: 'token-platform-' + platformId + '-' + Date.now(),
-          saasName: platformNameMap[platformId] || '未知平台',
-          userInfo: {
-            id: 1,
-            username: 'admin',
-            nickname: '管理员',
-            avatar: '',
-          },
-        },
-        msg: '登录成功',
+
+      const user = users.find((u) => u.username === session.username)
+      if (!user || !user.platformIds.includes(platformId)) {
+        return unauthorized('无权访问该平台')
       }
+
+      tempSessions.delete(tempToken)
+      const accessToken = buildAccessToken(platformId)
+      accessSessions.set(accessToken, { username: session.username, platformId, createdAt: Date.now() })
+      latestAccessToken = accessToken
+
+      return { code: 200, data: buildLoginPayload(user, platformId, accessToken), msg: '登录成功' }
     },
   },
-  // 登出
   {
     url: '/api/admin/auth/logout',
     method: 'POST',
-    response: {
-      code: 200,
-      data: null,
-      msg: '登出成功',
+    response: ({ headers }: { headers?: Record<string, string> }) => {
+      const token = getAuthorizationToken(headers)
+      if (token) accessSessions.delete(token)
+      if (!token && latestAccessToken) accessSessions.delete(latestAccessToken)
+      if (token === latestAccessToken || !token) latestAccessToken = ''
+      return { code: 200, data: null, msg: '登出成功' }
     },
   },
-  // 获取用户信息
   {
     url: '/api/admin/auth/info',
     method: 'GET',
-    response: {
-      code: 200,
-      data: {
-        id: 1,
-        username: 'admin',
-        nickname: '管理员',
-        avatar: '',
-      },
-      msg: 'success',
-    },
-  },
-  // 已登录状态获取可切换的平台列表
-  {
-    url: '/api/admin/auth/platforms',
-    method: 'GET',
-    response: {
-      code: 200,
-      data: [
-        {
-          id: 1,
-          name: '六合山庄',
-          code: 'platform',
-          description: '六合山庄独立管理后台',
-          path: '/',
-        },
-        {
-          id: 2,
-          name: '山悦酒店',
-          code: 'shanyue',
-          description: '山悦酒店独立管理后台',
-          path: '/',
-        },
-        {
-          id: 3,
-          name: '星海民宿',
-          code: 'xinghai',
-          description: '星海民宿独立管理后台',
-          path: '/',
-        },
-      ],
-      msg: 'success',
-    },
-  },
-  // 已登录状态切换平台
-  {
-    url: '/api/admin/auth/switch-platform',
-    method: 'POST',
-    response: ({ body }: { body: { platformId: number } }) => {
-      const { platformId } = body
+    response: ({ headers }: { headers?: Record<string, string> }) => {
+      const session = getSessionByAuth(headers)
+      if (!session) return unauthorized('登录已过期')
+      const user = users.find((u) => u.username === session.username)
+      if (!user) return unauthorized('用户不存在')
       return {
         code: 200,
         data: {
-          token: 'token-platform-' + platformId + '-' + Date.now(),
-          saasName: platformNameMap[platformId] || '未知平台',
-          userInfo: {
-            id: 1,
-            username: 'admin',
-            nickname: '管理员',
-            avatar: '',
-          },
+          id: user.id, username: user.username, nickname: user.nickname, avatar: user.avatar,
+          permissions: computeUserPermissions(user),
+          platformId: session.platformId,
         },
-        msg: '切换成功',
+        msg: 'success',
       }
+    },
+  },
+  {
+    url: '/api/admin/auth/platforms',
+    method: 'GET',
+    response: ({ headers }: { headers?: Record<string, string> }) => {
+      const session = getSessionByAuth(headers)
+      if (!session) return unauthorized('登录已过期')
+      const user = users.find((u) => u.username === session.username)
+      if (!user) return unauthorized('用户不存在')
+      return { code: 200, data: platforms.filter((p) => user.platformIds.includes(p.id)), msg: 'success' }
+    },
+  },
+  {
+    url: '/api/admin/auth/switch-platform',
+    method: 'POST',
+    response: ({ body, headers }: { body: { platformId?: number }; headers?: Record<string, string> }) => {
+      const session = getSessionByAuth(headers)
+      if (!session) return unauthorized('Login expired')
+
+      const platformId = Number(body?.platformId || 0)
+      const user = users.find((u) => u.username === session.username)
+      if (!user || !user.platformIds.includes(platformId)) {
+        return unauthorized('无权访问该平台')
+      }
+
+      const oldToken = getAuthorizationToken(headers)
+      if (oldToken) accessSessions.delete(oldToken)
+
+      const newToken = buildAccessToken(platformId)
+      accessSessions.set(newToken, { username: session.username, platformId, createdAt: Date.now() })
+      latestAccessToken = newToken
+
+      return { code: 200, data: buildLoginPayload(user, platformId, newToken), msg: '切换成功' }
     },
   },
 ]

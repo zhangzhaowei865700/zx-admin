@@ -16,6 +16,7 @@ export interface PreLoginResult {
 export interface LoginResult {
   token: string
   saasName: string
+  permissions: string[]
   userInfo: {
     id: number
     username: string
