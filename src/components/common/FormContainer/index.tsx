@@ -37,7 +37,13 @@ export const FormContainer: React.FC<FormContainerProps> = (props) => {
 
   // 水平布局时需要设置 labelCol，标签对齐才会生效
   const layoutProps = formLayout === 'horizontal'
-    ? { layout: formLayout, labelAlign: formLabelAlign, labelCol: { flex: '0 0 100px' } }
+    ? {
+      layout: formLayout,
+      labelAlign: formLabelAlign,
+      ...(formLabelAlign === 'left'
+        ? { labelCol: { flex: '0 0 auto' }, wrapperCol: { flex: 1 }, labelWrap: true }
+        : { labelCol: { flex: '0 0 100px' } }),
+    }
     : { layout: formLayout }
 
   return <Form {...props} {...containerProps} {...gridProps} {...layoutProps} size={formComponentSize} colon={formColon} />
