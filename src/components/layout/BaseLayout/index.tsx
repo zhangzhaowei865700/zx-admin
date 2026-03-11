@@ -84,6 +84,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     primaryColor,
     compactMode,
     showWatermark,
+    watermarkText,
     contentWidth,
     contentPadding,
     sidebarDark,
@@ -100,6 +101,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     primaryColor: s.primaryColor,
     compactMode: s.compactMode,
     showWatermark: s.showWatermark,
+    watermarkText: s.watermarkText,
     contentWidth: s.contentWidth,
     contentPadding: s.contentPadding,
     sidebarDark: s.sidebarDark,
@@ -249,6 +251,8 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     </div>
   ), [userInfo, dropdownItems, handleMenuClick, headerActions, themeToken, isMobile, t, isNavDark])
 
+  const finalWatermarkContent = watermarkText.trim() || watermarkContent
+
   return (
     <>
       <ProLayout
@@ -316,7 +320,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         }}
         bgLayoutImgList={darkMode ? [] : undefined}
       >
-        <Watermark content={showWatermark ? watermarkContent : ''}>
+        <Watermark content={showWatermark ? finalWatermarkContent : ''}>
           <ConfigProvider
             theme={{
               algorithm: [
