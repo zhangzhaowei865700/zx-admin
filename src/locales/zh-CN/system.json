@@ -16,7 +16,9 @@
     "confirmPassword": "确认密码",
     "enterConfirmPassword": "请确认密码",
     "passwordMismatch": "两次密码不一致",
-    "resetPasswordTitle": "重置密码 - {{name}}"
+    "resetPasswordTitle": "重置密码 - {{name}}",
+    "viewPermission": "查看权限",
+    "viewPermissionTitle": "权限预览 - {{name}}"
   },
   "role": {
     "title": "角色管理",
@@ -36,7 +38,9 @@
     "searchMenu": "搜索菜单...",
     "searchDept": "搜索部门...",
     "noMenuData": "暂无菜单数据",
-    "noDeptData": "暂无部门数据"
+    "noDeptData": "暂无部门数据",
+    "parentChildLinked": "父子联动",
+    "linked": "联动"
   },
   "menu": {
     "title": "菜单管理",

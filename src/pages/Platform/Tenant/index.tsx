@@ -104,7 +104,9 @@ export const TenantPage: React.FC = () => {
         }
 
         return [
-          <a key="backend" onClick={() => window.open(getTenantUrl(), '_blank')}>{t('tenant:backend')}</a>,
+          <HasPermission key="backend" code="tenant:backend">
+            <a onClick={() => window.open(getTenantUrl(), '_blank')}>{t('tenant:backend')}</a>
+          </HasPermission>,
           <HasPermission key="edit" code="tenant:edit">
             <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
           </HasPermission>,

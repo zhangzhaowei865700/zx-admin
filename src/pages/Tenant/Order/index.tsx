@@ -3,6 +3,7 @@ import { Popconfirm, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
+import { HasPermission } from '@/components/common/HasPermission'
 import { useTranslation } from 'react-i18next'
 import { getOrderList } from '@/api/modules/tenant'
 import type { TenantOrder } from '@/types'
@@ -83,13 +84,14 @@ export const TenantOrderPage: React.FC = () => {
           <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
         ]}
         tableAlertOptionRender={({ onCleanSelected }) => [
-          <Popconfirm
-            key="delete"
-            title={t('order:confirmDeleteOrders', { count: selectedRowKeys.length })}
-            onConfirm={() => { batchRemove.mutate(selectedRowKeys); onCleanSelected() }}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-          </Popconfirm>,
+          <HasPermission key="delete" code="tenant:admin:order:delete">
+            <Popconfirm
+              title={t('order:confirmDeleteOrders', { count: selectedRowKeys.length })}
+              onConfirm={() => { batchRemove.mutate(selectedRowKeys); onCleanSelected() }}
+            >
+              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+            </Popconfirm>
+          </HasPermission>,
         ]}
       />
     </PageContainer>

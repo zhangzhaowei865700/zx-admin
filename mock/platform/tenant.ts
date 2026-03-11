@@ -70,8 +70,8 @@ export default [
   {
     url: '/api/admin/tenant/:id',
     method: 'GET',
-    response: ({ params }: { params: { id: string } }) => {
-      const tenant = mockTenants.find((t) => t.id === Number(params.id))
+    response: ({ query }: { query: { id: string } }) => {
+      const tenant = mockTenants.find((t) => t.id === Number(query?.id))
       return {
         code: 200,
         data: tenant || null,

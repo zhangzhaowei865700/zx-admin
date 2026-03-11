@@ -12,5 +12,6 @@
   "dashboard": "ダッシュボード",
   "business": "業務管理",
   "system": "システム管理",
-  "message": "メッセージセンター"
+  "message": "メッセージセンター",
+  "authCenter": "権限センター"
 }

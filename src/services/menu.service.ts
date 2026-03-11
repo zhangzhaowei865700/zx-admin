@@ -48,3 +48,35 @@ export function buildPermissionValue(inputValue: string | undefined, prefix: str
   if (!prefix || !inputValue) return inputValue
   return `${prefix}${inputValue}`
 }
+
+type PermissionMenuItem<T extends PermissionMenuItem<T>> = {
+  permission?: string
+  children?: T[]
+}
+
+/** 按权限递归过滤菜单，空权限列表保持全量（兼容后端未对接场景） */
+export function filterMenuByPermissions<T extends PermissionMenuItem<T>>(menus: T[], permissions: string[]): T[] {
+  if (permissions.length === 0) return menus
+
+  return menus
+    .map((menu) => {
+      const nextChildren = menu.children ? filterMenuByPermissions(menu.children, permissions) : undefined
+      const hasChildren = !!menu.children && menu.children.length > 0
+      const hasVisibleChildren = !!nextChildren && nextChildren.length > 0
+      const selfAllowed = !menu.permission || permissions.includes(menu.permission)
+
+      // Parent containers without explicit permission should only be visible
+      // when they still have visible children after filtering.
+      if (hasChildren && !menu.permission) {
+        if (!hasVisibleChildren) return null
+      } else if (!selfAllowed && !hasVisibleChildren) {
+        return null
+      }
+
+      return {
+        ...menu,
+        ...(nextChildren ? { children: nextChildren } : {}),
+      }
+    })
+    .filter(Boolean) as T[]
+}

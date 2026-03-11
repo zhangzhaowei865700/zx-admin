@@ -12,5 +12,6 @@
   "dashboard": "工作台",
   "business": "业务管理",
   "system": "系统管理",
-  "message": "消息中心"
+  "message": "消息中心",
+  "authCenter": "权限中心"
 }

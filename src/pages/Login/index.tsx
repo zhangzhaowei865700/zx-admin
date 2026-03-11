@@ -17,7 +17,13 @@ type Step = 'login' | 'selectPlatform'
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { token, setToken: setGlobalToken, setUserInfo: setGlobalUserInfo, setSaasName } = useUserStore()
+  const {
+    token,
+    setToken: setGlobalToken,
+    setUserInfo: setGlobalUserInfo,
+    setSaasName,
+    setPermissions,
+  } = useUserStore()
   const { setSystemName, removeAllTabs } = useAppStore(useShallow((s) => ({ setSystemName: s.setSystemName, removeAllTabs: s.removeAllTabs })))
   const { token: themeToken } = theme.useToken()
   const { t } = useTranslation('login')
@@ -59,6 +65,7 @@ export const LoginPage: React.FC = () => {
         setToken(result.token)
         setGlobalToken(result.token)
         setSaasName(result.saasName)
+        setPermissions(result.permissions)
         setUserInfo(result.userInfo)
         setGlobalUserInfo(result.userInfo)
         removeAllTabs()
@@ -80,6 +87,7 @@ export const LoginPage: React.FC = () => {
     try {
       let newToken: string
       let saasName: string
+      let permissions: string[]
       let userInfo: { id: number; username: string; nickname: string; avatar?: string }
 
       if (isSwitchMode) {
@@ -87,17 +95,20 @@ export const LoginPage: React.FC = () => {
         const result = await switchPlatform({ platformId: platform.id })
         newToken = result.token
         saasName = result.saasName
+        permissions = result.permissions
         userInfo = result.userInfo
       } else {
         const result = await loginPlatform({ tempToken, platformId: platform.id })
         newToken = result.token
         saasName = result.saasName
+        permissions = result.permissions
         userInfo = result.userInfo
       }
 
       setToken(newToken)
       setGlobalToken(newToken)
       setSaasName(saasName)
+      setPermissions(permissions)
       setUserInfo(userInfo)
       setGlobalUserInfo(userInfo)
       removeAllTabs()

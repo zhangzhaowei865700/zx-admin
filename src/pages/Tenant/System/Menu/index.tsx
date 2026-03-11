@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Tag } from 'antd'
+import { Button, Popconfirm, Tag, Tabs } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import {
   ProFormText,
@@ -10,10 +10,10 @@ import { PageContainer } from '@/components/common/PageContainer'
 import { ProTable } from '@/components/common/ProTable'
 import { FormContainer } from '@/components/common/FormContainer'
 import { HasPermission } from '@/components/common/HasPermission'
-import { type Menu } from '@/api/modules/platform'
+import { type TenantAuthMenuItem, type TenantClientType } from '@/api/modules/tenant'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useMenuTreeQuery, useMenuMutations } from './hooks/useMenu'
+import { useTenantMenuTreeQuery, useTenantMenuMutations } from './hooks/useMenu'
 import {
   convertToTreeSelectData,
   buildPermissionPrefix,
@@ -21,16 +21,17 @@ import {
   buildPermissionValue,
 } from '@/services/menu.service'
 
-export const MenuPage: React.FC = () => {
+export const TenantMenuPage: React.FC = () => {
   const actionRef = useRef<ActionType>()
+  const [activeClient, setActiveClient] = useState<TenantClientType>('admin')
   const [editModalOpen, setEditModalOpen] = useState(false)
-  const [currentRecord, setCurrentRecord] = useState<Menu>()
+  const [currentRecord, setCurrentRecord] = useState<TenantAuthMenuItem>()
   const [treeSelectData, setTreeSelectData] = useState<any[]>([])
   const [permissionPrefix, setPermissionPrefix] = useState('')
   const { t } = useTranslation(['system', 'common'])
 
-  const { data: menuTree = [], refetch: refetchMenuTree } = useMenuTreeQuery()
-  const { submit, remove } = useMenuMutations(actionRef)
+  const { data: menuTree = [], refetch: refetchMenuTree } = useTenantMenuTreeQuery(activeClient)
+  const { submit, remove } = useTenantMenuMutations(actionRef)
 
   const menuTypeMap: Record<number, { text: string; color: string }> = {
     1: { text: t('system:menu.typeDirectory'), color: 'blue' },
@@ -38,22 +39,21 @@ export const MenuPage: React.FC = () => {
     3: { text: t('system:menu.typeButton'), color: 'orange' },
   }
 
-  const handleEdit = async (record?: Menu, parentId?: number) => {
-    // 每次打开弹窗时刷新最新菜单树，用于父级选择器
+  const handleEdit = async (record?: TenantAuthMenuItem, parentId?: number) => {
     const { data: menus } = await refetchMenuTree()
     const latestMenus = menus ?? menuTree
-    setTreeSelectData(convertToTreeSelectData(latestMenus))
+    setTreeSelectData(convertToTreeSelectData(latestMenus as any))
     if (record) {
-      const prefix = buildPermissionPrefix(latestMenus, record.parentId)
+      const prefix = buildPermissionPrefix(latestMenus as any, record.parentId)
       setPermissionPrefix(prefix)
       setCurrentRecord({
         ...record,
         permission: stripPermissionPrefix(record.permission, prefix),
       })
     } else if (parentId !== undefined) {
-      const prefix = buildPermissionPrefix(latestMenus, parentId)
+      const prefix = buildPermissionPrefix(latestMenus as any, parentId)
       setPermissionPrefix(prefix)
-      setCurrentRecord({ parentId } as any)
+      setCurrentRecord({ parentId, clientType: activeClient } as any)
     } else {
       setPermissionPrefix('')
       setCurrentRecord(undefined)
@@ -61,7 +61,7 @@ export const MenuPage: React.FC = () => {
     setEditModalOpen(true)
   }
 
-  const columns: ProColumns<Menu>[] = [
+  const columns: ProColumns<TenantAuthMenuItem>[] = [
     { title: t('system:menu.menuName'), dataIndex: 'name', width: 200 },
     { title: t('system:menu.icon'), dataIndex: 'icon', width: 100 },
     { title: t('system:menu.path'), dataIndex: 'path', width: 200 },
@@ -71,7 +71,7 @@ export const MenuPage: React.FC = () => {
       title: t('system:menu.menuType'),
       dataIndex: 'type',
       width: 80,
-      render: (_: unknown, record: Menu) => {
+      render: (_: unknown, record: TenantAuthMenuItem) => {
         const info = menuTypeMap[record.type]
         return info ? <Tag color={info.color}>{info.text}</Tag> : '-'
       },
@@ -81,7 +81,7 @@ export const MenuPage: React.FC = () => {
       title: t('common:show'),
       dataIndex: 'visible',
       width: 80,
-      render: (_: unknown, record: Menu) => (
+      render: (_: unknown, record: TenantAuthMenuItem) => (
         <Tag color={record.visible === 1 ? 'green' : 'red'}>
           {record.visible === 1 ? t('common:show') : t('common:hide')}
         </Tag>
@@ -91,7 +91,7 @@ export const MenuPage: React.FC = () => {
       title: t('common:status'),
       dataIndex: 'status',
       width: 80,
-      render: (_: unknown, record: Menu) => (
+      render: (_: unknown, record: TenantAuthMenuItem) => (
         <Tag color={record.status === 1 ? 'green' : 'red'}>
           {record.status === 1 ? t('common:enabled') : t('common:disabled')}
         </Tag>
@@ -101,14 +101,14 @@ export const MenuPage: React.FC = () => {
       title: t('common:operation'),
       valueType: 'option',
       width: 200,
-      render: (_: unknown, record: Menu) => [
-        <HasPermission key="add" code="system:menu:create">
+      render: (_: unknown, record: TenantAuthMenuItem) => [
+        <HasPermission key="add" code="tenant:admin:auth:menu:create">
           <a onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>
         </HasPermission>,
-        <HasPermission key="edit" code="system:menu:update">
+        <HasPermission key="edit" code="tenant:admin:auth:menu:update">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
-        <HasPermission key="delete" code="system:menu:delete">
+        <HasPermission key="delete" code="tenant:admin:auth:menu:delete">
           <Popconfirm
             title={t('system:menu.confirmDeleteMenu')}
             onConfirm={() => remove.mutate(record.id)}
@@ -122,7 +122,20 @@ export const MenuPage: React.FC = () => {
 
   return (
     <PageContainer title={t('system:menu.title')}>
-      <ProTable<Menu>
+      <Tabs
+        activeKey={activeClient}
+        onChange={(key) => {
+          setActiveClient(key as TenantClientType)
+          // 切换端时刷新表格
+          setTimeout(() => actionRef.current?.reload(), 0)
+        }}
+        items={[
+          { key: 'admin', label: '后台端' },
+          { key: 'miniapp', label: '小程序端' },
+        ]}
+      />
+
+      <ProTable<TenantAuthMenuItem>
         actionRef={actionRef}
         columns={columns}
         request={async () => {
@@ -133,7 +146,7 @@ export const MenuPage: React.FC = () => {
         search={false}
         pagination={false}
         toolBarRender={() => [
-          <HasPermission key="add" code="system:menu:create">
+          <HasPermission key="add" code="tenant:admin:auth:menu:create">
             <Button type="primary" onClick={() => handleEdit()}>
               {t('system:menu.addMenu')}
             </Button>
@@ -148,11 +161,12 @@ export const MenuPage: React.FC = () => {
         initialValues={
           currentRecord?.id
             ? currentRecord
-            : { parentId: currentRecord?.parentId || 0, type: 2, sort: 0, visible: 1, status: 1 }
+            : { parentId: currentRecord?.parentId || 0, clientType: activeClient, type: 2, sort: 0, visible: 1, status: 1 }
         }
         onFinish={async (values) => {
           const submitValues = {
             ...values,
+            clientType: activeClient,
             permission: buildPermissionValue(values.permission, permissionPrefix),
           }
           await submit.mutateAsync({ id: currentRecord?.id, values: submitValues })

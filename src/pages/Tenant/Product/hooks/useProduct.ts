@@ -10,24 +10,22 @@ import {
   batchUpdateProductStatus,
 } from '@/api/modules/tenant'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 /** 商品 Mutations（创建、更新、删除、批量操作） */
 export const useProductMutations = (
   actionRef: RefObject<ActionType | undefined>,
   onSelectionClear: () => void,
 ) => {
-  const save = useMutation({
-    mutationFn: ({ id, data }: { id?: number; data: Partial<TenantProduct> }) =>
-      id && id > 0 ? updateProduct(id, data) : createProduct(data),
-    onSuccess: () => {
-      message.success('保存成功')
-      actionRef.current?.reload()
-    },
-  })
+  const { t } = useTranslation(['product', 'common'])
 
-  const create = useMutation({
-    mutationFn: (data: Partial<TenantProduct>) => createProduct(data),
-    onSuccess: () => {
+  const submit = useMutation({
+    mutationFn: (payload: { record?: TenantProduct; values: Partial<TenantProduct> }) => {
+      const { record, values } = payload
+      return record ? updateProduct(record.id, values) : createProduct(values)
+    },
+    onSuccess: (_, { record }) => {
+      message.success(record ? t('common:updateSuccess') : t('common:createSuccess'))
       actionRef.current?.reload()
     },
   })
@@ -35,7 +33,7 @@ export const useProductMutations = (
   const remove = useMutation({
     mutationFn: (id: number) => deleteProduct(id),
     onSuccess: () => {
-      message.success('删除成功')
+      message.success(t('common:deleteSuccess'))
       actionRef.current?.reload()
     },
   })
@@ -43,7 +41,7 @@ export const useProductMutations = (
   const batchRemove = useMutation({
     mutationFn: (ids: number[]) => batchDeleteProducts(ids),
     onSuccess: () => {
-      message.success('批量删除成功')
+      message.success(t('common:batchDeleteSuccess'))
       onSelectionClear()
       actionRef.current?.reload()
     },
@@ -53,11 +51,11 @@ export const useProductMutations = (
     mutationFn: ({ ids, status }: { ids: number[]; status: number }) =>
       batchUpdateProductStatus(ids, status),
     onSuccess: (_, { status }) => {
-      message.success(status === 1 ? '批量上架成功' : '批量下架成功')
+      message.success(status === 1 ? t('product:batchOnSaleSuccess') : t('product:batchOffSaleSuccess'))
       onSelectionClear()
       actionRef.current?.reload()
     },
   })
 
-  return { save, create, remove, batchRemove, batchStatus }
+  return { submit, remove, batchRemove, batchStatus }
 }

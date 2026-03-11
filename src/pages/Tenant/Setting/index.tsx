@@ -4,6 +4,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { PageContainer } from '@/components/common/PageContainer'
 import { PageSkeleton } from '@/components/common/PageSkeleton'
+import { HasPermission } from '@/components/common/HasPermission'
 import { getStoreSetting, updateStoreSetting } from '@/api/modules/tenant'
 import type { StoreSetting } from '@/types'
 
@@ -89,9 +90,11 @@ export const TenantSettingPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" loading={loading} onClick={handleSave}>
-              {t('tenant:setting.saveSettings')}
-            </Button>
+            <HasPermission code="tenant:admin:setting:update">
+              <Button type="primary" loading={loading} onClick={handleSave}>
+                {t('tenant:setting.saveSettings')}
+              </Button>
+            </HasPermission>
           </Form.Item>
         </Form>
       </Card>

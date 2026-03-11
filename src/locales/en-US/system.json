@@ -16,7 +16,9 @@
     "confirmPassword": "Confirm Password",
     "enterConfirmPassword": "Confirm password",
     "passwordMismatch": "Passwords do not match",
-    "resetPasswordTitle": "Reset Password - {{name}}"
+    "resetPasswordTitle": "Reset Password - {{name}}",
+    "viewPermission": "View Permissions",
+    "viewPermissionTitle": "Permissions - {{name}}"
   },
   "role": {
     "title": "Role Management",
@@ -36,7 +38,9 @@
     "searchMenu": "Search menus...",
     "searchDept": "Search departments...",
     "noMenuData": "No menu data",
-    "noDeptData": "No department data"
+    "noDeptData": "No department data",
+    "parentChildLinked": "Parent-child linked",
+    "linked": "Linked"
   },
   "menu": {
     "title": "Menu Management",

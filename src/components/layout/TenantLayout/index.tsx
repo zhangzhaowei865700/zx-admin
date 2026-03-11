@@ -2,10 +2,12 @@ import { useMemo, useCallback, useState, useEffect, memo } from 'react'
 import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { RollbackOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useShallow } from 'zustand/react/shallow'
 import { useAppStore, useUserStore } from '@/stores'
 import { getTenantDetail } from '@/api/modules/platform'
 import { getTenantMenuItems } from '@/constants/menu'
 import type { MenuItem } from '@/constants/menu'
+import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions } from '../HeaderActions'
 
@@ -24,7 +26,10 @@ export const TenantLayout: React.FC = () => {
   const { tenantId } = useParams<{ tenantId: string }>()
   const [searchParams] = useSearchParams()
   const { t } = useTranslation()
-  const { saasName } = useUserStore()
+  const { saasName, permissions } = useUserStore(useShallow((s) => ({
+    saasName: s.saasName,
+    permissions: s.permissions,
+  })))
   const systemLogo = useAppStore((s) => s.systemLogo)
 
   const [tenantName, setTenantName] = useState(() => {
@@ -51,23 +56,27 @@ export const TenantLayout: React.FC = () => {
   }, [tenantId])
 
   const basePath = `/tenant-admin/${tenantId}`
+  const filteredMenuItems = useMemo(
+    () => filterMenuByPermissions(getTenantMenuItems(), permissions),
+    [permissions, t]
+  )
 
   const staticRoute = useMemo(() => ({
     path: basePath,
-    routes: convertMenuToRoutes(getTenantMenuItems(), basePath),
-  }), [basePath])
+    routes: convertMenuToRoutes(filteredMenuItems, basePath),
+  }), [basePath, filteredMenuItems])
 
   const pathname = useMemo(() => location.pathname, [location.pathname])
 
   // 精确匹配当前路径对应的菜单项
   const selectedKeys = useMemo(() => {
-    const menuItems = getTenantMenuItems()
+    const menuItems = filteredMenuItems
     for (const item of menuItems) {
       const fullPath = item.path ? `${basePath}/${item.path}` : basePath
       if (fullPath === pathname) return [fullPath]
     }
     return [pathname]
-  }, [pathname, basePath])
+  }, [pathname, basePath, filteredMenuItems])
 
   // 面包屑：第一级显示租户名称，后续显示菜单层级
   const breadcrumbItems = useMemo(() => {
@@ -82,12 +91,12 @@ export const TenantLayout: React.FC = () => {
       }
       return null
     }
-    const menuPath = findMenuPath(getTenantMenuItems(), pathname) || []
+    const menuPath = findMenuPath(filteredMenuItems, pathname) || []
     return [
       { title: tenantName },
       ...menuPath.map((item) => ({ title: item.name })),
     ]
-  }, [pathname, basePath, tenantName])
+  }, [pathname, basePath, tenantName, filteredMenuItems])
 
   const handleExtraMenuClick = useCallback((key: string) => {
     if (key === 'backToPlatform') {
@@ -101,12 +110,12 @@ export const TenantLayout: React.FC = () => {
 
   const headerActions = useMemo(() => (
     <OverflowActions gap={4}>
-      <MenuSearch menuItems={getTenantMenuItems()} basePath={basePath} />
+      <MenuSearch menuItems={filteredMenuItems} basePath={basePath} />
       <DarkModeToggle />
       <LockScreenButton />
       <FullScreen />
     </OverflowActions>
-  ), [basePath])
+  ), [basePath, filteredMenuItems])
 
   const layoutTitle = saasName ? `${saasName} - ${tenantName}` : tenantName
   const watermarkContent = saasName ? `${saasName} - ${tenantName}` : tenantName

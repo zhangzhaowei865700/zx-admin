@@ -1,15 +1,15 @@
-import { Button, Popconfirm, Tag, Tabs } from 'antd'
+import { Button, Popconfirm, Tag, Tabs, Dropdown } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
 import { FormContainer } from '@/components/common/FormContainer'
-import { HasPermission } from '@/components/common/HasPermission'
 import { PermissionTreePanel } from '@/components/common/PermissionTreePanel'
-import { getRoleList, type Role } from '@/api/modules/platform'
+import { HasPermission } from '@/components/common/HasPermission'
+import { getTenantAuthRoleList, type TenantAuthRole, type TenantClientType } from '@/api/modules/tenant'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useMenuTreeQuery, useDeptTreeQuery, useRoleMutations } from '../hooks/useRole'
+import { useTenantMenuTreeQuery, useTenantDeptTreeQuery, useTenantRoleMutations } from '../hooks'
 import {
   convertMenuToTreeData,
   convertDeptToTreeData,
@@ -18,12 +18,31 @@ import {
   splitLeafAndParentKeys,
 } from '@/services/role.service'
 
-export const RolePage: React.FC = () => {
+/** 将租户菜单树转换为 role.service 兼容的格式 */
+function convertTenantMenuToRoleServiceFormat(menus: any[]): any[] {
+  return menus.map((m) => ({
+    id: m.id,
+    name: m.name,
+    children: m.children ? convertTenantMenuToRoleServiceFormat(m.children) : [],
+  }))
+}
+
+/** 将租户部门树转换为 role.service 兼容的格式 */
+function convertTenantDeptToRoleServiceFormat(depts: any[]): any[] {
+  return depts.map((d) => ({
+    id: d.id,
+    name: d.name,
+    children: d.children ? convertTenantDeptToRoleServiceFormat(d.children) : [],
+  }))
+}
+
+export const TenantRolePage: React.FC = () => {
   const actionRef = useRef<ActionType>()
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [permissionDrawerOpen, setPermissionDrawerOpen] = useState(false)
-  const [currentRecord, setCurrentRecord] = useState<Role>()
+  const [currentRecord, setCurrentRecord] = useState<TenantAuthRole>()
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([])
+  const [permissionClientType, setPermissionClientType] = useState<TenantClientType>('admin')
   const [checkedMenuKeys, setCheckedMenuKeys] = useState<number[]>([])
   const [checkedDeptKeys, setCheckedDeptKeys] = useState<number[]>([])
   const [halfCheckedMenuKeys, setHalfCheckedMenuKeys] = useState<number[]>([])
@@ -36,30 +55,40 @@ export const RolePage: React.FC = () => {
   const [deptAllExpanded, setDeptAllExpanded] = useState(true)
   const { t } = useTranslation(['system', 'common'])
 
-  const { data: menuTree = [] } = useMenuTreeQuery()
-  const { data: deptTree = [] } = useDeptTreeQuery()
-  const { submit, remove, batchRemove, savePermission } = useRoleMutations(actionRef)
+  const { data: adminMenuTree = [] } = useTenantMenuTreeQuery('admin')
+  const { data: miniappMenuTree = [] } = useTenantMenuTreeQuery('miniapp')
+  const { data: adminDeptTree = [] } = useTenantDeptTreeQuery('admin')
+  const { data: miniappDeptTree = [] } = useTenantDeptTreeQuery('miniapp')
+  const { submit, remove, batchRemove, savePermission } = useTenantRoleMutations(actionRef)
+
+  const getMenuTree = () => permissionClientType === 'admin' ? adminMenuTree : miniappMenuTree
+  const getDeptTree = () => permissionClientType === 'admin' ? adminDeptTree : miniappDeptTree
+  const getMenuTreeForService = () => convertTenantMenuToRoleServiceFormat(getMenuTree())
+  const getDeptTreeForService = () => convertTenantDeptToRoleServiceFormat(getDeptTree())
 
   const handleAdd = () => {
     setCurrentRecord(undefined)
-    setCheckedMenuKeys([])
-    setCheckedDeptKeys([])
-    setHalfCheckedMenuKeys([])
-    setHalfCheckedDeptKeys([])
     setEditModalOpen(true)
   }
 
-  const handleEdit = (record: Role) => {
+  const handleEdit = (record: TenantAuthRole) => {
     setCurrentRecord(record)
     setEditModalOpen(true)
   }
 
-  const handlePermission = (record: Role) => {
+  const handlePermission = (record: TenantAuthRole, clientType: TenantClientType) => {
     setCurrentRecord(record)
-    const menuTreeData = convertMenuToTreeData(menuTree, '')
-    const deptTreeData = convertDeptToTreeData(deptTree, '')
-    const menuSplit = splitLeafAndParentKeys(menuTreeData, record.menuIds || [])
-    const deptSplit = splitLeafAndParentKeys(deptTreeData, record.deptIds || [])
+    setPermissionClientType(clientType)
+    const menuTree = clientType === 'admin' ? adminMenuTree : miniappMenuTree
+    const deptTree = clientType === 'admin' ? adminDeptTree : miniappDeptTree
+    const menuIds = clientType === 'admin' ? (record.adminMenuIds || []) : (record.miniappMenuIds || [])
+    const deptIds = clientType === 'admin' ? (record.adminDeptIds || []) : (record.miniappDeptIds || [])
+    const menuServiceData = convertTenantMenuToRoleServiceFormat(menuTree)
+    const deptServiceData = convertTenantDeptToRoleServiceFormat(deptTree)
+    const menuTreeData = convertMenuToTreeData(menuServiceData, '')
+    const deptTreeData = convertDeptToTreeData(deptServiceData, '')
+    const menuSplit = splitLeafAndParentKeys(menuTreeData, menuIds)
+    const deptSplit = splitLeafAndParentKeys(deptTreeData, deptIds)
     setCheckedMenuKeys(menuSplit.leafKeys)
     setHalfCheckedMenuKeys(menuSplit.parentKeys)
     setCheckedDeptKeys(deptSplit.leafKeys)
@@ -68,16 +97,18 @@ export const RolePage: React.FC = () => {
     setExpandedDeptKeys(getAllTreeKeys(deptTreeData))
     setMenuAllExpanded(true)
     setDeptAllExpanded(true)
+    setMenuSearch('')
+    setDeptSearch('')
     setPermissionDrawerOpen(true)
   }
 
   const handleMenuSelectAll = (checked: boolean) => {
-    setCheckedMenuKeys(checked ? getAllLeafKeys(convertMenuToTreeData(menuTree, menuSearch)) as number[] : [])
+    setCheckedMenuKeys(checked ? getAllLeafKeys(convertMenuToTreeData(getMenuTreeForService(), menuSearch)) as number[] : [])
     setHalfCheckedMenuKeys([])
   }
 
   const handleDeptSelectAll = (checked: boolean) => {
-    setCheckedDeptKeys(checked ? getAllLeafKeys(convertDeptToTreeData(deptTree, deptSearch)) as number[] : [])
+    setCheckedDeptKeys(checked ? getAllLeafKeys(convertDeptToTreeData(getDeptTreeForService(), deptSearch)) as number[] : [])
     setHalfCheckedDeptKeys([])
   }
 
@@ -85,8 +116,8 @@ export const RolePage: React.FC = () => {
     const isExpanded = type === 'menu' ? menuAllExpanded : deptAllExpanded
     const treeData =
       type === 'menu'
-        ? convertMenuToTreeData(menuTree, menuSearch)
-        : convertDeptToTreeData(deptTree, deptSearch)
+        ? convertMenuToTreeData(getMenuTreeForService(), menuSearch)
+        : convertDeptToTreeData(getDeptTreeForService(), deptSearch)
     const allKeys = getAllTreeKeys(treeData)
     if (type === 'menu') {
       setExpandedMenuKeys(isExpanded ? [] : allKeys)
@@ -97,7 +128,9 @@ export const RolePage: React.FC = () => {
     }
   }
 
-  const columns: ProColumns<Role>[] = [
+  const clientTypeLabel = permissionClientType === 'admin' ? '后台端' : '小程序端'
+
+  const columns: ProColumns<TenantAuthRole>[] = [
     { title: t('common:id'), dataIndex: 'id', width: 80, search: false },
     { title: t('system:role.roleName'), dataIndex: 'name', width: 150 },
     { title: t('system:role.roleCode'), dataIndex: 'code', width: 150 },
@@ -111,7 +144,7 @@ export const RolePage: React.FC = () => {
         1: { text: t('common:enabled'), status: 'Success' },
         0: { text: t('common:disabled'), status: 'Error' },
       },
-      render: (_: unknown, record: Role) => (
+      render: (_: unknown, record: TenantAuthRole) => (
         <Tag color={record.status === 1 ? 'green' : 'red'}>
           {record.status === 1 ? t('common:enabled') : t('common:disabled')}
         </Tag>
@@ -121,15 +154,26 @@ export const RolePage: React.FC = () => {
     {
       title: t('common:operation'),
       valueType: 'option',
-      width: 200,
-      render: (_: unknown, record: Role) => [
-        <HasPermission key="edit" code="system:role:update">
+      width: 250,
+      render: (_: unknown, record: TenantAuthRole) => [
+        <HasPermission key="edit" code="tenant:admin:auth:role:update">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
-        <HasPermission key="permission" code="system:role:permission">
-          <a onClick={() => handlePermission(record)}>{t('system:role.configPermission')}</a>
+        <HasPermission key="permission" code="tenant:admin:auth:role:update">
+          <Dropdown
+            trigger={['click']}
+            menu={{
+              items: [
+                { key: 'admin', label: '后台端权限' },
+                { key: 'miniapp', label: '小程序端权限' },
+              ],
+              onClick: ({ key }) => handlePermission(record, key as TenantClientType),
+            }}
+          >
+            <a>{t('system:role.configPermission')}</a>
+          </Dropdown>
         </HasPermission>,
-        <HasPermission key="delete" code="system:role:delete">
+        <HasPermission key="delete" code="tenant:admin:auth:role:delete">
           <Popconfirm
             title={t('system:role.confirmDeleteRole')}
             onConfirm={() => remove.mutate(record.id)}
@@ -143,11 +187,11 @@ export const RolePage: React.FC = () => {
 
   return (
     <PageContainer title={t('system:role.title')}>
-      <ProTable<Role>
+      <ProTable<TenantAuthRole>
         actionRef={actionRef}
         columns={columns}
         request={async (params) => {
-          const result = await getRoleList({
+          const result = await getTenantAuthRoleList({
             ...params,
             pageNum: params.current,
             pageSize: params.pageSize,
@@ -165,7 +209,7 @@ export const RolePage: React.FC = () => {
           <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
         ]}
         tableAlertOptionRender={({ onCleanSelected }) => [
-          <HasPermission key="delete" code="system:role:delete">
+          <HasPermission key="delete" code="tenant:admin:auth:role:delete">
             <Popconfirm
               title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
               onConfirm={() => {
@@ -179,7 +223,7 @@ export const RolePage: React.FC = () => {
           </HasPermission>,
         ]}
         toolBarRender={() => [
-          <HasPermission key="add" code="system:role:create">
+          <HasPermission key="add" code="tenant:admin:auth:role:create">
             <Button type="primary" onClick={handleAdd}>
               {t('system:role.addRole')}
             </Button>
@@ -223,7 +267,7 @@ export const RolePage: React.FC = () => {
 
       {/* 配置权限 */}
       <FormContainer
-        title={t('system:role.configPermissionTitle', { name: currentRecord?.name })}
+        title={`${t('system:role.configPermission')} - ${currentRecord?.name || ''} - ${clientTypeLabel}`}
         open={permissionDrawerOpen}
         onOpenChange={setPermissionDrawerOpen}
         drawerProps={{
@@ -233,6 +277,7 @@ export const RolePage: React.FC = () => {
         onFinish={async () => {
           await savePermission.mutateAsync({
             roleId: currentRecord!.id,
+            clientType: permissionClientType,
             menuIds: [...checkedMenuKeys, ...halfCheckedMenuKeys],
             deptIds: [...checkedDeptKeys, ...halfCheckedDeptKeys],
           })
@@ -275,7 +320,7 @@ export const RolePage: React.FC = () => {
                 ),
                 children: (
                   <PermissionTreePanel
-                    treeData={convertMenuToTreeData(menuTree, menuSearch)}
+                    treeData={convertMenuToTreeData(getMenuTreeForService(), menuSearch)}
                     checkedKeys={checkedMenuKeys}
                     expandedKeys={expandedMenuKeys}
                     allExpanded={menuAllExpanded}
@@ -306,7 +351,7 @@ export const RolePage: React.FC = () => {
                 ),
                 children: (
                   <PermissionTreePanel
-                    treeData={convertDeptToTreeData(deptTree, deptSearch)}
+                    treeData={convertDeptToTreeData(getDeptTreeForService(), deptSearch)}
                     checkedKeys={checkedDeptKeys}
                     expandedKeys={expandedDeptKeys}
                     allExpanded={deptAllExpanded}

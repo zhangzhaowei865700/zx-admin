@@ -1,5 +1,5 @@
 import request from '@/api/request'
-import type { PageResult, TenantProduct, ProductParams } from '@/types'
+import type { PageResult, TenantProduct, ProductParams, ProductSpec } from '@/types'
 
 export const getProductList = (params: ProductParams) =>
   request<PageResult<TenantProduct>>({
@@ -40,6 +40,26 @@ export const batchUpdateProductStatus = (ids: number[], status: number) =>
     url: '/api/tenant/product/batch-status',
     method: 'PUT',
     data: { ids, status },
+  })
+
+// 商品规格 API
+export const getProductSpecs = (productId: number) =>
+  request<ProductSpec[]>({
+    url: `/api/tenant/product/${productId}/specs`,
+    method: 'GET',
+  })
+
+export const saveProductSpec = (productId: number, data: Partial<ProductSpec>) =>
+  request({
+    url: `/api/tenant/product/${productId}/spec`,
+    method: 'POST',
+    data,
+  })
+
+export const deleteProductSpec = (productId: number, specId: number) =>
+  request({
+    url: `/api/tenant/product/${productId}/spec/${specId}`,
+    method: 'DELETE',
   })
 
 export type { ProductParams } from '@/types'
