@@ -1041,6 +1041,6 @@ src/pages/Platform/Notice/
 
 <br>
 
-**MIT License © 2024-present**
+**MIT License © 2026 zhangzhaowei865700**
 
 </div>
