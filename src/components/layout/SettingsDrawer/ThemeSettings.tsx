@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, ColorPicker, Segmented } from 'antd'
+import { Switch, ColorPicker, Segmented, Tooltip } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
@@ -90,7 +90,17 @@ export const ThemeSettings: React.FC = () => {
         <Switch checked={compactMode} onChange={setCompactMode} />
       </SettingRow>
       <SettingRow label={t('theme.sidebarDark')}>
-        <Switch checked={sidebarDark} onChange={setSidebarDark} disabled={darkMode || layoutMode === 'mix'} />
+        <Tooltip
+          title={
+            darkMode
+              ? t('theme.sidebarDarkDisabledDark')
+              : layoutMode === 'mix'
+                ? t('theme.sidebarDarkDisabledMix')
+                : undefined
+          }
+        >
+          <Switch checked={sidebarDark} onChange={setSidebarDark} disabled={darkMode || layoutMode === 'mix'} />
+        </Tooltip>
       </SettingRow>
     </>
   )

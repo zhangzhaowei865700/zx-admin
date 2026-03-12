@@ -24,7 +24,9 @@
     "colorWeak": "Color Weak",
     "grayMode": "Gray Mode",
     "compactMode": "Compact Mode",
-    "sidebarDark": "Sidebar Dark"
+    "sidebarDark": "Sidebar Dark",
+    "sidebarDarkDisabledDark": "Not available in dark mode",
+    "sidebarDarkDisabledMix": "Not available in mix layout"
   },
   "layout": {
     "sideLayout": "Side Layout",

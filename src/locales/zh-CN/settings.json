@@ -24,7 +24,9 @@
     "colorWeak": "色弱模式",
     "grayMode": "灰色模式",
     "compactMode": "紧凑模式",
-    "sidebarDark": "侧边栏暗色"
+    "sidebarDark": "侧边栏暗色",
+    "sidebarDarkDisabledDark": "全局暗色模式下不可用",
+    "sidebarDarkDisabledMix": "混合布局下不可用"
   },
   "layout": {
     "sideLayout": "侧边栏布局",

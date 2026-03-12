@@ -24,7 +24,9 @@
     "colorWeak": "色弱モード",
     "grayMode": "グレーモード",
     "compactMode": "コンパクトモード",
-    "sidebarDark": "サイドバーダーク"
+    "sidebarDark": "サイドバーダーク",
+    "sidebarDarkDisabledDark": "ダークモード時は使用できません",
+    "sidebarDarkDisabledMix": "ミックスレイアウト時は使用できません"
   },
   "layout": {
     "sideLayout": "サイドバーレイアウト",
