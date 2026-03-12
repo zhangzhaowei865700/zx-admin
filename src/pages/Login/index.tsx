@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { preLogin, loginPlatform, getPlatforms, switchPlatform } from '@/api/modules/platform'
 import { useUserStore, useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { setUserInfo } from '@/utils/storage'
+import { setUserInfo, removeUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent } from '@/utils/authChannel'
 import { LanguageSwitch } from '@/components/layout/HeaderActions/LanguageSwitch'
 import { SliderCaptcha } from './components'
@@ -23,6 +23,7 @@ export const LoginPage: React.FC = () => {
     setUserInfo: setGlobalUserInfo,
     setSaasName,
     setPermissions,
+    logout: storeLogout,
   } = useUserStore()
   const { setSystemName, removeAllTabs } = useAppStore(useShallow((s) => ({ setSystemName: s.setSystemName, removeAllTabs: s.removeAllTabs })))
   const { token: themeToken } = theme.useToken()
@@ -56,8 +57,13 @@ export const LoginPage: React.FC = () => {
           setPlatforms(data)
         })
         .catch((err) => {
-          // 401 已由 request.ts 的 handleUnauthorized 处理（会显示提示并重定向）
-          if (err?.code === 401) return
+          if (err?.code === 401) {
+            message.error(t('common:loginExpired'))
+            storeLogout()
+            removeUserInfo()
+            navigate('/login', { replace: true })
+            return
+          }
           message.error(t('getPlatformListFailed'))
           navigate(-1)
         })
@@ -133,8 +139,15 @@ export const LoginPage: React.FC = () => {
       message.success(`${t('entered')}${platform.name}`)
       setSystemName(platform.name)
       navigateWithTransition(platform.path)
-    } catch {
-      // 错误消息已在 request.ts 中显示
+    } catch (err: any) {
+      // switchPlatform 的 401 不再触发全局 handleUnauthorized，需在此处理
+      if (err?.code === 401) {
+        message.error(t('common:loginExpired'))
+        storeLogout()
+        removeUserInfo()
+        navigate('/login', { replace: true })
+      }
+      // 其他错误消息已在 request.ts 中显示
     } finally {
       setPlatformLoading(null)
     }

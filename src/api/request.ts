@@ -74,11 +74,15 @@ service.interceptors.response.use(
       return data
     }
 
-    // 登录相关接口的 401 不触发登录过期逻辑
-    const isLoginRequest = response.config.url?.includes('/auth/pre-login') ||
-                          response.config.url?.includes('/auth/login-platform')
-    if (code === 401 && !isLoginRequest) {
-      handleUnauthorized()
+    if (code === 401) {
+      // 登录相关接口（含切换平台流程）的 401 由调用方处理，不触发全局登出
+      const isAuthFlowRequest = response.config.url?.includes('/auth/pre-login') ||
+                                response.config.url?.includes('/auth/login-platform') ||
+                                response.config.url?.includes('/auth/platforms') ||
+                                response.config.url?.includes('/auth/switch-platform')
+      if (!isAuthFlowRequest) {
+        handleUnauthorized()
+      }
       return Promise.reject(rawPayload)
     }
 
@@ -86,11 +90,15 @@ service.interceptors.response.use(
     return Promise.reject(rawPayload)
   },
   (error) => {
-    // 登录相关接口的 401 不触发登录过期逻辑
-    const isLoginRequest = error?.config?.url?.includes('/auth/pre-login') ||
-                          error?.config?.url?.includes('/auth/login-platform')
-    if (error?.response?.status === 401 && !isLoginRequest) {
-      handleUnauthorized()
+    if (error?.response?.status === 401) {
+      // 登录相关接口（含切换平台流程）的 401 由调用方处理，不触发全局登出
+      const isAuthFlowRequest = error?.config?.url?.includes('/auth/pre-login') ||
+                                error?.config?.url?.includes('/auth/login-platform') ||
+                                error?.config?.url?.includes('/auth/platforms') ||
+                                error?.config?.url?.includes('/auth/switch-platform')
+      if (!isAuthFlowRequest) {
+        handleUnauthorized()
+      }
       return Promise.reject(error)
     }
 
