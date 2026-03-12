@@ -55,7 +55,9 @@ export const LoginPage: React.FC = () => {
         .then((data) => {
           setPlatforms(data)
         })
-        .catch(() => {
+        .catch((err) => {
+          // 401 已由 request.ts 的 handleUnauthorized 处理（会显示提示并重定向）
+          if (err?.code === 401) return
           message.error(t('getPlatformListFailed'))
           navigate(-1)
         })
@@ -108,8 +110,8 @@ export const LoginPage: React.FC = () => {
       let userInfo: { id: number; username: string; nickname: string; avatar?: string }
 
       if (isSwitchMode) {
-        broadcastAuthEvent('switchPlatform')
         const result = await switchPlatform({ platformId: platform.id })
+        broadcastAuthEvent('switchPlatform')
         newToken = result.token
         saasName = result.saasName
         permissions = result.permissions

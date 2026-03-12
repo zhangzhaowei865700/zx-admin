@@ -3,6 +3,8 @@ import { message } from 'antd'
 import { decrypt, encrypt } from '@/utils/crypto'
 import { generateSign } from '@/utils/sign'
 import { getToken, removeToken, removeUserInfo } from '@/utils/storage'
+import { useUserStore } from '@/stores/useUserStore'
+import { broadcastAuthEvent } from '@/utils/authChannel'
 import i18n from '@/locales'
 import type { ApiResponse } from '@/types'
 
@@ -11,6 +13,10 @@ function handleUnauthorized() {
   if (redirectTimer) return
   removeToken()
   removeUserInfo()
+  // 必须同时清除 Zustand store 的持久化 token，否则页面刷新后
+  // Guard 会从 'user-storage' 读到旧 token，将用户从 /login 重定向回 /
+  useUserStore.getState().logout()
+  broadcastAuthEvent('logout')
   message.error(i18n.t('common:loginExpired'))
   redirectTimer = setTimeout(() => {
     redirectTimer = null
