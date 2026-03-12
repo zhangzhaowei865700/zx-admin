@@ -18,7 +18,7 @@
 
 ## Pull Request 流程
 
-1. **Fork** 本仓库 https://github.com/zhangzhaowei865700/zx-admin
+1. **Fork** 本仓库 https://github.com/zhangxiaowei6/zx-admin
 2. **创建**功能分支: `git checkout -b feature/你的功能`
 3. **编写**代码，遵循代码规范
 4. **运行**代码检查: `npm run lint`

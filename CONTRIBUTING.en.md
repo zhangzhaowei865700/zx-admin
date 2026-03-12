@@ -18,7 +18,7 @@ We welcome contributions! Please follow these steps:
 
 ## Pull Request Process
 
-1. **Fork** the repository https://github.com/zhangzhaowei865700/zx-admin
+1. **Fork** the repository https://github.com/zhangxiaowei6/zx-admin
 2. **Create** a feature branch: `git checkout -b feature/your-feature`
 3. **Make** your changes following our code style
 4. **Run** lint check: `npm run lint`

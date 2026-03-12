@@ -1,13 +1,13 @@
 <p align="center">
   <img src="https://img.shields.io/badge/ZX--Admin-v1.2.0-blue?style=for-the-badge" alt="Version">
-  <a href="https://github.com/zhangzhaowei865700/ZX-Admin">
-    <img src="https://img.shields.io/github/stars/zhangzhaowei865700/ZX-Admin?style=for-the-badge&logo=github" alt="Stars">
+  <a href="https://github.com/zhangxiaowei6/ZX-Admin">
+    <img src="https://img.shields.io/github/stars/zhangxiaowei6/ZX-Admin?style=for-the-badge&logo=github" alt="Stars">
   </a>
-  <a href="https://github.com/zhangzhaowei865700/ZX-Admin/network/members">
-    <img src="https://img.shields.io/github/forks/zhangzhaowei865700/ZX-Admin?style=for-the-badge&logo=github" alt="Forks">
+  <a href="https://github.com/zhangxiaowei6/ZX-Admin/network/members">
+    <img src="https://img.shields.io/github/forks/zhangxiaowei6/ZX-Admin?style=for-the-badge&logo=github" alt="Forks">
   </a>
-  <a href="https://github.com/zhangzhaowei865700/ZX-Admin/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/zhangzhaowei865700/ZX-Admin?style=for-the-badge" alt="License">
+  <a href="https://github.com/zhangxiaowei6/ZX-Admin/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/zhangxiaowei6/ZX-Admin?style=for-the-badge" alt="License">
   </a>
 </p>
 
@@ -28,7 +28,7 @@
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node"></a>
 </p>
 
-[在线演示](https://zhangzhaowei865700.github.io/ZX-Admin/) · [快速开始](#快速开始)
+[在线演示](https://zhangxiaowei6.github.io/ZX-Admin/) · [快速开始](#快速开始)
 
 **👤 测试账号：** `admin` / `123456`
 
@@ -371,7 +371,7 @@ Ant Design Pro Components + TailwindCSS
 
 ```bash
 # 1️⃣ 克隆仓库
-git clone https://github.com/zhangzhaowei865700/ZX-Admin.git
+git clone https://github.com/zhangxiaowei6/ZX-Admin.git
 
 # 2️⃣ 进入目录
 cd ZX-Admin
@@ -1016,7 +1016,7 @@ src/pages/Platform/Notice/
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=zhangzhaowei865700/ZX-Admin&type=Date)](https://star-history.com/#zhangzhaowei865700/ZX-Admin&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=zhangxiaowei6/ZX-Admin&type=Date)](https://star-history.com/#zhangxiaowei6/ZX-Admin&Date)
 
 <br>
 
@@ -1025,11 +1025,11 @@ src/pages/Platform/Notice/
 如果这个项目对你有帮助，请给个 Star ⭐
 
 <p>
-  <a href="https://github.com/zhangzhaowei865700/ZX-Admin/stargazers">
-    <img src="https://img.shields.io/github/stars/zhangzhaowei865700/ZX-Admin?style=for-the-badge&logo=github" alt="Stars">
+  <a href="https://github.com/zhangxiaowei6/ZX-Admin/stargazers">
+    <img src="https://img.shields.io/github/stars/zhangxiaowei6/ZX-Admin?style=for-the-badge&logo=github" alt="Stars">
   </a>
-  <a href="https://github.com/zhangzhaowei865700/ZX-Admin/network/members">
-    <img src="https://img.shields.io/github/forks/zhangzhaowei865700/ZX-Admin?style=for-the-badge&logo=github" alt="Forks">
+  <a href="https://github.com/zhangxiaowei6/ZX-Admin/network/members">
+    <img src="https://img.shields.io/github/forks/zhangxiaowei6/ZX-Admin?style=for-the-badge&logo=github" alt="Forks">
   </a>
 </p>
 
@@ -1037,10 +1037,10 @@ src/pages/Platform/Notice/
 
 ---
 
-<sub>Built with ❤️ by <a href="https://github.com/zhangzhaowei865700">@zhangzhaowei865700</a></sub>
+<sub>Built with ❤️ by <a href="https://github.com/zhangxiaowei6">@zhangxiaowei6</a></sub>
 
 <br>
 
-**MIT License © 2026 zhangzhaowei865700**
+**MIT License © 2026 zhangxiaowei6**
 
 </div>
