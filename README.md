@@ -6,7 +6,7 @@
 [![Stars](https://img.shields.io/github/stars/zhangxiaowei6/ZX-Admin?style=flat)](https://github.com/zhangxiaowei6/ZX-Admin)
 [![License](https://img.shields.io/github/license/zhangxiaowei6/ZX-Admin)](LICENSE)
 
-[在线演示](https://zhangxiaowei6.github.io/ZX-Admin/) | 测试账号：`admin` / `123456` | [更新日志](./CHANGELOG.md) | [English](./README.en.md)
+[在线演示](https://zhangxiaowei6.github.io/ZX-Admin/) | 测试账号：`admin` / `zx@123` | [更新日志](./CHANGELOG.md) | [English](./README.en.md)
 
 ---
 
@@ -45,7 +45,7 @@ cp .env.example .env.local   # 按需填入实际配置
 npm run dev
 ```
 
-浏览器访问 http://localhost:3000，使用 `admin` / `123456` 登录。
+浏览器访问 http://localhost:3000，使用 `admin` / `zx@123` 登录。
 
 ---
 
@@ -168,7 +168,7 @@ docker run -d -p 80:80 zx-admin
 创建 `.env.development.local` 并设置 `VITE_API_BASE_URL`，重启开发服务器。
 
 **登录失败怎么办？**
-Mock 模式下确保 `VITE_API_BASE_URL` 为空，使用 `admin` / `123456`。对接后端时检查 Key/Secret 是否与后端一致，并确认后端支持 CORS。
+Mock 模式下确保 `VITE_API_BASE_URL` 为空，使用 `admin` / `zx@123`。对接后端时检查 Key/Secret 是否与后端一致，并确认后端支持 CORS。
 
 **如何自定义主题色？**
 点击右上角 ⚙️ 图标，在设置抽屉中实时调整，所有配置自动保存到 `localStorage`。

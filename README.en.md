@@ -6,7 +6,7 @@ Multi-platform multi-tenant enterprise admin dashboard, built with React 18 + Ty
 [![Stars](https://img.shields.io/github/stars/zhangxiaowei6/ZX-Admin?style=flat)](https://github.com/zhangxiaowei6/ZX-Admin)
 [![License](https://img.shields.io/github/license/zhangxiaowei6/ZX-Admin)](LICENSE)
 
-[Live Demo](https://zhangxiaowei6.github.io/ZX-Admin/) | Test account: `admin` / `123456` | [Changelog](./CHANGELOG.md) | [中文](./README.md)
+[Live Demo](https://zhangxiaowei6.github.io/ZX-Admin/) | Test account: `admin` / `zx@123` | [Changelog](./CHANGELOG.md) | [中文](./README.md)
 
 ---
 
@@ -45,7 +45,7 @@ cp .env.example .env.local   # fill in your config if needed
 npm run dev
 ```
 
-Open http://localhost:3000 and log in with `admin` / `123456`.
+Open http://localhost:3000 and log in with `admin` / `zx@123`.
 
 ---
 
@@ -168,7 +168,7 @@ docker run -d -p 80:80 zx-admin
 Create `.env.development.local` with `VITE_API_BASE_URL` set, then restart the dev server.
 
 **Login fails?**
-In Mock mode, ensure `VITE_API_BASE_URL` is empty and use `admin` / `123456`. For real backend, verify Key/Secret match and that CORS is enabled.
+In Mock mode, ensure `VITE_API_BASE_URL` is empty and use `admin` / `zx@123`. For real backend, verify Key/Secret match and that CORS is enabled.
 
 **How to customize theme colors?**
 Click the ⚙️ icon in the top-right corner. All settings persist automatically in `localStorage`.

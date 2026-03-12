@@ -72,7 +72,7 @@ export default [
       const newUser: StoreUser = {
         id,
         username: body.username || '',
-        password: body.password || '123456',
+        password: body.password || 'zx@123',
         nickname: body.nickname || '',
         phone: body.phone || '',
         email: body.email || '',
@@ -120,7 +120,7 @@ export default [
     response: ({ query, body }: { query: Record<string, string>; body: { password?: string } }) => {
       const user = users.find((u) => u.id === Number(query?.id))
       if (user) {
-        user.password = body?.password || '123456'
+        user.password = body?.password || 'zx@123'
         user.updatedAt = now()
       }
       return { code: 200, data: null, msg: '密码重置成功' }
