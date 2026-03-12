@@ -294,9 +294,15 @@ export const UserPage: React.FC = () => {
         open={permissionDrawerOpen}
         onOpenChange={setPermissionDrawerOpen}
         submitter={false}
-        drawerProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
-        modalProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
+        drawerProps={{ className: 'permission-view-drawer', styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
+        modalProps={{ className: 'permission-view-modal', styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
       >
+        <style>{`
+          .permission-view-drawer .ant-drawer-body > form,
+          .permission-view-modal .ant-modal-body > form {
+            display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
+          }
+        `}</style>
         <PermissionTreePanel
           readonly
           treeData={filterTreeByCheckedKeys(convertMenuToTreeData(menuTree, menuSearch), new Set(permissionMenuKeys))}
