@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Button, Popconfirm, Tag, message } from 'antd'
+import { Button, Popconfirm, Space, Tag, message } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components'
 import { useMutation } from '@tanstack/react-query'
@@ -146,26 +146,30 @@ export const TenantPage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
-          <span key="text">{t('common:selected', { count: keys.length })}</span>,
-          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
-        ]}
-        tableAlertOptionRender={({ onCleanSelected }) => [
-          <HasPermission key="enable" code="tenant:edit">
-            <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 1 }); onCleanSelected() }}>{t('common:batchEnable')}</a>
-          </HasPermission>,
-          <HasPermission key="disable" code="tenant:edit">
-            <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 0 }); onCleanSelected() }}>{t('common:batchDisable')}</a>
-          </HasPermission>,
-          <HasPermission key="delete" code="tenant:delete">
-            <Popconfirm
-              title={t('tenant:confirmDeleteTenant', { count: selectedRowKeys.length })}
-              onConfirm={() => { batchDeleteMutation.mutate(selectedRowKeys); onCleanSelected() }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </HasPermission>,
-        ]}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
+          <Space>
+            <span>{t('common:selected', { count: keys.length })}</span>
+            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
+          </Space>
+        )}
+        tableAlertOptionRender={({ onCleanSelected }) => (
+          <Space>
+            <HasPermission key="enable" code="tenant:edit">
+              <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 1 }); onCleanSelected() }}>{t('common:batchEnable')}</a>
+            </HasPermission>
+            <HasPermission key="disable" code="tenant:edit">
+              <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 0 }); onCleanSelected() }}>{t('common:batchDisable')}</a>
+            </HasPermission>
+            <HasPermission key="delete" code="tenant:delete">
+              <Popconfirm
+                title={t('tenant:confirmDeleteTenant', { count: selectedRowKeys.length })}
+                onConfirm={() => { batchDeleteMutation.mutate(selectedRowKeys); onCleanSelected() }}
+              >
+                <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+              </Popconfirm>
+            </HasPermission>
+          </Space>
+        )}
         toolBarRender={() => [
           <HasPermission key="add" code="tenant:create">
             <Button type="primary" onClick={handleAdd}>

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Popconfirm, Tag } from 'antd'
+import { Popconfirm, Space, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
@@ -79,20 +79,24 @@ export const TenantOrderPage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
-          <span key="text">{t('common:selected', { count: keys.length })}</span>,
-          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
-        ]}
-        tableAlertOptionRender={({ onCleanSelected }) => [
-          <HasPermission key="delete" code="tenant:admin:order:delete">
-            <Popconfirm
-              title={t('order:confirmDeleteOrders', { count: selectedRowKeys.length })}
-              onConfirm={() => { batchRemove.mutate(selectedRowKeys); onCleanSelected() }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </HasPermission>,
-        ]}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
+          <Space>
+            <span>{t('common:selected', { count: keys.length })}</span>
+            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
+          </Space>
+        )}
+        tableAlertOptionRender={({ onCleanSelected }) => (
+          <Space>
+            <HasPermission key="delete" code="tenant:admin:order:delete">
+              <Popconfirm
+                title={t('order:confirmDeleteOrders', { count: selectedRowKeys.length })}
+                onConfirm={() => { batchRemove.mutate(selectedRowKeys); onCleanSelected() }}
+              >
+                <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+              </Popconfirm>
+            </HasPermission>
+          </Space>
+        )}
       />
     </PageContainer>
   )

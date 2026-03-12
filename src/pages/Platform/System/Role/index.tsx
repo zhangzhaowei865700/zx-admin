@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Tag, Tabs } from 'antd'
+import { Button, Popconfirm, Space, Tag, Tabs } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
@@ -160,24 +160,28 @@ export const RolePage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
-          <span key="text">{t('common:selected', { count: keys.length })}</span>,
-          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
-        ]}
-        tableAlertOptionRender={({ onCleanSelected }) => [
-          <HasPermission key="delete" code="system:role:delete">
-            <Popconfirm
-              title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
-              onConfirm={() => {
-                batchRemove.mutate(selectedRowKeys)
-                setSelectedRowKeys([])
-                onCleanSelected()
-              }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </HasPermission>,
-        ]}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
+          <Space>
+            <span>{t('common:selected', { count: keys.length })}</span>
+            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
+          </Space>
+        )}
+        tableAlertOptionRender={({ onCleanSelected }) => (
+          <Space>
+            <HasPermission key="delete" code="system:role:delete">
+              <Popconfirm
+                title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
+                onConfirm={() => {
+                  batchRemove.mutate(selectedRowKeys)
+                  setSelectedRowKeys([])
+                  onCleanSelected()
+                }}
+              >
+                <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+              </Popconfirm>
+            </HasPermission>
+          </Space>
+        )}
         toolBarRender={() => [
           <HasPermission key="add" code="system:role:create">
             <Button type="primary" onClick={handleAdd}>

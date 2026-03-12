@@ -1,4 +1,4 @@
-import { Button, Drawer, Dropdown, Popconfirm, Tag, message } from 'antd'
+import { Button, Dropdown, Popconfirm, Tag, message } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormSelect, ProFormCheckbox } from '@ant-design/pro-components'
 import { useMutation } from '@tanstack/react-query'
@@ -234,12 +234,13 @@ export const TenantUserPage: React.FC = () => {
       </FormContainer>
 
       {/* 权限预览 */}
-      <Drawer
+      <FormContainer
         title={`${t('system:user.viewPermissionTitle', { name: permissionUserName })} - ${clientLabel[permissionClientType]}`}
         open={permissionDrawerOpen}
-        onClose={() => setPermissionDrawerOpen(false)}
-        width={480}
-        styles={{ body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+        onOpenChange={setPermissionDrawerOpen}
+        submitter={false}
+        drawerProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
+        modalProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
       >
         <PermissionTreePanel
           readonly
@@ -261,7 +262,7 @@ export const TenantUserPage: React.FC = () => {
           }}
           emptyText={t('system:role.noMenuData')}
         />
-      </Drawer>
+      </FormContainer>
     </PageContainer>
   )
 }

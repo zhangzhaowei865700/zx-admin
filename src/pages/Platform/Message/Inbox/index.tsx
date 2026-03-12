@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import { Badge, Button, Descriptions, Divider, Drawer, Popconfirm, Tabs, Tag } from 'antd'
+import { Badge, Button, Descriptions, Divider, Drawer, Popconfirm, Space, Tabs, Tag } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProTable } from '@/components/common/ProTable'
 import { PageContainer } from '@/components/common/PageContainer'
@@ -211,22 +211,26 @@ export const InboxPage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
-          <span key="text">{t('common:selected', { count: keys.length })}</span>,
-          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
-        ]}
-        tableAlertOptionRender={({ onCleanSelected }) => [
-          <a key="markRead" onClick={() => { markRead.mutate(selectedRowKeys); onCleanSelected() }}>
-            {t('message:batchRead')}
-          </a>,
-          <Popconfirm
-            key="delete"
-            title={t('message:confirmDeleteMessages', { count: selectedRowKeys.length })}
-            onConfirm={() => { remove.mutate(selectedRowKeys); onCleanSelected() }}
-          >
-            <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-          </Popconfirm>,
-        ]}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
+          <Space>
+            <span>{t('common:selected', { count: keys.length })}</span>
+            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
+          </Space>
+        )}
+        tableAlertOptionRender={({ onCleanSelected }) => (
+          <Space>
+            <a key="markRead" onClick={() => { markRead.mutate(selectedRowKeys); onCleanSelected() }}>
+              {t('message:batchRead')}
+            </a>
+            <Popconfirm
+              key="delete"
+              title={t('message:confirmDeleteMessages', { count: selectedRowKeys.length })}
+              onConfirm={() => { remove.mutate(selectedRowKeys); onCleanSelected() }}
+            >
+              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+            </Popconfirm>
+          </Space>
+        )}
         toolBarRender={() => [
           <Button key="readAll" onClick={() => markAllRead.mutate()}>
             {t('message:allRead')}

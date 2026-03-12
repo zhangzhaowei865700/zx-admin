@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
 import { logout } from '@/api/modules/platform'
-import { removeToken, removeUserInfo, getUserInfo } from '@/utils/storage'
+import { removeUserInfo, getUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent, onAuthEvent } from '@/utils/authChannel'
 import { MultiTabs } from '../MultiTabs'
 import { PageTransitionWrapper } from '../PageTransitionWrapper'
@@ -141,7 +141,6 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     }
     broadcastAuthEvent('logout')
     storeLogout()
-    removeToken()
     removeUserInfo()
     message.success(t('common:loggedOut'))
     navigate('/login')
@@ -152,7 +151,6 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     return onAuthEvent((event) => {
       if (event === 'logout' || event === 'switchPlatform') {
         storeLogout()
-        removeToken()
         removeUserInfo()
         navigate('/login')
       }

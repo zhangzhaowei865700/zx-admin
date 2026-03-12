@@ -1,4 +1,4 @@
-import { Button, Drawer, Popconfirm, Tag, message } from 'antd'
+import { Button, Popconfirm, Space, Tag, message } from 'antd'
 import type { ProColumns, ActionType } from '@ant-design/pro-components'
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components'
 import { useMutation } from '@tanstack/react-query'
@@ -182,26 +182,30 @@ export const UserPage: React.FC = () => {
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys as number[]),
         }}
-        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => [
-          <span key="text">{t('common:selected', { count: keys.length })}</span>,
-          <a key="cancel" onClick={onCleanSelected}>{t('common:cancelSelect')}</a>,
-        ]}
-        tableAlertOptionRender={({ onCleanSelected }) => [
-          <HasPermission key="enable" code="system:user:edit">
-            <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 1 }); onCleanSelected() }}>{t('common:batchEnable')}</a>
-          </HasPermission>,
-          <HasPermission key="disable" code="system:user:edit">
-            <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 0 }); onCleanSelected() }}>{t('common:batchDisable')}</a>
-          </HasPermission>,
-          <HasPermission key="delete" code="system:user:delete">
-            <Popconfirm
-              title={t('system:user.confirmDeleteUsers', { count: selectedRowKeys.length })}
-              onConfirm={() => { batchDeleteMutation.mutate(selectedRowKeys); onCleanSelected() }}
-            >
-              <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
-            </Popconfirm>
-          </HasPermission>,
-        ]}
+        tableAlertRender={({ selectedRowKeys: keys, onCleanSelected }) => (
+          <Space>
+            <span>{t('common:selected', { count: keys.length })}</span>
+            <a onClick={onCleanSelected}>{t('common:cancelSelect')}</a>
+          </Space>
+        )}
+        tableAlertOptionRender={({ onCleanSelected }) => (
+          <Space>
+            <HasPermission key="enable" code="system:user:edit">
+              <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 1 }); onCleanSelected() }}>{t('common:batchEnable')}</a>
+            </HasPermission>
+            <HasPermission key="disable" code="system:user:edit">
+              <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 0 }); onCleanSelected() }}>{t('common:batchDisable')}</a>
+            </HasPermission>
+            <HasPermission key="delete" code="system:user:delete">
+              <Popconfirm
+                title={t('system:user.confirmDeleteUsers', { count: selectedRowKeys.length })}
+                onConfirm={() => { batchDeleteMutation.mutate(selectedRowKeys); onCleanSelected() }}
+              >
+                <a style={{ color: '#ff4d4f' }}>{t('common:batchDelete')}</a>
+              </Popconfirm>
+            </HasPermission>
+          </Space>
+        )}
         toolBarRender={() => [
           <HasPermission key="add" code="system:user:create">
             <Button type="primary" onClick={() => handleEdit()}>
@@ -285,12 +289,13 @@ export const UserPage: React.FC = () => {
       </FormContainer>
 
       {/* 权限预览 */}
-      <Drawer
+      <FormContainer
         title={t('system:user.viewPermissionTitle', { name: permissionUserName })}
         open={permissionDrawerOpen}
-        onClose={() => setPermissionDrawerOpen(false)}
-        width={480}
-        styles={{ body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+        onOpenChange={setPermissionDrawerOpen}
+        submitter={false}
+        drawerProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
+        modalProps={{ styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } } }}
       >
         <PermissionTreePanel
           readonly
@@ -312,7 +317,7 @@ export const UserPage: React.FC = () => {
           }}
           emptyText={t('system:role.noMenuData')}
         />
-      </Drawer>
+      </FormContainer>
     </PageContainer>
   )
 }

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { preLogin, loginPlatform, getPlatforms, switchPlatform } from '@/api/modules/platform'
 import { useUserStore, useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { setToken, setUserInfo } from '@/utils/storage'
+import { setUserInfo } from '@/utils/storage'
 import { broadcastAuthEvent } from '@/utils/authChannel'
 import { LanguageSwitch } from '@/components/layout/HeaderActions/LanguageSwitch'
 import { SliderCaptcha } from './components'
@@ -74,7 +74,6 @@ export const LoginPage: React.FC = () => {
         // 只有一个平台，直接登录
         setPlatformLoading(list[0].id)
         const result = await loginPlatform({ tempToken: token, platformId: list[0].id })
-        setToken(result.token)
         setGlobalToken(result.token)
         setSaasName(result.saasName)
         setPermissions(result.permissions)
@@ -124,7 +123,6 @@ export const LoginPage: React.FC = () => {
         userInfo = result.userInfo
       }
 
-      setToken(newToken)
       setGlobalToken(newToken)
       setSaasName(saasName)
       setPermissions(permissions)
