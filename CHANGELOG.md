@@ -1,5 +1,46 @@
 # Changelog
 
+## v1.4.0 (2026-03-12)
+
+租户权限体系与商品管理增强版本，完整实现租户级权限控制，重构商品管理模块，优化认证状态管理。
+
+### 新功能 (Features)
+
+- **路由级权限控制系统**: 重写 Guard 为基于 `route handle.permission` 的权限校验，替代原路径匹配方案；平台路由和菜单配置添加 `permission` 字段；提取 `PermissionTreePanel` 为通用组件；平台用户/角色/菜单管理页集成 `HasPermission` 权限控制
+- **租户级系统管理模块**: 新增租户 System 页面，包含用户管理、角色管理、菜单管理；租户路由新增 system 子路由及权限配置；TenantLayout 适配菜单权限过滤和子菜单导航；租户业务页面适配权限控制
+- **商品管理重构与规格管理**: 商品管理从行内编辑表格改为 FormContainer 弹窗表单；新增商品规格 CRUD（`SpecDrawer` 可编辑表格）；扩展商品类型字段（description、unit）；完善商品国际化翻译
+- **权限树父子联动模式**: `PermissionTreePanel` 新增 `checkStrictly` 模式切换和 `onHalfCheckedChange` 回调；平台/租户角色权限分配支持半选状态回显和保存
+- **用户权限查看面板优化**: 用户权限查看面板仅展示已授权菜单节点（只读模式），隐藏未授权节点
+- **规格管理适配全局表单模式**: 规格管理抽屉适配全局表单显示模式（modal/drawer）设置
+- **登录页交互动效优化**: 优化登录页加载和交互动效，提升视觉体验
+
+### 重构 (Refactor)
+
+- **类型定义与权限持久化重构**: `LoginResult` 新增 `permissions` 字段；`SystemUser` 的 `roleId/roleName` 改为 `roleIds/roleNames` 支持多角色；新增 `tenant/auth` 类型定义；`useUserStore` 持久化 `permissions` 到 localStorage；Mock auth 重构为集中式 store 管理
+- **认证状态管理重构**: 从存储工具中移除 token 的 get/set/remove 方法；请求拦截器改为从 Zustand 状态读取 token；`BaseLayout`、`Login` 等页面移除 token 直接存储调用，统一改用全局状态管理；批量操作 UI 升级使用 `Antd Space` 组件
+
+### 问题修复 (Bug Fixes)
+
+- **Mock 路由参数修复**: Mock 路由参数从 `params` 改为 `query`，匹配 vite-plugin-mock 实际行为
+- **Demo 构建 Mock 路由修复**: 修复 demo 构建下含路径参数的 Mock 接口 404 问题
+- **401 处理优化**: 优化 401 错误处理和切换平台逻辑，避免重复跳转
+
+### 样式优化 (Style)
+
+- **权限抽屉与表单布局**: 优化权限抽屉和模态框表单布局样式，提升视觉一致性
+
+### 工程化 (Chore)
+
+- **国际化翻译补全**: 补充租户系统管理、商品规格等模块的 zh-CN/en-US/ja-JP 翻译
+- **Mock 数据本地化**: Mock 数据平台名称和用户昵称本地化为中文
+- **LICENSE 更新**: 更新版权信息
+
+### 文档 (Docs)
+
+- **项目文档更新**: 更新 CLAUDE.md 及组件说明，补充 `PermissionTreePanel`、`EditableProTable` 等组件文档
+
+---
+
 ## v1.3.0 (2026-03-11)
 
 功能增强与体验优化版本，新增水印自定义、导出功能增强，修复多个 UI 交互问题。
