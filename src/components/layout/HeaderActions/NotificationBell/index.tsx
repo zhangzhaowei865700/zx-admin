@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { usePolling } from '@/hooks'
 import { useNavigate } from 'react-router-dom'
-import { Badge, List, Popover, Tabs, Tag, Typography, Button, Space, message } from 'antd'
+import { Badge, List, Popover, Tabs, Tag, Typography, Button, Space, message, Tooltip, Grid } from 'antd'
 import {
   BellOutlined,
   SoundOutlined,
@@ -36,10 +36,13 @@ const POLL_INTERVAL = 30000
 export const NotificationBell: React.FC = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('message')
+  const { t: tCommon } = useTranslation()
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('all')
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
 
   const { unreadCount, setUnreadCount } = useMessageStore()
 
@@ -191,22 +194,24 @@ export const NotificationBell: React.FC = () => {
       arrow={false}
       rootClassName="notification-bell-popover"
     >
-      <ActionIcon style={{ position: 'relative' }}>
-        <BellOutlined />
-        {unreadCount.total > 0 && (
-          <span
-            style={{
-              position: 'absolute',
-              top: 4,
-              right: 4,
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: '#ff4d4f',
-            }}
-          />
-        )}
-      </ActionIcon>
+      <Tooltip title={isMobile ? '' : tCommon('notifications')} open={open ? false : undefined}>
+        <ActionIcon style={{ position: 'relative' }}>
+          <BellOutlined />
+          {unreadCount.total > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: 4,
+                right: 4,
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#ff4d4f',
+              }}
+            />
+          )}
+        </ActionIcon>
+      </Tooltip>
     </Popover>
   )
 }

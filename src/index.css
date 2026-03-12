@@ -185,7 +185,31 @@ html.color-weak {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* 表格斑马纹 */
+/* 侧边栏暗色模式：折叠后弹出菜单深色主题 */
+.sidebar-dark-popup,
+.sidebar-dark-popup .ant-menu {
+  background-color: #001529 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.sidebar-dark-popup .ant-menu-item,
+.sidebar-dark-popup .ant-menu-submenu-title {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+.sidebar-dark-popup .ant-menu-item:hover,
+.sidebar-dark-popup .ant-menu-item-active,
+.sidebar-dark-popup .ant-menu-submenu-title:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.sidebar-dark-popup .ant-menu-item-selected {
+  color: #ffffff !important;
+}
+.sidebar-dark-popup .ant-menu-item .ant-menu-item-icon,
+.sidebar-dark-popup .ant-menu-submenu-title .ant-menu-item-icon,
+.sidebar-dark-popup .ant-menu-submenu-arrow {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
 .table-row-striped {
   background-color: rgba(0, 0, 0, 0.02);
 }

@@ -274,7 +274,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         siderWidth={sidebarWidth}
         breadcrumbRender={breadcrumbRender}
         breadcrumbProps={breadcrumbProps}
-        menuProps={extraMenuProps}
+        menuProps={isNavDark ? { ...extraMenuProps, popupClassName: ['sidebar-dark-popup', extraMenuProps?.popupClassName].filter(Boolean).join(' ') } : extraMenuProps}
         siderMenuType={siderMenuType}
         footerRender={showFooter ? () => (
           <div style={{ textAlign: 'center', padding: '16px 0', color: themeToken.colorTextSecondary }}>

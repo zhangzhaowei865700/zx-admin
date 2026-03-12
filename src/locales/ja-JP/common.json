@@ -113,6 +113,8 @@
   "enterLockPassword": "ロックパスワードを入力",
   "enterPasswordToUnlock": "パスワードを入力して解除",
   "passwordError": "パスワードが間違っています",
+  "switchLanguage": "言語切替",
+  "notifications": "通知",
   "searchMenu": "メニュー検索 (Ctrl+K)",
   "searchMenuPlaceholder": "メニューを検索...",
   "noMatchMenu": "一致するメニューなし",

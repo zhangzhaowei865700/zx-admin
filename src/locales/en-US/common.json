@@ -113,6 +113,8 @@
   "enterLockPassword": "Enter lock password",
   "enterPasswordToUnlock": "Enter password to unlock",
   "passwordError": "Wrong password",
+  "switchLanguage": "Switch Language",
+  "notifications": "Notifications",
   "searchMenu": "Search Menu (Ctrl+K)",
   "searchMenuPlaceholder": "Search menus...",
   "noMatchMenu": "No matching menus",
