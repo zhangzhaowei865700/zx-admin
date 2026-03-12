@@ -10,6 +10,7 @@
 | `FormContainer` | `./FormContainer/index.tsx` | 表单容器（自动适配抽屉/弹窗、列数） |
 | `ProTable` | `./ProTable/ProTable.tsx` | 增强表格（含导出、可拖拽列宽） |
 | `EditableProTable` | `./ProTable/EditableProTable.tsx` | 增强可编辑表格（含导出、可拖拽列宽） |
+| `PermissionTreePanel` | `./PermissionTreePanel/index.tsx` | 权限树面板（支持搜索、全选、展开/收起、只读模式） |
 | `HasPermission` | `./HasPermission/index.tsx` | 按钮级权限控制 |
 | `ErrorBoundary` | `./ErrorBoundary/index.tsx` | 错误边界 |
 | `PageSkeleton` | `./PageSkeleton/index.tsx` | 页面级骨架屏（dashboard / table / detail 三种类型） |
@@ -69,7 +70,7 @@ const DashboardPage = () => (
 ```tsx
 import { FormContainer } from '@/components/common/FormContainer'
 
-// 基础用法：跟随全局设置
+// 基础用法：跟随全局设置（可编辑表单）
 <FormContainer
   title="新增用户"
   open={open}
@@ -94,7 +95,33 @@ import { FormContainer } from '@/components/common/FormContainer'
 >
   {/* 复杂表单内容 */}
 </FormContainer>
+
+// 只读展示场景：隐藏提交按钮
+<FormContainer
+  title="查看权限"
+  open={open}
+  onOpenChange={setOpen}
+  submitter={false}
+  drawerProps={{
+    className: 'permission-view-drawer',
+    styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }
+  }}
+  modalProps={{
+    className: 'permission-view-modal',
+    styles: { body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }
+  }}
+>
+  <style>{`
+    .permission-view-drawer .ant-drawer-body > form,
+    .permission-view-modal .ant-modal-body > form {
+      display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
+    }
+  `}</style>
+  {/* 只读内容，如权限树、详情展示等 */}
+</FormContainer>
 ```
+
+**注意**：只读展示场景需要额外处理 `<form>` 元素的 flex 布局，否则内容区域高度不正确导致无法滚动。
 
 ### 页面级覆盖
 
@@ -495,6 +522,101 @@ import { DictTag } from '@/components/common/DictTag'
 2. 调用 `getLabel(value)` 获取显示文本
 3. 调用 `getColor(value)` 获取标签颜色
 4. 渲染为 `<Tag color={color}>{label}</Tag>`
+
+---
+
+## PermissionTreePanel
+
+权限树面板组件，用于展示和编辑菜单权限、数据权限等树形结构。支持搜索、全选、展开/收起、只读模式等功能。
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `treeData` | `DataNode[]` | ✅ | 树形数据 |
+| `checkedKeys` | `number[]` | ✅ | 已选中的节点 key |
+| `expandedKeys` | `number[]` | ✅ | 已展开的节点 key |
+| `allExpanded` | `boolean` | ✅ | 是否全部展开 |
+| `searchValue` | `string` | ✅ | 搜索关键词 |
+| `searchPlaceholder` | `string` | ✅ | 搜索框占位符 |
+| `onSearchChange` | `(value: string) => void` | ✅ | 搜索变化回调 |
+| `onCheckedChange` | `(keys: number[]) => void` | ✅ | 选中变化回调 |
+| `onExpandedChange` | `(keys: number[]) => void` | ✅ | 展开变化回调 |
+| `onSelectAll` | `(checked: boolean) => void` | ✅ | 全选/取消全选回调 |
+| `onClear` | `() => void` | ✅ | 清空选择回调 |
+| `onToggleExpand` | `() => void` | ✅ | 展开/收起全部回调 |
+| `emptyText` | `string` | ✅ | 空数据提示文本 |
+| `readonly` | `boolean` | ❌ | 是否只读模式（默认 `false`） |
+| `onHalfCheckedChange` | `(keys: number[]) => void` | ❌ | 半选父级 key 变化回调（联动模式） |
+
+### 用法
+
+```tsx
+import { PermissionTreePanel } from '@/components/common/PermissionTreePanel'
+
+// 可编辑模式
+<PermissionTreePanel
+  treeData={menuTreeData}
+  checkedKeys={checkedMenuKeys}
+  expandedKeys={expandedMenuKeys}
+  allExpanded={menuAllExpanded}
+  searchValue={menuSearch}
+  searchPlaceholder={t('system:role.searchMenu')}
+  onSearchChange={setMenuSearch}
+  onCheckedChange={setCheckedMenuKeys}
+  onExpandedChange={setExpandedMenuKeys}
+  onSelectAll={(checked) => {
+    setCheckedMenuKeys(checked ? getAllLeafKeys(menuTreeData) : [])
+  }}
+  onClear={() => setCheckedMenuKeys([])}
+  onToggleExpand={() => {
+    const allKeys = getAllTreeKeys(menuTreeData)
+    setExpandedMenuKeys(menuAllExpanded ? [] : allKeys)
+    setMenuAllExpanded(!menuAllExpanded)
+  }}
+  onHalfCheckedChange={setHalfCheckedMenuKeys}
+  emptyText={t('system:role.noMenuData')}
+/>
+
+// 只读模式（查看权限）
+<PermissionTreePanel
+  readonly
+  treeData={menuTreeData}
+  checkedKeys={permissionMenuKeys}
+  expandedKeys={expandedMenuKeys}
+  allExpanded={menuAllExpanded}
+  searchValue={menuSearch}
+  searchPlaceholder={t('system:role.searchMenu')}
+  onSearchChange={setMenuSearch}
+  onCheckedChange={() => {}}
+  onExpandedChange={setExpandedMenuKeys}
+  onSelectAll={() => {}}
+  onClear={() => {}}
+  onToggleExpand={() => {
+    const allKeys = getAllTreeKeys(menuTreeData)
+    setExpandedMenuKeys(menuAllExpanded ? [] : allKeys)
+    setMenuAllExpanded(!menuAllExpanded)
+  }}
+  emptyText={t('system:role.noMenuData')}
+/>
+```
+
+### 特性
+
+- **搜索过滤**：支持按节点名称搜索，自动高亮匹配项
+- **全选/清空**：快速选中或清空所有权限
+- **展开/收起**：一键展开或收起所有节点
+- **只读模式**：查看权限时使用，已选项显示绿色圆点，未选项灰色显示
+- **联动模式**：支持父子节点联动选择（通过 `onHalfCheckedChange` 获取半选状态）
+- **响应式布局**：自动适配容器高度，内容区域可滚动
+
+### 只读模式说明
+
+只读模式下：
+- 树节点不可勾选
+- 叶子节点前显示状态圆点（绿色=已选，灰色=未选）
+- 已选节点文字正常显示，未选节点文字灰色
+- 仍可搜索、展开/收起，但不能修改选中状态
 
 ---
 

@@ -47,8 +47,8 @@ npm run lint             # 运行 ESLint 检查
 三个主要 store，具有不同的持久化策略：
 
 **`useUserStore`**（`src/stores/useUserStore.ts`）：
-- 持久化：`token`、`saasName`
-- 仅运行时：`userInfo`、`permissions`
+- 持久化：`token`、`saasName`、`permissions`
+- 仅运行时：`userInfo`
 - 对认证状态管理至关重要
 
 **`useAppStore`**（`src/stores/useAppStore.ts`）：
@@ -191,8 +191,8 @@ cp .env.example .env.local
 
 菜单定义为常量中的静态配置：
 
-- 平台菜单：`src/constants/platformMenu.tsx`
-- 租户菜单：`src/constants/tenantMenu.tsx`
+- 平台菜单：`src/constants/menu/platformMenu.tsx`
+- 租户菜单：`src/constants/menu/tenantMenu.tsx`
 
 菜单项定义 `key`、`label`、`icon`、`path` 和可选的 `children`、`group`。
 
@@ -284,22 +284,24 @@ src/
 │   └── types.ts           # 通用 API 响应类型
 ├── components/
 │   ├── common/            # 可复用业务组件
-│   │   ├── FormContainer/ # 智能表单包装器（modal/drawer，带全局设置）
-│   │   ├── ProTable/      # 增强的 Ant Design ProTable
-│   │   ├── PageContainer/ # 带面包屑的页面包装器
-│   │   ├── DictTag/       # 字典驱动的标签显示
-│   │   ├── VersionUpdateBar/ # 版本更新通知栏
-│   │   ├── HasPermission/ # 基于权限的渲染
-│   │   ├── ErrorBoundary/ # 错误边界包装器（展示错误详情，支持重试和刷新）
-│   │   └── PageSkeleton/  # 加载骨架屏
+│   │   ├── FormContainer/      # 智能表单包装器（modal/drawer，带全局设置）
+│   │   ├── ProTable/           # 增强的 Ant Design ProTable 和 EditableProTable
+│   │   ├── PageContainer/      # 带面包屑的页面包装器
+│   │   ├── DictTag/            # 字典驱动的标签显示
+│   │   ├── VersionUpdateBar/   # 版本更新通知栏
+│   │   ├── HasPermission/      # 基于权限的渲染
+│   │   ├── PermissionTreePanel/ # 权限树面板（搜索、全选、展开/收起、只读模式）
+│   │   ├── ErrorBoundary/      # 错误边界包装器（展示错误详情，支持重试和刷新）
+│   │   └── PageSkeleton/       # 加载骨架屏
 │   └── layout/            # 布局组件
-│       ├── AppLayout/     # 平台布局
-│       ├── TenantLayout/  # 租户布局
-│       ├── BaseLayout/    # 共享基础布局逻辑
-│       ├── HeaderActions/ # Header 操作组件（通知、用户菜单等）
-│       ├── MultiTabs/     # 标签页导航系统
-│       ├── SettingsDrawer/ # 设置面板，带表单/表格偏好
-│       └── ThemeProvider/ # 主题配置提供者
+│       ├── AppLayout/          # 平台布局
+│       ├── TenantLayout/       # 租户布局
+│       ├── BaseLayout/         # 共享基础布局逻辑
+│       ├── HeaderActions/      # Header 操作组件（通知、用户菜单等）
+│       ├── MultiTabs/          # 标签页导航系统
+│       ├── PageTransitionWrapper/ # 页面切换过渡包装器
+│       ├── SettingsDrawer/     # 设置面板，带表单/表格偏好
+│       └── ThemeProvider/      # 主题配置提供者
 ├── pages/
 │   ├── Platform/          # 平台级页面
 │   │   ├── Dashboard/
@@ -308,6 +310,8 @@ src/
 │   │   └── Tenant/        # 租户管理
 │   ├── Tenant/            # 租户级页面
 │   │   ├── Dashboard/
+│   │   ├── Auth/          # 租户级认证（登录、用户信息）
+│   │   ├── System/        # 租户级系统管理（用户、角色、菜单）
 │   │   ├── Order/
 │   │   ├── Product/
 │   │   └── Setting/
@@ -352,8 +356,9 @@ src/
 │   ├── modules/           # 路由定义
 │   │   ├── platform.tsx
 │   │   └── tenant.tsx
+│   ├── routes.tsx         # 路由配置（组合所有模块）
 │   ├── Guard.tsx          # 带认证和权限检查的路由守卫
-│   └── index.tsx          # 路由设置
+│   └── index.ts           # 路由设置
 ├── locales/               # i18n 翻译
 │   ├── zh-CN/
 │   ├── en-US/
@@ -367,13 +372,19 @@ src/
 ```
 mock/
 ├── index.ts               # Mock 入口点
+├── mockProdServer.ts      # 生产/演示环境 mock 服务器
 ├── platform/
+│   ├── index.ts          # 平台 mock 汇总导出
+│   ├── _store.ts         # 平台 mock 数据内存存储
 │   ├── auth.ts           # 登录、登出、用户信息
 │   ├── system.ts         # 用户、角色、菜单 CRUD
 │   ├── message.ts        # 消息列表、详情、标记已读
 │   ├── tenant.ts         # 租户管理
 │   └── dictionary.ts     # 字典数据
 └── tenant/
+    ├── index.ts          # 租户 mock 汇总导出
+    ├── auth.ts           # 租户认证
+    ├── dashboard.ts      # 租户仪表盘数据
     ├── order.ts          # 订单管理
     ├── product.ts        # 产品管理
     └── setting.ts        # 租户设置
@@ -397,7 +408,7 @@ mock/
 - 自动使用 `useAppStore` 中的 `formDisplayMode`（modal 或 drawer）
 - 应用 `formColumns` 设置（1 或 2 列），除非被字段级 `colProps` 覆盖
 - 使用 `formSizePreset` 作为宽度，除非提供 `formSize` 或 `width` 属性
-- 宽度映射定义在 `src/constants/formSize.ts`：
+- 宽度映射定义在 `src/constants/ui/formSize.ts`：
     - Small：520px（modal）、480px（drawer）
     - Medium：720px（modal）、700px（drawer）
     - Large：960px（modal）、1000px（drawer）
@@ -422,9 +433,18 @@ mock/
 
 - 通过 `useCommon` hook 自动管理分页状态
 - 通过 `useDictionary` 字典驱动列渲染
-- 导出到 Excel 功能
+- 导出到 Excel 功能（`exportable` 属性开启）
+- 可拖拽调整列宽（`tableResizable` 全局设置开启）
 - 集成搜索和过滤
 - 可配置的表格大小、边框、斑马纹（来自 `useAppStore`）
+
+### EditableProTable
+
+增强的 Ant Design EditableProTable，与 ProTable 具备相同的增强能力：
+
+- 全局表格尺寸/边框、可拖拽列宽、数据导出
+- 行选择兼容：拦截 `rowSelection.onChange` 捕获选中行供导出使用，不影响页面自身选中状态管理
+- 从 `@/components/common/ProTable` 导出：`import { EditableProTable } from '@/components/common/ProTable'`
 
 ### DictTag
 
@@ -455,13 +475,23 @@ mock/
 基于权限的条件渲染组件：
 
 **属性：**
-- `permission: string | string[]`：所需权限代码
+- `code: string | string[]`：所需权限代码（数组时满足其一即可，OR 逻辑）
 - `children: ReactNode`：有权限时渲染的内容
+- `fallback?: ReactNode`：无权限时渲染的内容（默认 `null`）
 
 **行为：**
 - 检查用户权限数组
 - 空权限数组 = 完全访问（后端兼容性）
 - 支持单个或多个权限检查
+
+### PermissionTreePanel
+
+权限树面板组件，用于展示和编辑菜单权限等树形结构：
+
+- 支持搜索过滤、全选/清空、展开/收起全部
+- 只读模式：已选项显示绿色圆点，未选项灰色显示
+- 联动模式：通过 `onHalfCheckedChange` 获取半选状态
+- 详细文档见 `src/components/common/README.md`
 
 ## 自定义 Hooks
 
