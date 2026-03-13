@@ -99,8 +99,10 @@ export const LoginPage: React.FC = () => {
           setStepTransition(false)
         }, 250)
       }
-    } catch {
-      // 错误消息已在 request.ts 中显示
+    } catch (err: any) {
+      if (err?.msg) {
+        message.error(err.msg)
+      }
     } finally {
       setLoginLoading(false)
     }
