@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProductSpecs, saveProductSpec, deleteProductSpec } from '@/api/modules/tenant'
 import { useAppStore } from '@/stores'
-import { useShallow } from 'zustand/react/shallow'
 import { FORM_SIZE_MAP } from '@/constants/ui'
 import type { ProductSpec, TenantProduct } from '@/types'
 
@@ -24,14 +23,10 @@ export const SpecDrawer: React.FC<SpecDrawerProps> = ({ open, product, onClose }
   const [editableKeys, setEditableKeys] = useState<React.Key[]>([])
   const [dataSource, setDataSource] = useState<ProductSpec[]>([])
 
-  const { formDisplayMode, formSizePreset } = useAppStore(useShallow((s) => ({
-    formDisplayMode: s.formDisplayMode,
-    formSizePreset: s.formSizePreset,
-  })))
+  const formDisplayMode = useAppStore((s) => s.formDisplayMode)
 
   const isDrawer = formDisplayMode === 'drawer'
-  const sizeKey = formSizePreset === 'small' ? 'medium' : formSizePreset
-  const width = isDrawer ? FORM_SIZE_MAP[sizeKey].drawer : FORM_SIZE_MAP[sizeKey].modal
+  const width = isDrawer ? FORM_SIZE_MAP.large.drawer : FORM_SIZE_MAP.large.modal
 
   const productId = product?.id ?? 0
 
