@@ -1,4 +1,4 @@
-import { users, platforms, computeUserPermissions, type StoreUser } from './_store'
+import { users, platforms, computeUserPermissions, hydrateRoleNames, type StoreUser } from './_store'
 
 interface TempSession {
   username: string
@@ -29,7 +29,7 @@ const buildLoginPayload = (user: StoreUser, platformId: number, token: string) =
     token,
     saasName: platform?.name || 'Unknown Platform',
     permissions: computeUserPermissions(user),
-    userInfo: { id: user.id, username: user.username, nickname: user.nickname, avatar: user.avatar },
+    userInfo: { id: user.id, username: user.username, nickname: user.nickname, avatar: user.avatar, roles: hydrateRoleNames(user.roleIds) },
   }
 }
 
@@ -125,6 +125,7 @@ export default [
         code: 200,
         data: {
           id: user.id, username: user.username, nickname: user.nickname, avatar: user.avatar,
+          roles: hydrateRoleNames(user.roleIds),
           permissions: computeUserPermissions(user),
           platformId: session.platformId,
         },

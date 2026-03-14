@@ -88,103 +88,52 @@ const m = (id: number, parentId: number, name: string, permission: string, type:
 
 export let menus: StoreMenu[] = [
   // === 平台级菜单 ===
-  m(1, 0, '首页', 'dashboard:view', 1, 0, { path: '/', icon: 'DashboardOutlined' }),
-  m(2, 0, '商户管理', 'tenant:view', 2, 1, {
+  m(1, 0, '首页', 'dashboard', 2, 0, { path: '/', icon: 'DashboardOutlined' }),
+  m(2, 0, '商户管理', 'tenant', 1, 1, {
     path: '/tenant', icon: 'ShopOutlined',
     children: [
-      m(21, 2, '查看', 'tenant:view', 3, 0),
-      m(22, 2, '新增', 'tenant:create', 3, 1),
-      m(23, 2, '编辑', 'tenant:edit', 3, 2),
-      m(24, 2, '删除', 'tenant:delete', 3, 3),
-      // 后台按钮（对应商户列表的「后台」操作按钮）
-      m(5, 2, '后台', 'tenant:backend', 3, 4, {
-        icon: 'AppstoreOutlined',
+      m(21, 2, '商户列表', 'tenant:list', 2, 0, {
         children: [
-          m(51, 5, '工作台', 'tenant:admin:dashboard:view', 2, 0),
-          m(52, 5, '订单管理', 'tenant:admin:order:view', 2, 1, {
-            children: [
-              m(521, 52, '新增', 'tenant:admin:order:create', 3, 0),
-              m(522, 52, '编辑', 'tenant:admin:order:update', 3, 1),
-              m(523, 52, '删除', 'tenant:admin:order:delete', 3, 2),
-            ],
-          }),
-          m(53, 5, '商品管理', 'tenant:admin:product:view', 2, 2, {
-            children: [
-              m(531, 53, '新增', 'tenant:admin:product:create', 3, 0),
-              m(532, 53, '编辑', 'tenant:admin:product:update', 3, 1),
-              m(533, 53, '删除', 'tenant:admin:product:delete', 3, 2),
-            ],
-          }),
-          m(54, 5, '店铺设置', 'tenant:admin:setting:view', 2, 3, {
-            children: [
-              m(541, 54, '编辑', 'tenant:admin:setting:update', 3, 0),
-            ],
-          }),
-          m(55, 5, '系统管理', '', 1, 4, {
-            children: [
-              m(551, 55, '权限概览', 'tenant:admin:auth:view', 2, 0),
-              m(552, 55, '用户管理', 'tenant:admin:auth:user:view', 2, 1, {
-                children: [
-                  m(5521, 552, '新增', 'tenant:admin:auth:user:create', 3, 0),
-                  m(5522, 552, '编辑', 'tenant:admin:auth:user:update', 3, 1),
-                  m(5523, 552, '删除', 'tenant:admin:auth:user:delete', 3, 2),
-                ],
-              }),
-              m(553, 55, '角色管理', 'tenant:admin:auth:role:view', 2, 2, {
-                children: [
-                  m(5531, 553, '新增', 'tenant:admin:auth:role:create', 3, 0),
-                  m(5532, 553, '编辑', 'tenant:admin:auth:role:update', 3, 1),
-                  m(5533, 553, '删除', 'tenant:admin:auth:role:delete', 3, 2),
-                ],
-              }),
-              m(554, 55, '菜单管理', 'tenant:admin:auth:menu:view', 2, 3, {
-                children: [
-                  m(5541, 554, '新增', 'tenant:admin:auth:menu:create', 3, 0),
-                  m(5542, 554, '编辑', 'tenant:admin:auth:menu:update', 3, 1),
-                  m(5543, 554, '删除', 'tenant:admin:auth:menu:delete', 3, 2),
-                ],
-              }),
-              m(555, 55, '权限管理', 'tenant:admin:auth:permission:view', 2, 4, {
-                children: [
-                  m(5551, 555, '新增', 'tenant:admin:auth:permission:create', 3, 0),
-                  m(5552, 555, '编辑', 'tenant:admin:auth:permission:update', 3, 1),
-                  m(5553, 555, '删除', 'tenant:admin:auth:permission:delete', 3, 2),
-                ],
-              }),
-            ],
-          }),
+          m(211, 21, '查看', 'tenant:list:view', 3, 0),
+          m(212, 21, '新增', 'tenant:list:create', 3, 1),
+          m(213, 21, '编辑', 'tenant:list:update', 3, 2),
+          m(214, 21, '删除', 'tenant:list:delete', 3, 3),
+          m(215, 21, '进入后台', 'tenant:list:backend', 3, 4),
         ],
       }),
     ],
   }),
-  m(3, 0, '消息中心', 'message:view', 1, 2, { path: '/inbox', icon: 'MailOutlined' }),
-  m(4, 0, '系统管理', '', 1, 3, {
+  m(3, 0, '消息中心', 'message', 2, 2, { path: '/inbox', icon: 'MailOutlined' }),
+  m(4, 0, '系统管理', 'system', 1, 3, {
     path: '/system', icon: 'SettingOutlined',
     children: [
-      m(41, 4, '用户管理', 'system:user:view', 2, 0, {
+      m(41, 4, '用户管理', 'system:user', 2, 0, {
         path: '/system/user', icon: 'UserOutlined',
         children: [
-          m(411, 41, '新增', 'system:user:create', 3, 0),
-          m(412, 41, '编辑', 'system:user:edit', 3, 1),
-          m(413, 41, '删除', 'system:user:delete', 3, 2),
-          m(414, 41, '重置密码', 'system:user:resetPwd', 3, 3),
+          m(411, 41, '查看', 'system:user:view', 3, 0),
+          m(412, 41, '新增', 'system:user:create', 3, 1),
+          m(413, 41, '编辑', 'system:user:update', 3, 2),
+          m(414, 41, '删除', 'system:user:delete', 3, 3),
+          m(415, 41, '重置密码', 'system:user:resetPwd', 3, 4),
         ],
       }),
-      m(42, 4, '角色管理', 'system:role:view', 2, 1, {
+      m(42, 4, '角色管理', 'system:role', 2, 1, {
         path: '/system/role', icon: 'SafetyCertificateOutlined',
         children: [
-          m(421, 42, '新增', 'system:role:create', 3, 0),
-          m(422, 42, '编辑', 'system:role:update', 3, 1),
-          m(423, 42, '删除', 'system:role:delete', 3, 2),
-          m(424, 42, '分配权限', 'system:role:permission', 3, 3),
+          m(421, 42, '查看', 'system:role:view', 3, 0),
+          m(422, 42, '新增', 'system:role:create', 3, 1),
+          m(423, 42, '编辑', 'system:role:update', 3, 2),
+          m(424, 42, '删除', 'system:role:delete', 3, 3),
+          m(425, 42, '分配权限', 'system:role:permission', 3, 4),
         ],
       }),
-      m(43, 4, '菜单管理', 'system:menu:view', 2, 2, {
+      m(43, 4, '菜单管理', 'system:menu', 2, 2, {
         path: '/system/menu', icon: 'MenuOutlined',
         children: [
-          m(431, 43, '新增', 'system:menu:create', 3, 0),
-          m(432, 43, '编辑', 'system:menu:update', 3, 1),
-          m(433, 43, '删除', 'system:menu:delete', 3, 2),
+          m(431, 43, '查看', 'system:menu:view', 3, 0),
+          m(432, 43, '新增', 'system:menu:create', 3, 1),
+          m(433, 43, '编辑', 'system:menu:update', 3, 2),
+          m(434, 43, '删除', 'system:menu:delete', 3, 3),
         ],
       }),
     ],
