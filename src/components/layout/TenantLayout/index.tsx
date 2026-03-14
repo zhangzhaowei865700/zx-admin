@@ -9,7 +9,7 @@ import { getTenantMenuItems } from '@/constants/menu'
 import type { MenuItem } from '@/constants/menu'
 import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
-import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions } from '../HeaderActions'
+import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions, ActionDivider } from '../HeaderActions'
 
 // 递归转换菜单数据为 ProLayout route 格式（带 tenantId 前缀）
 const convertMenuToRoutes = (items: MenuItem[], basePath: string): any[] =>
@@ -110,10 +110,15 @@ export const TenantLayout: React.FC = () => {
 
   const headerActions = useMemo(() => (
     <OverflowActions gap={4}>
+      {/* 功能组：搜索 */}
       <MenuSearch menuItems={filteredMenuItems} basePath={basePath} />
+
+      <ActionDivider />
+
+      {/* 设置组��主题、全屏、锁屏 */}
       <DarkModeToggle />
-      <LockScreenButton />
       <FullScreen />
+      <LockScreenButton />
     </OverflowActions>
   ), [basePath, filteredMenuItems])
 

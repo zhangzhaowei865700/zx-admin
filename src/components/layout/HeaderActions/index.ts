@@ -1,4 +1,5 @@
 export { ActionIcon } from './ActionIcon'
+export { ActionDivider } from './ActionDivider'
 export { DarkModeToggle } from './DarkModeToggle'
 export { FullScreen } from './FullScreen'
 export { LanguageSwitch } from './LanguageSwitch'

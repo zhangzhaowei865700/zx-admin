@@ -199,11 +199,15 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const pathname = useMemo(() => location.pathname, [location.pathname])
 
   const dropdownItems: ItemType[] = useMemo(() => [
+    ...(userInfo?.roles?.length ? [
+      { key: 'role', label: <span style={{ color: 'inherit', opacity: 0.65, fontSize: 12 }}>{userInfo.roles.join(' / ')}</span>, icon: <UserOutlined style={{ opacity: 0.65 }} />, disabled: true },
+      { type: 'divider' as const },
+    ] : []),
     { key: 'profile', label: t('common:profileCenter'), icon: <UserOutlined /> },
     ...extraMenuItems,
     { type: 'divider' as const },
     { key: 'logout', label: t('common:logoutBtn'), icon: <LogoutOutlined />, danger: true },
-  ], [t, extraMenuItems])
+  ], [t, extraMenuItems, userInfo?.roles])
 
   // 导航栏暗色模式（sidebarDark 开启且非全局暗黑时）
   // side 布局下 ProLayout 将 header 操作渲染在侧边栏底部，同样需要暗色文字
@@ -212,7 +216,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const rightContentRender = useCallback(() => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', overflow: 'hidden', color: isNavDark ? 'rgba(255,255,255,0.65)' : undefined }}>
       {headerActions}
-      <span style={{ width: 1, height: 20, flexShrink: 0, background: isNavDark ? 'rgba(255,255,255,0.2)' : themeToken.colorBorderSecondary, margin: isMobile ? '0 4px' : '0 8px' }} />
+      <span style={{ width: 1, height: 20, flexShrink: 0, background: isNavDark ? 'rgba(255,255,255,0.2)' : themeToken.colorBorderSecondary, margin: isMobile ? '0 2px' : '0 4px' }} />
       <Dropdown
         menu={{ items: dropdownItems, onClick: handleMenuClick }}
         trigger={['click']}
@@ -239,7 +243,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
           >
             {userInfo?.nickname?.[0] || userInfo?.username?.[0] || 'A'}
           </Avatar>
-          {!isMobile && (
+          {!isMobile && layoutMode === 'top' && (
             <span style={{ color: isNavDark ? '#ffffff' : themeToken.colorText, fontSize: 14, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {userInfo?.nickname || userInfo?.username || t('common:admin')}
             </span>
