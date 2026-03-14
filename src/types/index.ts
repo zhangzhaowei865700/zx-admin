@@ -25,7 +25,7 @@ export interface User {
   avatar?: string
   phone?: string
   email?: string
-  role?: string
+  roles?: string[]
   tenantId?: number
   createdAt?: string
   updatedAt?: string
