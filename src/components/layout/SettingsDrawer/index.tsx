@@ -142,6 +142,19 @@ export const SettingsDrawer: React.FC = () => {
     }
   }, [])
 
+  // 窗口大小变化时重新计算吸附位置，防止悬浮球超出视口
+  useEffect(() => {
+    const handleResize = () => {
+      setPosition((prev) => {
+        const snapped = getSnapPosition(prev.x, prev.y)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapped))
+        return snapped
+      })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const startDrag = () => {
     isDraggingRef.current = true
     setIsLongPress(true)
