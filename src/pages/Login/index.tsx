@@ -80,6 +80,7 @@ export const LoginPage: React.FC = () => {
         // 只有一个平台，直接登录
         setPlatformLoading(list[0].id)
         const result = await loginPlatform({ tempToken: token, platformId: list[0].id })
+        console.log('[Login] API response:', result) // 调试日志
         setGlobalToken(result.token)
         setSaasName(result.saasName)
         setPermissions(result.permissions)
@@ -118,6 +119,7 @@ export const LoginPage: React.FC = () => {
 
       if (isSwitchMode) {
         const result = await switchPlatform({ platformId: platform.id })
+        console.log('[Login] Switch platform response:', result) // 调试日志
         broadcastAuthEvent('switchPlatform')
         newToken = result.token
         saasName = result.saasName
@@ -125,6 +127,7 @@ export const LoginPage: React.FC = () => {
         userInfo = result.userInfo
       } else {
         const result = await loginPlatform({ tempToken, platformId: platform.id })
+        console.log('[Login] Login platform response:', result) // 调试日志
         newToken = result.token
         saasName = result.saasName
         permissions = result.permissions
