@@ -1,3 +1,5 @@
+import { withAuth } from '../platform/auth'
+
 const mockOrders = Array.from({ length: 28 }, (_, i) => ({
   id: i + 1,
   orderNo: `ORD${String(20240001 + i)}`,
@@ -11,7 +13,7 @@ export default [
   {
     url: '/api/tenant/order/list',
     method: 'POST',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const pageNum = Number(body?.pageNum) || 1
       const pageSize = Number(body?.pageSize) || 10
       let filtered = [...mockOrders]
@@ -21,16 +23,16 @@ export default [
       const start = (pageNum - 1) * pageSize
       const list = filtered.slice(start, start + pageSize)
       return { code: 200, data: { list, total: filtered.length }, msg: 'success' }
-    },
+    }),
   },
   {
     url: '/api/tenant/order/:id',
     method: 'DELETE',
-    response: () => ({ code: 200, data: null, msg: '删除成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '删除成功' })),
   },
   {
     url: '/api/tenant/order/batch',
     method: 'DELETE',
-    response: () => ({ code: 200, data: null, msg: '批量删除成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '批量删除成功' })),
   },
 ]

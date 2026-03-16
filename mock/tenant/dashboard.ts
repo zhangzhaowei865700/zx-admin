@@ -1,8 +1,10 @@
+import { withAuth } from '../platform/auth'
+
 export default [
   {
     url: '/api/tenant/dashboard/stats',
     method: 'GET',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: {
         todayOrders: 36,
@@ -11,12 +13,12 @@ export default [
         totalCustomers: 1893,
       },
       msg: 'success',
-    }),
+    })),
   },
   {
     url: '/api/tenant/dashboard/recent-orders',
     method: 'GET',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: [
         { id: 1, orderNo: 'ORD20240001', customerName: '张三', amount: 128.00, status: 1, createdAt: '2024-01-15 10:00:00' },
@@ -26,6 +28,6 @@ export default [
         { id: 5, orderNo: 'ORD20240005', customerName: '钱七', amount: 67.80, status: 1, createdAt: '2024-01-15 14:00:00' },
       ],
       msg: 'success',
-    }),
+    })),
   },
 ]

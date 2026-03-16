@@ -1,3 +1,5 @@
+import { withAuth } from '../platform/auth'
+
 const mockStoreSetting = {
   storeName: '示例店铺',
   storeDesc: '这是一家示例店铺',
@@ -13,11 +15,11 @@ export default [
   {
     url: '/api/tenant/setting',
     method: 'GET',
-    response: () => ({ code: 200, data: mockStoreSetting, msg: 'success' }),
+    response: withAuth(() => ({ code: 200, data: mockStoreSetting, msg: 'success' })),
   },
   {
     url: '/api/tenant/setting',
     method: 'PUT',
-    response: () => ({ code: 200, data: null, msg: '保存成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '保存成功' })),
   },
 ]

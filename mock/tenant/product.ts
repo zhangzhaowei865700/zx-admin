@@ -1,3 +1,5 @@
+import { withAuth } from '../platform/auth'
+
 const units = ['个', '件', '箱', 'kg', '台']
 const descriptions = [
   '高品质产品，性价比极高',
@@ -52,7 +54,7 @@ export default [
   {
     url: '/api/tenant/product/list',
     method: 'POST',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const pageNum = Number(body?.pageNum) || 1
       const pageSize = Number(body?.pageSize) || 10
       let filtered = [...mockProducts]
@@ -62,12 +64,12 @@ export default [
       const start = (pageNum - 1) * pageSize
       const list = filtered.slice(start, start + pageSize)
       return { code: 200, data: { list, total: filtered.length }, msg: 'success' }
-    },
+    }),
   },
   {
     url: '/api/tenant/product',
     method: 'POST',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const newProduct = {
         id: nextId++,
         name: body.name || '',
@@ -81,32 +83,32 @@ export default [
       }
       mockProducts.unshift(newProduct)
       return { code: 200, data: { id: newProduct.id }, msg: '新增成功' }
-    },
+    }),
   },
   {
     url: '/api/tenant/product/batch-status',
     method: 'PUT',
-    response: () => ({ code: 200, data: null, msg: '状态更新成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '状态更新成功' })),
   },
   {
     url: '/api/tenant/product/batch',
     method: 'DELETE',
-    response: () => ({ code: 200, data: null, msg: '批量删除成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '批量删除成功' })),
   },
   // 规格列表
   {
     url: '/api/tenant/product/:id/specs',
     method: 'GET',
-    response: ({ query }: { query: Record<string, any> }) => {
+    response: withAuth(({ query }: { query: Record<string, any>; headers?: Record<string, string> }) => {
       const productId = Number(query?.id || 0)
       return { code: 200, data: mockSpecs[productId] || [], msg: 'success' }
-    },
+    }),
   },
   // 保存规格（新增或更新）
   {
     url: '/api/tenant/product/:id/spec',
     method: 'POST',
-    response: ({ body, query }: { body: Record<string, any>; query: Record<string, any> }) => {
+    response: withAuth(({ body, query }: { body: Record<string, any>; query: Record<string, any>; headers?: Record<string, string> }) => {
       const productId = Number(query?.id || body?.productId || 0)
       if (!mockSpecs[productId]) mockSpecs[productId] = []
       if (body.id && typeof body.id === 'number') {
@@ -119,36 +121,36 @@ export default [
         mockSpecs[productId].push(newSpec)
       }
       return { code: 200, data: null, msg: '保存成功' }
-    },
+    }),
   },
   // 删除规格
   {
     url: '/api/tenant/product/:id/spec/:specId',
     method: 'DELETE',
-    response: ({ query }: { query: Record<string, any> }) => {
+    response: withAuth(({ query }: { query: Record<string, any>; headers?: Record<string, string> }) => {
       const productId = Number(query?.id || 0)
       const specId = Number(query?.specId || 0)
       if (mockSpecs[productId]) {
         mockSpecs[productId] = mockSpecs[productId].filter((s: any) => s.id !== specId)
       }
       return { code: 200, data: null, msg: '删除成功' }
-    },
+    }),
   },
   {
     url: '/api/tenant/product/:id',
     method: 'PUT',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const id = Number(body?.id)
       const idx = mockProducts.findIndex((p) => p.id === id)
       if (idx >= 0) {
         Object.assign(mockProducts[idx], body)
       }
       return { code: 200, data: null, msg: '更新成功' }
-    },
+    }),
   },
   {
     url: '/api/tenant/product/:id',
     method: 'DELETE',
-    response: () => ({ code: 200, data: null, msg: '删除成功' }),
+    response: withAuth(() => ({ code: 200, data: null, msg: '删除成功' })),
   },
 ]
