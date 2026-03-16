@@ -69,8 +69,8 @@ npm run lint             # 运行 ESLint 检查
 - **签名头**：`X-App-Key`、`X-Timestamp`、`X-Nonce`、`X-Sign`（通过 `src/utils/sign.ts` 生成）
 - **可选 AES 加密**：由 `VITE_CRYPTO_ENABLED` 环境变量控制（使用 `src/utils/crypto.ts`）
 - **解密失败处理**：`decrypt()` 失败时抛出错误（不再静默返回原文），调用方需处理异常
-- **Token 认证**：`Authorization` 头中的 Bearer token
-- **401 处理**：自动登出并重定向到登录页
+- **Token 认证**：`Authorization` 头中的 Bearer token，**直接从 localStorage 读取**（`src/utils/storage.ts` 的 `getToken()`），确保 localStorage 被清空后立即失效
+- **401 处理**：自动登出并重定向到登录页，使用 `window.location.replace()` 避免历史记录污染
 
 ### 跨标签页同步
 
@@ -220,6 +220,36 @@ cp .env.example .env.local
 - 使用 `mockjs` 生成数据
 - Mock 文件在 `mock/index.ts` 中导入
 - 支持动态路由和 RESTful CRUD 模式
+
+### Mock 认证机制
+
+所有需要认证的 mock 接口统一使用 `withAuth` 高阶函数包装（`mock/platform/auth.ts`）：
+
+```ts
+import { withAuth } from './auth'  // 或 '../platform/auth' (租户 mock)
+
+export default [
+  {
+    url: '/api/admin/system/user/list',
+    method: 'POST',
+    response: withAuth(({ body, headers }) => {
+      // 业务逻辑，token 已验证
+      return { code: 200, data: { list, total }, msg: 'success' }
+    }),
+  },
+]
+```
+
+**验证逻辑**：
+- `withAuth` 自动调用 `getSessionByAuth(headers)` 验证 token
+- Token 必须在 `Authorization` header 中提供
+- Token 必须存在于 `accessSessions` Map 中且未过期（2小时）
+- 验证失败返回 `{ code: 401, data: null, msg: '登录已过期' }`
+- **不再使用 `latestAccessToken` 兜底**，严格验证 header token
+
+**已应用 `withAuth` 的 mock 模块**：
+- 平台级：`system.ts`（用户/角色/菜单/部门）、`tenant.ts`（商户）、`message.ts`（消息）、`dictionary.ts`（字典）
+- 租户级：`dashboard.ts`、`order.ts`、`product.ts`、`setting.ts`
 
 ## 重要实现细节
 
