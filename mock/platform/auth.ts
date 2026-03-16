@@ -15,9 +15,14 @@ const LOGIN_CODE = 401
 const TEMP_TOKEN_EXPIRE_MS = 5 * 60 * 1000
 const ACCESS_TOKEN_EXPIRE_MS = 2 * 60 * 60 * 1000
 
-const tempSessions = new Map<string, TempSession>()
-const accessSessions = new Map<string, AccessSession>()
-let latestAccessToken = ''
+// 挂载到 globalThis，避免 mock 模块热重载时 session 丢失
+const g = globalThis as Record<string, unknown>
+const tempSessions: Map<string, TempSession> = (g.__mockTempSessions as Map<string, TempSession>) ?? new Map()
+const accessSessions: Map<string, AccessSession> = (g.__mockAccessSessions as Map<string, AccessSession>) ?? new Map()
+const tokenRef: { value: string } = (g.__mockTokenRef as { value: string }) ?? { value: '' }
+g.__mockTempSessions = tempSessions
+g.__mockAccessSessions = accessSessions
+g.__mockTokenRef = tokenRef
 
 const buildTempToken = () => `temp-token-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 const buildAccessToken = (platformId: number) =>
@@ -111,7 +116,7 @@ export default [
       tempSessions.delete(tempToken)
       const accessToken = buildAccessToken(platformId)
       accessSessions.set(accessToken, { username: session.username, platformId, createdAt: Date.now() })
-      latestAccessToken = accessToken
+      tokenRef.value = accessToken
 
       return { code: 200, data: buildLoginPayload(user, platformId, accessToken), msg: '登录成功' }
     },
@@ -122,8 +127,8 @@ export default [
     response: ({ headers }: { headers?: Record<string, string> }) => {
       const token = getAuthorizationToken(headers)
       if (token) accessSessions.delete(token)
-      if (!token && latestAccessToken) accessSessions.delete(latestAccessToken)
-      if (token === latestAccessToken || !token) latestAccessToken = ''
+      if (!token && tokenRef.value) accessSessions.delete(tokenRef.value)
+      if (token === tokenRef.value || !token) tokenRef.value = ''
       return { code: 200, data: null, msg: '登出成功' }
     },
   },
@@ -176,7 +181,7 @@ export default [
 
       const newToken = buildAccessToken(platformId)
       accessSessions.set(newToken, { username: session.username, platformId, createdAt: Date.now() })
-      latestAccessToken = newToken
+      tokenRef.value = newToken
 
       return { code: 200, data: buildLoginPayload(user, platformId, newToken), msg: '切换成功' }
     },
