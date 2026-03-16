@@ -10,9 +10,9 @@ const SystemMenu = lazy(() => import('@/pages/Platform/System').then((m) => ({ d
 const MessageInbox = lazy(() => import('@/pages/Platform/Message').then((m) => ({ default: m.InboxPage })))
 
 export const platformRoutes: RouteObject[] = [
-  { index: true, element: <Dashboard />, handle: { permission: 'dashboard:view' } },
-  { path: 'tenant', element: <Tenant />, handle: { permission: 'tenant:view' } },
-  { path: 'inbox', element: <MessageInbox />, handle: { permission: 'message:view' } },
+  { index: true, element: <Dashboard />, handle: { permission: 'dashboard' } },
+  { path: 'tenant', element: <Tenant />, handle: { permission: 'tenant:list' } },
+  { path: 'inbox', element: <MessageInbox />, handle: { permission: 'message' } },
   {
     path: 'system',
     element: <System />,

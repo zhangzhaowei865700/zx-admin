@@ -27,18 +27,18 @@ const TenantSystemMenu = lazy(() =>
 )
 
 export const tenantRoutes: RouteObject[] = [
-  { index: true, element: <TenantDashboard />, handle: { permission: 'tenant:admin:dashboard:view' } },
-  { path: 'order', element: <TenantOrder />, handle: { permission: 'tenant:admin:order:view' } },
-  { path: 'product', element: <TenantProduct />, handle: { permission: 'tenant:admin:product:view' } },
-  { path: 'setting', element: <TenantSetting />, handle: { permission: 'tenant:admin:setting:view' } },
+  { index: true, element: <TenantDashboard />, handle: { permission: 'dashboard' } },
+  { path: 'order', element: <TenantOrder />, handle: { permission: 'order:list:view' } },
+  { path: 'product', element: <TenantProduct />, handle: { permission: 'product:list:view' } },
+  { path: 'setting', element: <TenantSetting />, handle: { permission: 'setting:view' } },
   {
     path: 'system',
     element: <TenantSystem />,
     children: [
-      { index: true, element: <TenantSystemUser />, handle: { permission: 'tenant:admin:auth:user:view' } },
-      { path: 'user', element: <TenantSystemUser />, handle: { permission: 'tenant:admin:auth:user:view' } },
-      { path: 'role', element: <TenantSystemRole />, handle: { permission: 'tenant:admin:auth:role:view' } },
-      { path: 'menu', element: <TenantSystemMenu />, handle: { permission: 'tenant:admin:auth:menu:view' } },
+      { index: true, element: <TenantSystemUser />, handle: { permission: 'system:user:view' } },
+      { path: 'user', element: <TenantSystemUser />, handle: { permission: 'system:user:view' } },
+      { path: 'role', element: <TenantSystemRole />, handle: { permission: 'system:role:view' } },
+      { path: 'menu', element: <TenantSystemMenu />, handle: { permission: 'system:menu:view' } },
     ],
   },
 ]

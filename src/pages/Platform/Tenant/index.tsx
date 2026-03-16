@@ -104,13 +104,13 @@ export const TenantPage: React.FC = () => {
         }
 
         return [
-          <HasPermission key="backend" code="tenant:backend">
+          <HasPermission key="backend" code="tenant:list:backend">
             <a onClick={() => window.open(getTenantUrl(), '_blank')}>{t('tenant:backend')}</a>
           </HasPermission>,
-          <HasPermission key="edit" code="tenant:edit">
+          <HasPermission key="edit" code="tenant:list:update">
             <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
           </HasPermission>,
-          <HasPermission key="delete" code="tenant:delete">
+          <HasPermission key="delete" code="tenant:list:delete">
             <Popconfirm title={t('common:confirmDelete')} onConfirm={() => deleteMutation.mutate(record.id)}>
               <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
             </Popconfirm>
@@ -154,13 +154,13 @@ export const TenantPage: React.FC = () => {
         )}
         tableAlertOptionRender={({ onCleanSelected }) => (
           <Space>
-            <HasPermission key="enable" code="tenant:edit">
+            <HasPermission key="enable" code="tenant:list:update">
               <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 1 }); onCleanSelected() }}>{t('common:batchEnable')}</a>
             </HasPermission>
-            <HasPermission key="disable" code="tenant:edit">
+            <HasPermission key="disable" code="tenant:list:update">
               <a onClick={() => { batchStatusMutation.mutate({ ids: selectedRowKeys, status: 0 }); onCleanSelected() }}>{t('common:batchDisable')}</a>
             </HasPermission>
-            <HasPermission key="delete" code="tenant:delete">
+            <HasPermission key="delete" code="tenant:list:delete">
               <Popconfirm
                 title={t('tenant:confirmDeleteTenant', { count: selectedRowKeys.length })}
                 onConfirm={() => { batchDeleteMutation.mutate(selectedRowKeys); onCleanSelected() }}
@@ -171,7 +171,7 @@ export const TenantPage: React.FC = () => {
           </Space>
         )}
         toolBarRender={() => [
-          <HasPermission key="add" code="tenant:create">
+          <HasPermission key="add" code="tenant:list:create">
             <Button type="primary" onClick={handleAdd}>
               {t('tenant:addTenant')}
             </Button>

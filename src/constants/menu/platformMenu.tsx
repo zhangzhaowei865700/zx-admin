@@ -19,8 +19,8 @@ export interface MenuItem {
 }
 
 export const getPlatformMenuItems = (): MenuItem[] => [
-  { path: '/', icon: <DashboardOutlined />, name: i18n.t('menu:home'), permission: 'dashboard:view', group: i18n.t('menu:dashboard') },
-  { path: '/tenant', icon: <ShopOutlined />, name: i18n.t('menu:tenantManagement'), permission: 'tenant:view', group: i18n.t('menu:business') },
+  { path: '/', icon: <DashboardOutlined />, name: i18n.t('menu:home'), permission: 'dashboard', group: i18n.t('menu:dashboard') },
+  { path: '/tenant', icon: <ShopOutlined />, name: i18n.t('menu:tenantManagement'), permission: 'tenant:list', group: i18n.t('menu:business') },
   {
     path: '/system',
     icon: <SettingOutlined />,
@@ -32,7 +32,7 @@ export const getPlatformMenuItems = (): MenuItem[] => [
       { path: '/system/menu', icon: <MenuOutlined />, name: i18n.t('menu:menuManagement'), permission: 'system:menu:view' },
     ],
   },
-  { path: '/inbox', icon: <MailOutlined />, name: i18n.t('menu:inbox'), permission: 'message:view', group: i18n.t('menu:message') },
+  { path: '/inbox', icon: <MailOutlined />, name: i18n.t('menu:inbox'), permission: 'message', group: i18n.t('menu:message') },
 ]
 
 /** 根据路径获取菜单名称（支持子菜单） */

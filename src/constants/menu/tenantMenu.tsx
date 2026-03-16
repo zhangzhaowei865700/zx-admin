@@ -11,18 +11,18 @@ import type { MenuItem } from './platformMenu'
 import i18n from '@/locales'
 
 export const getTenantMenuItems = (): MenuItem[] => [
-  { path: '', icon: <DashboardOutlined />, name: i18n.t('menu:home'), permission: 'tenant:admin:dashboard:view' },
-  { path: 'order', icon: <ShoppingCartOutlined />, name: i18n.t('menu:orderManagement'), permission: 'tenant:admin:order:view' },
-  { path: 'product', icon: <ShopOutlined />, name: i18n.t('menu:productManagement'), permission: 'tenant:admin:product:view' },
-  { path: 'setting', icon: <SettingOutlined />, name: i18n.t('menu:storeSetting'), permission: 'tenant:admin:setting:view' },
+  { path: '', icon: <DashboardOutlined />, name: i18n.t('menu:home'), permission: 'dashboard' },
+  { path: 'order', icon: <ShoppingCartOutlined />, name: i18n.t('menu:orderManagement'), permission: 'order:list:view' },
+  { path: 'product', icon: <ShopOutlined />, name: i18n.t('menu:productManagement'), permission: 'product:list:view' },
+  { path: 'setting', icon: <SettingOutlined />, name: i18n.t('menu:storeSetting'), permission: 'setting:view' },
   {
     path: 'system',
     icon: <SettingOutlined />,
     name: i18n.t('menu:systemManagement'),
     children: [
-      { path: 'system/user', icon: <UserOutlined />, name: i18n.t('menu:userManagement'), permission: 'tenant:admin:auth:user:view' },
-      { path: 'system/role', icon: <SafetyCertificateOutlined />, name: i18n.t('menu:roleManagement'), permission: 'tenant:admin:auth:role:view' },
-      { path: 'system/menu', icon: <MenuOutlined />, name: i18n.t('menu:menuManagement'), permission: 'tenant:admin:auth:menu:view' },
+      { path: 'system/user', icon: <UserOutlined />, name: i18n.t('menu:userManagement'), permission: 'system:user:view' },
+      { path: 'system/role', icon: <SafetyCertificateOutlined />, name: i18n.t('menu:roleManagement'), permission: 'system:role:view' },
+      { path: 'system/menu', icon: <MenuOutlined />, name: i18n.t('menu:menuManagement'), permission: 'system:menu:view' },
     ],
   },
 ]
