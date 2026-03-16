@@ -98,7 +98,67 @@ export let menus: StoreMenu[] = [
           m(212, 21, '新增', 'tenant:list:create', 3, 1),
           m(213, 21, '编辑', 'tenant:list:update', 3, 2),
           m(214, 21, '删除', 'tenant:list:delete', 3, 3),
-          m(215, 21, '进入后台', 'tenant:list:backend', 3, 4),
+          m(215, 21, '进入后台', 'tenant:list:backend', 3, 4, {
+            children: [
+              m(51, 215, '工作台', 'backend:dashboard', 2, 0, { path: 'dashboard', icon: 'DashboardOutlined' }),
+              m(52, 215, '订单管理', 'backend:order', 2, 1, {
+                path: 'order', icon: 'ShoppingCartOutlined',
+                children: [
+                  m(521, 52, '查看', 'backend:order:view', 3, 0),
+                  m(522, 52, '删除', 'backend:order:delete', 3, 1),
+                ],
+              }),
+              m(53, 215, '商品管理', 'backend:product', 2, 2, {
+                path: 'product', icon: 'ShopOutlined',
+                children: [
+                  m(531, 53, '查看', 'backend:product:view', 3, 0),
+                  m(532, 53, '新增', 'backend:product:create', 3, 1),
+                  m(533, 53, '编辑', 'backend:product:update', 3, 2),
+                  m(534, 53, '删除', 'backend:product:delete', 3, 3),
+                ],
+              }),
+              m(54, 215, '店铺设置', 'backend:setting', 2, 3, {
+                path: 'setting', icon: 'SettingOutlined',
+                children: [
+                  m(541, 54, '查看/编辑', 'backend:setting:view', 3, 0),
+                ],
+              }),
+              m(55, 215, '系统管理', 'backend:system', 1, 4, {
+                path: 'system', icon: 'SettingOutlined',
+                children: [
+                  m(551, 55, '权限概览', 'backend:system:overview', 2, 0, { path: 'system/overview' }),
+                  m(552, 55, '用户管理', 'backend:system:user', 2, 1, {
+                    path: 'system/user', icon: 'UserOutlined',
+                    children: [
+                      m(5521, 552, '查看', 'backend:system:user:view', 3, 0),
+                      m(5522, 552, '新增', 'backend:system:user:create', 3, 1),
+                      m(5523, 552, '编辑', 'backend:system:user:update', 3, 2),
+                      m(5524, 552, '删除', 'backend:system:user:delete', 3, 3),
+                    ],
+                  }),
+                  m(553, 55, '角色管理', 'backend:system:role', 2, 2, {
+                    path: 'system/role', icon: 'SafetyCertificateOutlined',
+                    children: [
+                      m(5531, 553, '查看', 'backend:system:role:view', 3, 0),
+                      m(5532, 553, '编辑', 'backend:system:role:update', 3, 1),
+                      m(5533, 553, '新增', 'backend:system:role:create', 3, 2),
+                      m(5534, 553, '删除', 'backend:system:role:delete', 3, 3),
+                    ],
+                  }),
+                  m(554, 55, '菜单管理', 'backend:system:menu', 2, 3, {
+                    path: 'system/menu', icon: 'MenuOutlined',
+                    children: [
+                      m(5541, 554, '查看', 'backend:system:menu:view', 3, 0),
+                      m(5542, 554, '编辑', 'backend:system:menu:update', 3, 1),
+                      m(5543, 554, '新增', 'backend:system:menu:create', 3, 2),
+                      m(5544, 554, '删除', 'backend:system:menu:delete', 3, 3),
+                    ],
+                  }),
+                  m(555, 55, '权限管理', 'backend:system:permission', 2, 4, { path: 'system/permission' }),
+                ],
+              }),
+            ],
+          }),
         ],
       }),
     ],
@@ -171,30 +231,29 @@ const allMenuIds = collectAllMenuIds(menus)
 // operator 拥有的菜单 ID：平台基础（首页、商户管理可查看/新增/编辑、消息中心）+ 后台业务（无删除、无系统管理）
 const operatorMenuIds = [
   1,                                      // 首页
-  2, 21, 22, 23,                          // 商户管理（查看/新增/编辑，无删除）
-  5,                                      // 后台（目录）
-  51,                                     // 后台：工作台
-  52, 522,                                // 订单管理（查看/编辑）
-  53, 532,                                // 商品管理（查看/编辑）
-  54, 541,                                // 店铺设置（查看/编辑）
-  55, 551,                                // 系统管理：权限概览
-  552, 5521, 5522,                        // 用户管理（查看/新增/编辑）
-  553, 5532,                              // 角色管理（查看/编辑）
-  554, 5542,                              // 菜单管理（查看/编辑）
-  555,                                    // 权限管理（查看）
+  2, 21, 211, 212, 213, 215,              // 商户管理（查看/新增/编辑，进入后台，无删除）
   3,                                      // 消息中心
+  51,                                     // 后台：工作台
+  52, 521, 522,                           // 后台：订单管理（查看/删除）
+  53, 531, 532, 533,                      // 后台：商品管理（查看/新增/编辑）
+  54, 541,                                // 后台：店铺设置（查看/编辑）
+  55,                                     // 后台：系统管理（目录）
+  551,                                    // 后台：权限概览
+  552, 5521, 5522, 5523,                  // 后台：用户管理（查看/新增/编辑）
+  553, 5531, 5532, 5533,                  // 后台：角色管理（查看/编辑/新增）
+  554, 5541, 5542,                        // 后台：菜单管理（查看/编辑）
+  555,                                    // 后台：权限管理
 ]
 
 // viewer 拥有的菜单 ID：仅平台基础查看 + 后台查看
 const viewerMenuIds = [
   1,                                      // 首页
-  2, 21,                                  // 商户管理（仅查看）
-  5,                                      // 后台（目录）
-  51,                                     // 后台：工作台
-  52,                                     // 订单管理（仅查看）
-  53,                                     // 商品管理（仅查看）
-  54,                                     // 店铺设置（仅查看）
+  2, 21, 211, 215,                        // 商户管理（仅查看，可进入后台）
   3,                                      // 消息中心
+  51,                                     // 后台：工作台
+  52, 521,                                // 后台：订单管理（仅查看）
+  53, 531,                                // 后台：商品管理（仅查看）
+  54, 541,                                // 后台：店铺设置（仅查看）
 ]
 
 export let roles: StoreRole[] = [
