@@ -27,9 +27,12 @@ export const FormContainer: React.FC<FormContainerProps> = (props) => {
     ? FORM_SIZE_MAP[sizeKey].drawer
     : FORM_SIZE_MAP[sizeKey].modal
 
+  // 过滤掉不属于当前模式的 props
+  const { modalProps, drawerProps, formSize, ...restProps } = props
+
   const containerProps = isDrawer
-    ? { drawerProps: { destroyOnClose: true, width: defaultWidth, ...props.drawerProps } }
-    : { modalProps: { destroyOnClose: true, centered: true, width: defaultWidth, ...props.modalProps } }
+    ? { drawerProps: { destroyOnClose: true, width: defaultWidth, ...drawerProps } }
+    : { modalProps: { destroyOnClose: true, centered: true, width: defaultWidth, ...modalProps } }
 
   const gridProps = formColumns === 2
     ? { grid: true as const, colProps: { span: 12, ...props.colProps } }
@@ -46,5 +49,5 @@ export const FormContainer: React.FC<FormContainerProps> = (props) => {
     }
     : { layout: formLayout }
 
-  return <Form {...props} {...containerProps} {...gridProps} {...layoutProps} size={formComponentSize} colon={formColon} />
+  return <Form {...restProps} {...containerProps} {...gridProps} {...layoutProps} size={formComponentSize} colon={formColon} />
 }
