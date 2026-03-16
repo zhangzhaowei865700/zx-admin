@@ -2,27 +2,29 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse 
 import { message } from 'antd'
 import { decrypt, encrypt } from '@/utils/crypto'
 import { generateSign } from '@/utils/sign'
-import { removeUserInfo } from '@/utils/storage'
+import { removeUserInfo, getToken } from '@/utils/storage'
 import { useUserStore } from '@/stores/useUserStore'
 import { broadcastAuthEvent } from '@/utils/authChannel'
 import i18n from '@/locales'
 import type { ApiResponse } from '@/types'
 
-let redirectTimer: ReturnType<typeof setTimeout> | null = null
+let isHandlingUnauthorized = false
 function handleUnauthorized() {
-  if (redirectTimer) return
+  if (isHandlingUnauthorized) return
+  isHandlingUnauthorized = true
+
   removeUserInfo()
   useUserStore.getState().logout()
-  broadcastAuthEvent('logout')
   message.error(i18n.t('common:loginExpired'))
-  redirectTimer = setTimeout(() => {
-    redirectTimer = null
-    if (import.meta.env.MODE === 'demo') {
-      window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/#/login`
-    } else {
-      window.location.href = `${import.meta.env.VITE_BASE_PATH || ''}/login`
-    }
-  }, 300)
+
+  // 先广播给其他标签页
+  broadcastAuthEvent('logout')
+
+  // 当前标签页直接跳转，不等待
+  const loginPath = import.meta.env.MODE === 'demo'
+    ? `${import.meta.env.VITE_BASE_PATH || ''}/#/login`
+    : `${import.meta.env.VITE_BASE_PATH || ''}/login`
+  window.location.replace(loginPath)
 }
 
 const appKey = import.meta.env.VITE_APP_KEY
@@ -38,7 +40,7 @@ service.interceptors.request.use(
   (config) => {
     config.headers = config.headers ?? {}
 
-    const token = useUserStore.getState().token
+    const token = getToken()
     if (token) {
       config.headers.Authorization = token
     }
