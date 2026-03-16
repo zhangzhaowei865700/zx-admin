@@ -38,19 +38,33 @@ const getAuthorizationToken = (headers?: Record<string, string>) => {
   return headers.Authorization || headers.authorization || ''
 }
 
-const getSessionByAuth = (headers?: Record<string, string>) => {
-  const auth = getAuthorizationToken(headers) || latestAccessToken
-  if (!auth) return null
-  const session = accessSessions.get(auth)
+export const getSessionByAuth = (headers?: Record<string, string>) => {
+  const headerToken = getAuthorizationToken(headers)
+
+  // 严格验证：必须有 header token 且在 session 中存在
+  if (!headerToken) return null
+
+  const session = accessSessions.get(headerToken)
   if (!session) return null
+
   if (Date.now() - session.createdAt > ACCESS_TOKEN_EXPIRE_MS) {
-    accessSessions.delete(auth)
+    accessSessions.delete(headerToken)
     return null
   }
+
   return session
 }
 
-const unauthorized = (msg: string) => ({ code: LOGIN_CODE, data: null, msg })
+export const unauthorized = (msg: string) => ({ code: LOGIN_CODE, data: null, msg })
+
+/** 包装 mock response，自动验证 token，未授权时返回 401 */
+export const withAuth = <T extends { headers?: Record<string, string> }>(
+  fn: (ctx: T) => unknown
+) => (ctx: T) => {
+  const session = getSessionByAuth(ctx.headers)
+  if (!session) return unauthorized('登录已过期')
+  return fn(ctx)
+}
 
 export default [
   {

@@ -5,6 +5,7 @@ import {
   hydrateRoleNames,
   type StoreUser, type StoreRole, type StoreMenu,
 } from './_store'
+import { withAuth } from './auth'
 
 const now = () => new Date().toISOString().slice(0, 10)
 
@@ -41,7 +42,7 @@ export default [
   {
     url: '/api/admin/system/user/list',
     method: 'POST',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const pageNum = Number(body?.pageNum) || 1
       const pageSize = Number(body?.pageSize) || 10
       let filtered = [...users]
@@ -54,7 +55,7 @@ export default [
       const start = (pageNum - 1) * pageSize
       const list = filtered.slice(start, start + pageSize).map(toSystemUser)
       return { code: 200, data: { list, total }, msg: 'success' }
-    },
+    }),
   },
   {
     url: '/api/admin/system/user/:id',
@@ -254,20 +255,20 @@ export default [
   {
     url: '/api/admin/system/menu/tree',
     method: 'GET',
-    response: () => ({ code: 200, data: menus, msg: 'success' }),
+    response: withAuth(() => ({ code: 200, data: menus, msg: 'success' })),
   },
   {
     url: '/api/admin/system/menu/:id',
     method: 'GET',
-    response: ({ query }: { query: Record<string, string> }) => {
+    response: withAuth(({ query }: { query: Record<string, string>; headers?: Record<string, string> }) => {
       const menu = findMenuInTree(menus, Number(query?.id))
       return { code: 200, data: menu || null, msg: 'success' }
-    },
+    }),
   },
   {
     url: '/api/admin/system/menu',
     method: 'POST',
-    response: ({ body }: { body: Record<string, any> }) => {
+    response: withAuth(({ body }: { body: Record<string, any>; headers?: Record<string, string> }) => {
       const id = nextIdFromTree(menus)
       const newMenu: StoreMenu = {
         id,
@@ -291,12 +292,12 @@ export default [
         insertMenuInTree(menus, newMenu.parentId, newMenu)
       }
       return { code: 200, data: { id }, msg: '新增成功' }
-    },
+    }),
   },
   {
     url: '/api/admin/system/menu/:id',
     method: 'PUT',
-    response: ({ query, body }: { query: Record<string, string>; body: Record<string, any> }) => {
+    response: withAuth(({ query, body }: { query: Record<string, string>; body: Record<string, any>; headers?: Record<string, string> }) => {
       const id = Number(query?.id)
       const updates: Partial<StoreMenu> = {}
       if (body.name !== undefined) updates.name = body.name
@@ -311,21 +312,21 @@ export default [
       updates.updatedAt = now()
       updateMenuInTree(menus, id, updates)
       return { code: 200, data: null, msg: '更新成功' }
-    },
+    }),
   },
   {
     url: '/api/admin/system/menu/:id',
     method: 'DELETE',
-    response: ({ query }: { query: Record<string, string> }) => {
+    response: withAuth(({ query }: { query: Record<string, string>; headers?: Record<string, string> }) => {
       deleteMenuFromTree(menus, Number(query?.id))
       return { code: 200, data: null, msg: '删除成功' }
-    },
+    }),
   },
 
   // ==================== 部门管理 ====================
   {
     url: '/api/admin/system/dept/tree',
     method: 'GET',
-    response: () => ({ code: 200, data: depts, msg: 'success' }),
+    response: withAuth(() => ({ code: 200, data: depts, msg: 'success' })),
   },
 ]

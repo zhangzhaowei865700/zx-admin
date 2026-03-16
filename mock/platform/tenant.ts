@@ -1,3 +1,5 @@
+import { withAuth } from './auth'
+
 const mockTenants = [
   { id: 1, name: '星巴克旗舰店', code: 'T001', status: 1, contact: '张经理', phone: '13800138001', email: 'starbucks@example.com', address: '北京市朝阳区建国路88号', createdAt: '2024-01-05 09:30:00' },
   { id: 2, name: '肯德基中心店', code: 'T002', status: 1, contact: '李经理', phone: '13800138002', email: 'kfc@example.com', address: '上海市浦东新区陆家嘴环路166号', createdAt: '2024-01-12 14:20:00' },
@@ -16,7 +18,7 @@ export default [
   {
     url: '/api/admin/tenant/list',
     method: 'POST',
-    response: ({ body }: { body: Record<string, string> }) => {
+    response: withAuth(({ body }: { body: Record<string, string>; headers?: Record<string, string> }) => {
       const pageNum = Number(body?.pageNum) || 1
       const pageSize = Number(body?.pageSize) || 10
       let filtered = [...mockTenants]
@@ -34,49 +36,49 @@ export default [
         data: { list, total: filtered.length },
         msg: 'success',
       }
-    },
+    }),
   },
   // 新增商户
   {
     url: '/api/admin/tenant',
     method: 'POST',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: { id: mockTenants.length + 1 },
       msg: '新增成功',
-    }),
+    })),
   },
   // 更新商户
   {
     url: '/api/admin/tenant/:id',
     method: 'PUT',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: null,
       msg: '更新成功',
-    }),
+    })),
   },
   // 删除商户
   {
     url: '/api/admin/tenant/:id',
     method: 'DELETE',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: null,
       msg: '删除成功',
-    }),
+    })),
   },
   // 获取商户详情
   {
     url: '/api/admin/tenant/:id',
     method: 'GET',
-    response: ({ query }: { query: { id: string } }) => {
+    response: withAuth(({ query }: { query: { id: string }; headers?: Record<string, string> }) => {
       const tenant = mockTenants.find((t) => t.id === Number(query?.id))
       return {
         code: 200,
         data: tenant || null,
         msg: tenant ? 'success' : '商户不存在',
       }
-    },
+    }),
   },
 ]

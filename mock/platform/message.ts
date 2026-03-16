@@ -1,3 +1,5 @@
+import { withAuth } from './auth'
+
 const mockMessages = [
   // 公告
   { id: 1, title: '系统升级通知', content: '尊敬的用户，系统将于2026年3月15日凌晨2:00-6:00进行版本升级维护，届时系统将暂停服务，请提前做好相关安排。本次升级将优化系统性能，修复已知问题，并新增多项功能。', type: 'announcement', priority: 'important', senderId: 1, senderName: '系统管理员', isRead: false, createdAt: '2026-03-08 10:00:00' },
@@ -31,7 +33,7 @@ export default [
   {
     url: '/api/admin/message/list',
     method: 'POST',
-    response: ({ body }: any) => {
+    response: withAuth(({ body }: any) => {
       const { pageNum = 1, pageSize = 10, type, isRead, keyword } = body || {}
       let filtered = [...mockMessages]
       if (type) filtered = filtered.filter((m) => m.type === type)
@@ -40,13 +42,13 @@ export default [
       filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       const start = (pageNum - 1) * pageSize
       return { code: 200, data: { list: filtered.slice(start, start + pageSize), total: filtered.length }, msg: 'success' }
-    },
+    }),
   },
   // 标记已读
   {
     url: '/api/admin/message/read',
     method: 'POST',
-    response: ({ body }: any) => {
+    response: withAuth(({ body }: any) => {
       const { ids } = body || {}
       if (ids) {
         ids.forEach((id: number) => {
@@ -55,22 +57,22 @@ export default [
         })
       }
       return { code: 200, data: null, msg: '标记成功' }
-    },
+    }),
   },
   // 全部已读
   {
     url: '/api/admin/message/read-all',
     method: 'POST',
-    response: () => {
+    response: withAuth(() => {
       mockMessages.forEach((m) => (m.isRead = true))
       return { code: 200, data: null, msg: '全部已读' }
-    },
+    }),
   },
   // 删除消息
   {
     url: '/api/admin/message/delete',
     method: 'POST',
-    response: ({ body }: any) => {
+    response: withAuth(({ body }: any) => {
       const { ids } = body || {}
       if (ids) {
         ids.forEach((id: number) => {
@@ -79,13 +81,13 @@ export default [
         })
       }
       return { code: 200, data: null, msg: '删除成功' }
-    },
+    }),
   },
   // 未读数统计
   {
     url: '/api/admin/message/unread-count',
     method: 'GET',
-    response: () => {
+    response: withAuth(() => {
       const unread = mockMessages.filter((m) => !m.isRead)
       return {
         code: 200,
@@ -97,16 +99,16 @@ export default [
         },
         msg: 'success',
       }
-    },
+    }),
   },
   // 消息详情（放在最后，避免 :id 匹配到 unread-count 等路径）
   {
     url: '/api/admin/message/:id',
     method: 'GET',
-    response: ({ query }: any) => {
+    response: withAuth(({ query }: any) => {
       const msg = mockMessages.find((m) => m.id === Number(query?.id))
       if (msg) msg.isRead = true
       return { code: 200, data: msg || null, msg: 'success' }
-    },
+    }),
   },
 ]

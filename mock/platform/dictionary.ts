@@ -1,3 +1,5 @@
+import { withAuth } from './auth'
+
 const mockDictData: Record<string, Array<{ id: number; dictType: string; value: string | number; label: string; color?: string; sort: number }>> = {
   order_status: [
     { id: 1, dictType: 'order_status', value: 0, label: '待支付', color: 'default', sort: 1 },
@@ -33,16 +35,16 @@ export default [
   {
     url: '/api/system/dict/types',
     method: 'get',
-    response: () => ({
+    response: withAuth(() => ({
       code: 200,
       data: mockDictTypes,
       msg: 'ok',
-    }),
+    })),
   },
   {
     url: '/api/system/dict/items/:dictType',
     method: 'get',
-    response: ({ url }: { url: string }) => {
+    response: withAuth(({ url }: { url: string; headers?: Record<string, string> }) => {
       const dictType = url.split('/').pop() || ''
       const items = mockDictData[dictType] || []
       return {
@@ -50,6 +52,6 @@ export default [
         data: items,
         msg: 'ok',
       }
-    },
+    }),
   },
 ]
