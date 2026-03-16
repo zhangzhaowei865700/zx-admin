@@ -7,6 +7,7 @@ interface UserState {
   saasName: string
   userInfo: User | null
   permissions: string[]
+  _hasHydrated: boolean
   setToken: (token: string) => void
   setSaasName: (name: string) => void
   setUserInfo: (info: User) => void
@@ -21,6 +22,7 @@ export const useUserStore = create<UserState>()(
       saasName: '',
       userInfo: null,
       permissions: [],
+      _hasHydrated: false,
       setToken: (token) => set({ token }),
       setSaasName: (saasName) => set({ saasName }),
       setUserInfo: (userInfo) => set({ userInfo }),
@@ -34,6 +36,14 @@ export const useUserStore = create<UserState>()(
         saasName: state.saasName,
         permissions: state.permissions,
       }),
+      onRehydrateStorage: () => (state) => {
+        // 无论恢复成功还是失败，都标记水合完成，避免 Guard 永久空白
+        if (state) {
+          state._hasHydrated = true
+        } else {
+          useUserStore.setState({ _hasHydrated: true })
+        }
+      },
     }
   )
 )

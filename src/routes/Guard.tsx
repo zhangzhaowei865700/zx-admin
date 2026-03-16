@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { Navigate, matchRoutes, useLocation } from 'react-router-dom'
 import { useUserStore } from '@/stores/useUserStore'
+import { getToken } from '@/utils/storage'
 import { routes } from './routes'
 
 const WHITE_LIST = ['/login', '/403', '/404']
@@ -20,9 +21,15 @@ const getRequiredPermission = (pathname: string): string | undefined => {
 }
 
 export const Guard = memo(function Guard({ children }: { children: React.ReactNode }) {
-  const { token, permissions } = useUserStore()
+  const { permissions, _hasHydrated } = useUserStore()
+  const token = getToken()
   const location = useLocation()
   const normalizedPath = location.pathname.replace(/\/+$/, '') || '/'
+
+  // 等待 Zustand persist 从 localStorage 恢复完成
+  if (!_hasHydrated) {
+    return null
+  }
 
   if (!token && normalizedPath !== '/login') {
     return <Navigate to="/login" state={{ from: location }} replace />

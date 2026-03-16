@@ -61,6 +61,7 @@ export const LoginPage: React.FC = () => {
             message.error(t('common:loginExpired'))
             storeLogout()
             removeUserInfo()
+            setStep('login')  // 重置到登录步骤
             navigate('/login', { replace: true })
             return
           }
