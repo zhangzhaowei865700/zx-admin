@@ -25,8 +25,23 @@ g.__mockAccessSessions = accessSessions
 g.__mockTokenRef = tokenRef
 
 const buildTempToken = () => `temp-token-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-const buildAccessToken = (platformId: number) =>
-  `token-platform-${platformId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+const buildAccessToken = (platformId: number, username: string) => {
+  const payload = btoa(`${platformId}:${username}`)
+  return `mock-token.${payload}.${Date.now().toString(36)}.${Math.random().toString(36).slice(2, 8)}`
+}
+
+/** 尝试从 token 字符串解析出嵌入的 platformId 和 username（用于开发服务器重启后自动恢复 session） */
+const parseTokenPayload = (token: string): { platformId: number; username: string } | null => {
+  const parts = token.split('.')
+  if (parts.length !== 4 || parts[0] !== 'mock-token') return null
+  try {
+    const [platformId, username] = atob(parts[1]).split(':')
+    if (!platformId || !username) return null
+    return { platformId: Number(platformId), username }
+  } catch {
+    return null
+  }
+}
 
 const buildLoginPayload = (user: StoreUser, platformId: number, token: string) => {
   const platform = platforms.find((p) => p.id === platformId)
@@ -50,14 +65,23 @@ export const getSessionByAuth = (headers?: Record<string, string>) => {
   if (!headerToken) return null
 
   const session = accessSessions.get(headerToken)
-  if (!session) return null
-
-  if (Date.now() - session.createdAt > ACCESS_TOKEN_EXPIRE_MS) {
-    accessSessions.delete(headerToken)
-    return null
+  if (session) {
+    if (Date.now() - session.createdAt > ACCESS_TOKEN_EXPIRE_MS) {
+      accessSessions.delete(headerToken)
+      return null
+    }
+    return session
   }
 
-  return session
+  // session 不存在时，尝试从 token 中解析用户信息（开发服务器重启后自动恢复）
+  const payload = parseTokenPayload(headerToken)
+  if (!payload) return null
+  const user = users.find((u) => u.username === payload.username)
+  if (!user || !user.platformIds.includes(payload.platformId)) return null
+
+  const restored: AccessSession = { username: payload.username, platformId: payload.platformId, createdAt: Date.now() }
+  accessSessions.set(headerToken, restored)
+  return restored
 }
 
 export const unauthorized = (msg: string) => ({ code: LOGIN_CODE, data: null, msg })
@@ -114,7 +138,7 @@ export default [
       }
 
       tempSessions.delete(tempToken)
-      const accessToken = buildAccessToken(platformId)
+      const accessToken = buildAccessToken(platformId, session.username)
       accessSessions.set(accessToken, { username: session.username, platformId, createdAt: Date.now() })
       tokenRef.value = accessToken
 
@@ -179,7 +203,7 @@ export default [
       const oldToken = getAuthorizationToken(headers)
       if (oldToken) accessSessions.delete(oldToken)
 
-      const newToken = buildAccessToken(platformId)
+      const newToken = buildAccessToken(platformId, session.username)
       accessSessions.set(newToken, { username: session.username, platformId, createdAt: Date.now() })
       tokenRef.value = newToken
 
