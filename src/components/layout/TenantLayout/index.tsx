@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
 import { useAppStore, useUserStore } from '@/stores'
 import { getTenantDetail } from '@/api/modules/platform'
-import { getTenantMenuItems } from '@/constants/menu'
-import type { MenuItem } from '@/constants/menu'
+import { getTenantMenuItems } from '@/config/routes'
+import type { MenuItem } from '@/config/routes'
 import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions, ActionDivider } from '../HeaderActions'
@@ -56,7 +56,7 @@ export const TenantLayout: React.FC = () => {
   }, [tenantId])
 
   const basePath = `/tenant-admin/${tenantId}`
-  const filteredMenuItems = useMemo(
+  const filteredMenuItems = useMemo<MenuItem[]>(
     () => filterMenuByPermissions(getTenantMenuItems(), permissions),
     [permissions, t]
   )

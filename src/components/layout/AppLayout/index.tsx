@@ -4,7 +4,7 @@ import { SwapOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore, useUserStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { getPlatformMenuItems, type MenuItem } from '@/constants/menu'
+import { getPlatformMenuItems, type MenuItem } from '@/config/routes'
 import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
 import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, NotificationBell, LanguageSwitch, OverflowActions, ActionDivider } from '../HeaderActions'
@@ -42,7 +42,7 @@ export const AppLayout: FC = () => {
   })))
 
   // 根据当前路径提取应该展开的父菜单 key
-  const filteredMenuItems = useMemo(
+  const filteredMenuItems = useMemo<MenuItem[]>(
     () => filterMenuByPermissions(getPlatformMenuItems(), permissions),
     [permissions, t]
   )

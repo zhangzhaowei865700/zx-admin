@@ -5,8 +5,7 @@ import type { MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores'
 import { useShallow } from 'zustand/react/shallow'
-import { getPlatformMenuLabelByPath } from '@/constants/menu'
-import { getTenantMenuLabelByPath } from '@/constants/menu'
+import { getPlatformMenuLabelByPath, getTenantMenuLabelByPath } from '@/config/routes'
 import './index.css'
 
 /** 判断当前路径属于哪套后台 */
