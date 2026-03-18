@@ -98,63 +98,63 @@ export let menus: StoreMenu[] = [
           m(212, 21, '新增', 'tenant:list:create', 3, 1),
           m(213, 21, '编辑', 'tenant:list:update', 3, 2),
           m(214, 21, '删除', 'tenant:list:delete', 3, 3),
-          m(215, 21, '进入后台', 'tenant:list:backend', 3, 4, {
+          m(215, 21, '后台', 'tenant:list:backend', 3, 4, {
             children: [
-              m(51, 215, '工作台', 'backend:dashboard', 2, 0, { path: 'dashboard', icon: 'DashboardOutlined' }),
-              m(52, 215, '订单管理', 'backend:order', 2, 1, {
+              m(51, 215, '工作台', 'tenant:list:backend:dashboard', 2, 0, { path: 'dashboard', icon: 'DashboardOutlined' }),
+              m(52, 215, '订单管理', 'tenant:list:backend:order', 2, 1, {
                 path: 'order', icon: 'ShoppingCartOutlined',
                 children: [
-                  m(521, 52, '查看', 'backend:order:view', 3, 0),
-                  m(522, 52, '删除', 'backend:order:delete', 3, 1),
+                  m(521, 52, '查看', 'tenant:list:backend:order:view', 3, 0),
+                  m(522, 52, '删除', 'tenant:list:backend:order:delete', 3, 1),
                 ],
               }),
-              m(53, 215, '商品管理', 'backend:product', 2, 2, {
+              m(53, 215, '商品管理', 'tenant:list:backend:product', 2, 2, {
                 path: 'product', icon: 'ShopOutlined',
                 children: [
-                  m(531, 53, '查看', 'backend:product:view', 3, 0),
-                  m(532, 53, '新增', 'backend:product:create', 3, 1),
-                  m(533, 53, '编辑', 'backend:product:update', 3, 2),
-                  m(534, 53, '删除', 'backend:product:delete', 3, 3),
+                  m(531, 53, '查看', 'tenant:list:backend:product:view', 3, 0),
+                  m(532, 53, '新增', 'tenant:list:backend:product:create', 3, 1),
+                  m(533, 53, '编辑', 'tenant:list:backend:product:update', 3, 2),
+                  m(534, 53, '删除', 'tenant:list:backend:product:delete', 3, 3),
                 ],
               }),
-              m(54, 215, '店铺设置', 'backend:setting', 2, 3, {
+              m(54, 215, '店铺设置', 'tenant:list:backend:setting', 2, 3, {
                 path: 'setting', icon: 'SettingOutlined',
                 children: [
-                  m(541, 54, '查看/编辑', 'backend:setting:view', 3, 0),
+                  m(541, 54, '查看/编辑', 'tenant:list:backend:setting:view', 3, 0),
                 ],
               }),
-              m(55, 215, '系统管理', 'backend:system', 1, 4, {
+              m(55, 215, '系统管理', 'tenant:list:backend:system', 1, 4, {
                 path: 'system', icon: 'SettingOutlined',
                 children: [
-                  m(551, 55, '权限概览', 'backend:system:overview', 2, 0, { path: 'system/overview' }),
-                  m(552, 55, '用户管理', 'backend:system:user', 2, 1, {
+                  m(551, 55, '权限概览', 'tenant:list:backend:system:overview', 2, 0, { path: 'system/overview' }),
+                  m(552, 55, '用户管理', 'tenant:list:backend:system:user', 2, 1, {
                     path: 'system/user', icon: 'UserOutlined',
                     children: [
-                      m(5521, 552, '查看', 'backend:system:user:view', 3, 0),
-                      m(5522, 552, '新增', 'backend:system:user:create', 3, 1),
-                      m(5523, 552, '编辑', 'backend:system:user:update', 3, 2),
-                      m(5524, 552, '删除', 'backend:system:user:delete', 3, 3),
+                      m(5521, 552, '查看', 'tenant:list:backend:system:user:view', 3, 0),
+                      m(5522, 552, '新增', 'tenant:list:backend:system:user:create', 3, 1),
+                      m(5523, 552, '编辑', 'tenant:list:backend:system:user:update', 3, 2),
+                      m(5524, 552, '删除', 'tenant:list:backend:system:user:delete', 3, 3),
                     ],
                   }),
-                  m(553, 55, '角色管理', 'backend:system:role', 2, 2, {
+                  m(553, 55, '角色管理', 'tenant:list:backend:system:role', 2, 2, {
                     path: 'system/role', icon: 'SafetyCertificateOutlined',
                     children: [
-                      m(5531, 553, '查看', 'backend:system:role:view', 3, 0),
-                      m(5532, 553, '编辑', 'backend:system:role:update', 3, 1),
-                      m(5533, 553, '新增', 'backend:system:role:create', 3, 2),
-                      m(5534, 553, '删除', 'backend:system:role:delete', 3, 3),
+                      m(5531, 553, '查看', 'tenant:list:backend:system:role:view', 3, 0),
+                      m(5532, 553, '编辑', 'tenant:list:backend:system:role:update', 3, 1),
+                      m(5533, 553, '新增', 'tenant:list:backend:system:role:create', 3, 2),
+                      m(5534, 553, '删除', 'tenant:list:backend:system:role:delete', 3, 3),
                     ],
                   }),
-                  m(554, 55, '菜单管理', 'backend:system:menu', 2, 3, {
+                  m(554, 55, '菜单管理', 'tenant:list:backend:system:menu', 2, 3, {
                     path: 'system/menu', icon: 'MenuOutlined',
                     children: [
-                      m(5541, 554, '查看', 'backend:system:menu:view', 3, 0),
-                      m(5542, 554, '编辑', 'backend:system:menu:update', 3, 1),
-                      m(5543, 554, '新增', 'backend:system:menu:create', 3, 2),
-                      m(5544, 554, '删除', 'backend:system:menu:delete', 3, 3),
+                      m(5541, 554, '查看', 'tenant:list:backend:system:menu:view', 3, 0),
+                      m(5542, 554, '编辑', 'tenant:list:backend:system:menu:update', 3, 1),
+                      m(5543, 554, '新增', 'tenant:list:backend:system:menu:create', 3, 2),
+                      m(5544, 554, '删除', 'tenant:list:backend:system:menu:delete', 3, 3),
                     ],
                   }),
-                  m(555, 55, '权限管理', 'backend:system:permission', 2, 4, { path: 'system/permission' }),
+                  m(555, 55, '权限管理', 'tenant:list:backend:system:permission', 2, 4, { path: 'system/permission' }),
                 ],
               }),
             ],
