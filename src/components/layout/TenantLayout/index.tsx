@@ -9,7 +9,7 @@ import { getTenantMenuItems } from '@/config/routes'
 import type { MenuItem } from '@/config/routes'
 import { filterMenuByPermissions } from '@/services/menu.service'
 import { BaseLayout } from '../BaseLayout'
-import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, OverflowActions, ActionDivider } from '../HeaderActions'
+import { MenuSearch, FullScreen, DarkModeToggle, LockScreenButton, LanguageSwitch, NotificationBell, OverflowActions, ActionDivider } from '../HeaderActions'
 
 // 递归转换菜单数据为 ProLayout route 格式（带 tenantId 前缀）
 const convertMenuToRoutes = (items: MenuItem[], basePath: string): any[] =>
@@ -30,7 +30,7 @@ export const TenantLayout: React.FC = () => {
     saasName: s.saasName,
     permissions: s.permissions,
   })))
-  const systemLogo = useAppStore((s) => s.systemLogo)
+  const { systemLogo, locale } = useAppStore(useShallow((s) => ({ systemLogo: s.systemLogo, locale: s.locale })))
 
   const [tenantName, setTenantName] = useState(() => {
     const nameFromUrl = searchParams.get('name')
@@ -58,7 +58,7 @@ export const TenantLayout: React.FC = () => {
   const basePath = `/tenant-admin/${tenantId}`
   const filteredMenuItems = useMemo<MenuItem[]>(
     () => filterMenuByPermissions(getTenantMenuItems(), permissions),
-    [permissions, t]
+    [permissions, locale]
   )
 
   const staticRoute = useMemo(() => ({
@@ -110,12 +110,14 @@ export const TenantLayout: React.FC = () => {
 
   const headerActions = useMemo(() => (
     <OverflowActions gap={4}>
-      {/* 功能组：搜索 */}
+      {/* 功能组：搜索和通知 */}
       <MenuSearch menuItems={filteredMenuItems} basePath={basePath} />
+      <NotificationBell />
 
       <ActionDivider />
 
-      {/* 设置组��主题、全屏、锁屏 */}
+      {/* 设置组：语言、主题、全屏、锁屏 */}
+      <LanguageSwitch />
       <DarkModeToggle />
       <FullScreen />
       <LockScreenButton />

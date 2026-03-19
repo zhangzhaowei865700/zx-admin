@@ -32,6 +32,7 @@ export const AppLayout: FC = () => {
     systemName,
     systemLogo,
     collapsed,
+    locale,
   } = useAppStore(useShallow((s) => ({
     showBreadcrumb: s.showBreadcrumb,
     menuAccordion: s.menuAccordion,
@@ -39,12 +40,13 @@ export const AppLayout: FC = () => {
     systemName: s.systemName,
     systemLogo: s.systemLogo,
     collapsed: s.collapsed,
+    locale: s.locale,
   })))
 
   // 根据当前路径提取应该展开的父菜单 key
   const filteredMenuItems = useMemo<MenuItem[]>(
     () => filterMenuByPermissions(getPlatformMenuItems(), permissions),
-    [permissions, t]
+    [permissions, locale]
   )
 
   const getParentKeys = useCallback((path: string): string[] => {

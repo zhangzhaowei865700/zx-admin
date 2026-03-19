@@ -30,6 +30,7 @@ export const MultiTabs: React.FC = () => {
     activeTabKey,
     showTabs,
     tabStyle,
+    locale,
     addTab,
     removeTab,
     removeOtherTabs,
@@ -40,6 +41,7 @@ export const MultiTabs: React.FC = () => {
     activeTabKey: s.activeTabKey,
     showTabs: s.showTabs,
     tabStyle: s.tabStyle,
+    locale: s.locale,
     addTab: s.addTab,
     removeTab: s.removeTab,
     removeOtherTabs: s.removeOtherTabs,
@@ -56,7 +58,7 @@ export const MultiTabs: React.FC = () => {
       return getTenantMenuLabelByPath(tabKey)
     }
     return getPlatformMenuLabelByPath(tabKey)
-  }, [t])
+  }, [t, locale])
 
   const filteredTabs = useMemo(
     () => isTenant

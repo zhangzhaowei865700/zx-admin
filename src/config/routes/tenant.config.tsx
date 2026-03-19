@@ -38,10 +38,9 @@ const TenantSystemMenu = lazy(() =>
 )
 
 /**
- * 租户后台统一路由配置
- * 同时定义路由和菜单，单一数据源
+ * 租户后台统一路由配置（函数形式，每次调用动态获取 i18n 翻译）
  */
-export const tenantRouteConfig: AppRouteConfig[] = [
+export const getTenantRouteConfig = (): AppRouteConfig[] => [
   {
     index: true,
     path: '',
@@ -103,10 +102,13 @@ export const tenantRouteConfig: AppRouteConfig[] = [
   },
 ]
 
+/** 兼容路由注册使用（路由结构不依赖翻译，只需初始化一次） */
+export const tenantRouteConfig: AppRouteConfig[] = getTenantRouteConfig()
+
 /**
- * 租户菜单（从统一配置生成）
+ * 租户菜单（每次调用动态生成，确保语言切换后名称更新）
  */
-export const getTenantMenuItems = (): MenuItem[] => generateMenuItems(tenantRouteConfig)
+export const getTenantMenuItems = (): MenuItem[] => generateMenuItems(getTenantRouteConfig())
 
 /**
  * 根据路径获取租户菜单名称
