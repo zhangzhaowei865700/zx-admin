@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
-import { viteMockServe } from 'vite-plugin-mock'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -38,10 +37,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       versionPlugin(appVersion),
-      viteMockServe({
-        mockPath: path.resolve(__dirname, './mock'),
-        enable: true,
-      }),
     ],
     resolve: {
       alias: {

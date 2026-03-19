@@ -12,12 +12,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import './locales'
 import './index.css'
-import { setupProdMockServer } from '../mock/mockProdServer'
-
-if (import.meta.env.MODE === 'demo') {
-  setupProdMockServer()
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,12 +26,21 @@ const queryClient = new QueryClient({
 // 其他环境使用 BrowserRouter 获得更好的 URL
 const Router = import.meta.env.MODE === 'demo' ? HashRouter : BrowserRouter
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <Router basename={import.meta.env.MODE === 'demo' ? undefined : import.meta.env.VITE_BASE_PATH}>
-        <App />
-      </Router>
-    </ThemeProvider>
-  </QueryClientProvider>
-)
+async function bootstrap() {
+  if (import.meta.env.MODE === 'demo' || import.meta.env.DEV) {
+    const { setupProdMockServer } = await import('../mock/mockProdServer')
+    await setupProdMockServer()
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <Router basename={import.meta.env.MODE === 'demo' ? undefined : import.meta.env.VITE_BASE_PATH}>
+          <App />
+        </Router>
+      </ThemeProvider>
+    </QueryClientProvider>
+  )
+}
+
+bootstrap()

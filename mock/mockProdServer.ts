@@ -1,74 +1,58 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import Mock from 'mockjs'
+import { http, HttpResponse } from 'msw'
+import { setupWorker } from 'msw/browser'
 import mockModules from './index'
 
 /**
- * Convert Express-style path pattern to RegExp and extract param names.
- * e.g. '/api/product/:id/specs' → { regex: /\/api\/product\/([^/]+)\/specs(\?.*)?$/, paramNames: ['id'] }
+ * 将现有 mock handler（vite-plugin-mock 格式）适配为 msw handler。
+ * 现有 mock 文件无需任何改动。
  */
-function pathToRegex(url: string) {
-  const paramNames: string[] = []
-  const regexStr = url.replace(/:([^/]+)/g, (_, name) => {
-    paramNames.push(name)
-    return '([^/]+)'
-  })
-  return { regex: new RegExp(regexStr + '(\\?.*)?$'), paramNames }
-}
+function adaptHandlers() {
+  return mockModules.map((item) => {
+    const { url, method = 'get', response: handler } = item
+    const methodLower = method.toLowerCase() as keyof typeof http
 
-/**
- * Extract path params from a URL using the original pattern.
- */
-function extractPathParams(url: string, pattern: RegExp, paramNames: string[]) {
-  const pathname = url.split('?')[0]
-  const match = pathname.match(pattern)
-  if (!match) return {}
-  const params: Record<string, string> = {}
-  paramNames.forEach((name, i) => {
-    params[name] = match[i + 1]
-  })
-  return params
-}
+    const mswMethod = http[methodLower]
+    if (!mswMethod) return null
 
-export function setupProdMockServer() {
-  for (const item of mockModules) {
-    const { url, method = 'get', response } = item
-    const { regex, paramNames } = pathToRegex(url)
+    return (mswMethod as typeof http.get)(url, async ({ request, params }) => {
+      let body: unknown = null
+      if (request.method !== 'GET' && request.method !== 'HEAD') {
+        try {
+          body = await request.json()
+        } catch {
+          // no body or not JSON
+        }
+      }
 
-    Mock.mock(regex, method.toLowerCase(), (options) => {
-      let body = options.body
-      try {
-        body = JSON.parse(body)
-      } catch {
-        // ignore
+      // 收集 headers 为普通对象，与现有 mock handler 的接口一致
+      const headers: Record<string, string> = {}
+      request.headers.forEach((value, key) => {
+        headers[key] = value
+      })
+
+      // URL query params
+      const query: Record<string, string> = { ...params } as Record<string, string>
+      const reqUrl = new URL(request.url)
+      reqUrl.searchParams.forEach((value, key) => {
+        query[key] = value
+      })
+
+      if (typeof handler === 'function') {
+        const result = handler({ method: request.method, body, query, headers })
+        return HttpResponse.json(result)
       }
-      const query = {
-        ...extractPathParams(options.url, regex, paramNames),
-        ...paramToObj(options.url),
-      }
-      if (typeof response === 'function') {
-        return response({
-          method: options.type,
-          body,
-          query,
-          headers: {},
-        })
-      }
-      return response
+      return HttpResponse.json(handler)
     })
-  }
+  }).filter(Boolean)
 }
 
-function paramToObj(url: string) {
-  const search = url.split('?')[1]
-  if (!search) return {}
-  return JSON.parse(
-    '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
-  )
+export async function setupProdMockServer() {
+  const handlers = adaptHandlers() as ReturnType<typeof http.get>[]
+  const worker = setupWorker(...handlers)
+  await worker.start({
+    onUnhandledRequest: 'bypass',
+    quiet: true,
+  })
 }
