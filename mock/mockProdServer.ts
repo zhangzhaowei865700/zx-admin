@@ -51,7 +51,11 @@ function adaptHandlers() {
 export async function setupProdMockServer() {
   const handlers = adaptHandlers() as ReturnType<typeof http.get>[]
   const worker = setupWorker(...handlers)
+  // 兼容子路径部署（如 GitHub Pages /ZX-Admin/），动态拼�� serviceWorker 路径
+  const base = import.meta.env.BASE_URL ?? '/'
+  const swUrl = base.replace(/\/$/, '') + '/mockServiceWorker.js'
   await worker.start({
+    serviceWorker: { url: swUrl },
     onUnhandledRequest: 'bypass',
     quiet: true,
   })
