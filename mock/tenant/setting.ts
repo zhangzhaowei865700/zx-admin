@@ -35,7 +35,7 @@ export default [
   {
     url: '/api/tenant/setting',
     method: 'PUT',
-    response: withAuth(({ body }) => {
+    response: withAuth(({ body }: { body: typeof defaultSetting; headers?: Record<string, string> }) => {
       saveStoreSetting({ ...getStoreSetting(), ...body })
       return { code: 200, data: null, msg: '保存成功' }
     }),
