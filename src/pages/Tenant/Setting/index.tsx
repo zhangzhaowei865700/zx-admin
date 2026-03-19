@@ -6,6 +6,7 @@ import { PageContainer } from '@/components/common/PageContainer'
 import { PageSkeleton } from '@/components/common/PageSkeleton'
 import { HasPermission } from '@/components/common/HasPermission'
 import { getStoreSetting, updateStoreSetting } from '@/api/modules/tenant'
+import { broadcastAppEvent, onAppEvent } from '@/utils/authChannel'
 import type { StoreSetting } from '@/types'
 
 export const TenantSettingPage: React.FC = () => {
@@ -15,16 +16,27 @@ export const TenantSettingPage: React.FC = () => {
   const [initialValues, setInitialValues] = useState<StoreSetting>()
   const { t } = useTranslation(['tenant', 'common'])
 
-  useEffect(() => {
-    const fetchSetting = async () => {
-      try {
-        const data = await getStoreSetting()
-        setInitialValues(data)
-      } finally {
-        setInitialLoading(false)
-      }
+  const fetchSetting = async () => {
+    try {
+      const data = await getStoreSetting()
+      setInitialValues(data)
+      form.setFieldsValue(data)
+    } finally {
+      setInitialLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchSetting()
+  }, [])
+
+  // 监听其他标签页的设置更新事件
+  useEffect(() => {
+    return onAppEvent((event) => {
+      if (event === 'storeSettingUpdated') {
+        fetchSetting()
+      }
+    })
   }, [])
 
   const handleSave = async () => {
@@ -33,6 +45,7 @@ export const TenantSettingPage: React.FC = () => {
       setLoading(true)
       await updateStoreSetting(values as StoreSetting)
       message.success(t('common:saveSuccess'))
+      broadcastAppEvent('storeSettingUpdated')
     } finally {
       setLoading(false)
     }
