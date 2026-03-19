@@ -102,13 +102,13 @@ export const TenantMenuPage: React.FC = () => {
       valueType: 'option',
       width: 200,
       render: (_: unknown, record: TenantAuthMenuItem) => [
-        <HasPermission key="add" code="tenant:admin:auth:menu:create">
+        <HasPermission key="add" code="tenant:list:backend:system:menu:create">
           <a onClick={() => handleEdit(undefined, record.id)}>{t('common:add')}</a>
         </HasPermission>,
-        <HasPermission key="edit" code="tenant:admin:auth:menu:update">
+        <HasPermission key="edit" code="tenant:list:backend:system:menu:update">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
-        <HasPermission key="delete" code="tenant:admin:auth:menu:delete">
+        <HasPermission key="delete" code="tenant:list:backend:system:menu:delete">
           <Popconfirm
             title={t('system:menu.confirmDeleteMenu')}
             onConfirm={() => remove.mutate(record.id)}
@@ -146,7 +146,7 @@ export const TenantMenuPage: React.FC = () => {
         search={false}
         pagination={false}
         toolBarRender={() => [
-          <HasPermission key="add" code="tenant:admin:auth:menu:create">
+          <HasPermission key="add" code="tenant:list:backend:system:menu:create">
             <Button type="primary" onClick={() => handleEdit()}>
               {t('system:menu.addMenu')}
             </Button>

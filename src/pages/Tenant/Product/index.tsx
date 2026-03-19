@@ -117,15 +117,15 @@ export const TenantProductPage: React.FC = () => {
         valueType: 'option',
         width: 200,
         render: (_text, record) => [
-          <HasPermission key="edit" code="tenant:admin:product:update">
+          <HasPermission key="edit" code="tenant:list:backend:product:update">
             <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
           </HasPermission>,
-          <HasPermission key="spec" code="tenant:admin:product:update">
+          <HasPermission key="spec" code="tenant:list:backend:product:update">
             <a onClick={() => { setSpecProduct(record); setSpecOpen(true) }}>
               {t('product:spec')}
             </a>
           </HasPermission>,
-          <HasPermission key="delete" code="tenant:admin:product:delete">
+          <HasPermission key="delete" code="tenant:list:backend:product:delete">
             <Popconfirm title={t('common:confirmDelete')} onConfirm={() => remove.mutate(record.id)}>
               <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
             </Popconfirm>
@@ -170,7 +170,7 @@ export const TenantProductPage: React.FC = () => {
         )}
         tableAlertOptionRender={({ onCleanSelected }) => (
           <Space>
-            <HasPermission key="onSale" code="tenant:admin:product:update">
+            <HasPermission key="onSale" code="tenant:list:backend:product:update">
               <a
                 onClick={() => {
                   batchStatus.mutate({ ids: selectedRowKeys as number[], status: 1 })
@@ -180,7 +180,7 @@ export const TenantProductPage: React.FC = () => {
                 {t('product:batchOnSale')}
               </a>
             </HasPermission>
-            <HasPermission key="offSale" code="tenant:admin:product:update">
+            <HasPermission key="offSale" code="tenant:list:backend:product:update">
               <a
                 onClick={() => {
                   batchStatus.mutate({ ids: selectedRowKeys as number[], status: 0 })
@@ -190,7 +190,7 @@ export const TenantProductPage: React.FC = () => {
                 {t('product:batchOffSale')}
               </a>
             </HasPermission>
-            <HasPermission key="delete" code="tenant:admin:product:delete">
+            <HasPermission key="delete" code="tenant:list:backend:product:delete">
               <Popconfirm
                 title={t('product:confirmDeleteProducts', { count: selectedRowKeys.length })}
                 onConfirm={() => {
@@ -204,7 +204,7 @@ export const TenantProductPage: React.FC = () => {
           </Space>
         )}
         toolBarRender={() => [
-          <HasPermission key="add" code="tenant:admin:product:create">
+          <HasPermission key="add" code="tenant:list:backend:product:create">
             <Button type="primary" onClick={() => handleEdit()}>
               {t('product:addProduct')}
             </Button>

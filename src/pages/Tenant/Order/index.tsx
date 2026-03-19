@@ -87,7 +87,7 @@ export const TenantOrderPage: React.FC = () => {
         )}
         tableAlertOptionRender={({ onCleanSelected }) => (
           <Space>
-            <HasPermission key="delete" code="tenant:admin:order:delete">
+            <HasPermission key="delete" code="tenant:list:backend:order:delete">
               <Popconfirm
                 title={t('order:confirmDeleteOrders', { count: selectedRowKeys.length })}
                 onConfirm={() => { batchRemove.mutate(selectedRowKeys); onCleanSelected() }}

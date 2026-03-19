@@ -90,7 +90,7 @@ export const TenantSettingPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <HasPermission code="tenant:admin:setting:update">
+            <HasPermission code="tenant:list:backend:setting:view">
               <Button type="primary" loading={loading} onClick={handleSave}>
                 {t('tenant:setting.saveSettings')}
               </Button>

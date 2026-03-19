@@ -156,10 +156,10 @@ export const TenantRolePage: React.FC = () => {
       valueType: 'option',
       width: 250,
       render: (_: unknown, record: TenantAuthRole) => [
-        <HasPermission key="edit" code="tenant:admin:auth:role:update">
+        <HasPermission key="edit" code="tenant:list:backend:system:role:update">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
-        <HasPermission key="permission" code="tenant:admin:auth:role:update">
+        <HasPermission key="permission" code="tenant:list:backend:system:role:update">
           <Dropdown
             trigger={['click']}
             menu={{
@@ -173,7 +173,7 @@ export const TenantRolePage: React.FC = () => {
             <a>{t('system:role.configPermission')}</a>
           </Dropdown>
         </HasPermission>,
-        <HasPermission key="delete" code="tenant:admin:auth:role:delete">
+        <HasPermission key="delete" code="tenant:list:backend:system:role:delete">
           <Popconfirm
             title={t('system:role.confirmDeleteRole')}
             onConfirm={() => remove.mutate(record.id)}
@@ -212,7 +212,7 @@ export const TenantRolePage: React.FC = () => {
         )}
         tableAlertOptionRender={({ onCleanSelected }) => (
           <Space>
-            <HasPermission key="delete" code="tenant:admin:auth:role:delete">
+            <HasPermission key="delete" code="tenant:list:backend:system:role:delete">
               <Popconfirm
                 title={t('system:role.confirmDeleteRoles', { count: selectedRowKeys.length })}
                 onConfirm={() => {
@@ -227,7 +227,7 @@ export const TenantRolePage: React.FC = () => {
           </Space>
         )}
         toolBarRender={() => [
-          <HasPermission key="add" code="tenant:admin:auth:role:create">
+          <HasPermission key="add" code="tenant:list:backend:system:role:create">
             <Button type="primary" onClick={handleAdd}>
               {t('system:role.addRole')}
             </Button>

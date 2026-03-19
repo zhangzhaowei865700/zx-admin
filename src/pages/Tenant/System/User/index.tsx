@@ -153,7 +153,7 @@ export const TenantUserPage: React.FC = () => {
       valueType: 'option',
       width: 200,
       render: (_: unknown, record: TenantAuthUser) => [
-        <HasPermission key="edit" code="tenant:admin:auth:user:update">
+        <HasPermission key="edit" code="tenant:list:backend:system:user:update">
           <a onClick={() => handleEdit(record)}>{t('common:edit')}</a>
         </HasPermission>,
         <Dropdown
@@ -169,7 +169,7 @@ export const TenantUserPage: React.FC = () => {
         >
           <a>{t('system:user.viewPermission')}</a>
         </Dropdown>,
-        <HasPermission key="delete" code="tenant:admin:auth:user:delete">
+        <HasPermission key="delete" code="tenant:list:backend:system:user:delete">
           <Popconfirm title={t('system:user.confirmDeleteUser')} onConfirm={() => deleteMutation.mutate(record.id)}>
             <a style={{ color: '#ff4d4f' }}>{t('common:delete')}</a>
           </Popconfirm>
@@ -195,7 +195,7 @@ export const TenantUserPage: React.FC = () => {
         rowKey="id"
         search={{ labelWidth: 'auto' }}
         toolBarRender={() => [
-          <HasPermission key="add" code="tenant:admin:auth:user:create">
+          <HasPermission key="add" code="tenant:list:backend:system:user:create">
             <Button type="primary" onClick={() => handleEdit()}>
               {t('system:user.addUser')}
             </Button>
