@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.5.0 (2026-03-20)
+
+Mock 体系升级与跨标签页同步版本，将 Mock 方案迁移至 MSW，实现配置驱动路由，支持跨标签页实时同步设置与语言，强化认证机制。
+
+### 新功能 (Features)
+
+- **MSW Mock 迁移**: 将 mock 方案从 vite-plugin-mock 迁移至 msw，支持 dev/demo 环境统一拦截
+- **Session 持久化**: token 嵌入用户信息，支持开发服务器重启后自动恢复 session
+- **商户后台菜单**: 补充商户后台菜单树（工作台/订单/商品/设置/系统管理），统一添加 `backend:` 权限前缀
+- **跨标签页设置同步**: 支持跨标签页同步 app-settings 及语言切换
+- **租户设置跨标签页同步**: 租户设置跨标签页实时同步，mock 数据持久化
+
+### 重构 (Refactor)
+
+- **配置驱动路由**: 将菜单与路由配置迁移至 `config/routes`，支持配置驱动生成路由
+- **平台级 Mock 认证统一**: 统一平台级 mock 接口认证机制，严格验证 Authorization header
+- **租户级 Mock 认证统一**: 统一租户级 mock 接口认证机制，确保与平台接口认证一致性
+- **BroadcastChannel 重构**: 跨标签页通信改用独立 BroadcastChannel，i18n 同步移至 onRehydrateStorage
+
+### 问题修复 (Bug Fixes)
+
+- **Token 验证机制**: 修复 token 验证机制，确保 localStorage 清空后立即失效；请求拦截器改用 `getToken()` 直接读取
+- **热重载 Session 丢失**: 迁移 session 存储至 globalThis，修复热重载时 session 丢失
+- **登录过期与首屏闪白**: 修复登录过期时步骤未重置及首屏路由守卫闪白问题
+- **菜单权限前缀**: 修正商户后台菜单权限前缀，统一改为 `tenant:list:backend:` 命名空间
+- **MSW 子路径部署**: 修复 msw serviceWorker 在子路径部署时 404 问题
+- **商户后台权限码**: 修正商户后台页面权限码，与 mock 菜单定义保持一致
+- **语言切换实时更新**: 修复语言切换后菜单和标签页名称未实时更新的问题
+- **类型注解补全**: 补全 tenant setting PUT handler 的参数类型注解
+
+### 文档 (Docs)
+
+- **认证机制说明**: 更新认证机制和 Mock 验证说明，���充 `withAuth` 使用方式
+- **CLAUDE.md 整理**: 整理 CLAUDE.md 结构，精简内容，新增设计原则
+
+---
+
 ## v1.4.1 (2026-03-16)
 
 权限体系优化与体验增强版本，简化权限代码格式，优化组件 props 传递，提升用户体验。
