@@ -464,6 +464,16 @@ export const useAppStore = create<AppState>()(
         tableMaxHeight: state.tableMaxHeight,
         locale: state.locale,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return
+        const dayjsLocaleMap: Record<string, string> = {
+          'zh-CN': 'zh-cn',
+          'en-US': 'en',
+          'ja-JP': 'ja',
+        }
+        i18n.changeLanguage(state.locale)
+        dayjs.locale(dayjsLocaleMap[state.locale] ?? 'zh-cn')
+      },
     }
   )
 )

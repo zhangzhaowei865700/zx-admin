@@ -58,7 +58,7 @@ export const MultiTabs: React.FC = () => {
       return getTenantMenuLabelByPath(tabKey)
     }
     return getPlatformMenuLabelByPath(tabKey)
-  }, [t, locale])
+  }, [locale])
 
   const filteredTabs = useMemo(
     () => isTenant

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, Form, Input, Switch, Button, message, Upload, Divider } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +16,7 @@ export const TenantSettingPage: React.FC = () => {
   const [initialValues, setInitialValues] = useState<StoreSetting>()
   const { t } = useTranslation(['tenant', 'common'])
 
-  const fetchSetting = async () => {
+  const fetchSetting = useCallback(async () => {
     try {
       const data = await getStoreSetting()
       setInitialValues(data)
@@ -24,11 +24,11 @@ export const TenantSettingPage: React.FC = () => {
     } finally {
       setInitialLoading(false)
     }
-  }
+  }, [form])
 
   useEffect(() => {
     fetchSetting()
-  }, [])
+  }, [fetchSetting])
 
   // 监听其他标签页的设置更新事件
   useEffect(() => {
@@ -37,7 +37,7 @@ export const TenantSettingPage: React.FC = () => {
         fetchSetting()
       }
     })
-  }, [])
+  }, [fetchSetting])
 
   const handleSave = async () => {
     try {
