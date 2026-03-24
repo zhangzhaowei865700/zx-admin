@@ -45,14 +45,6 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
-      proxy: process.env.NODE_ENV === 'production'
-        ? {
-            '/api': {
-              target: 'http://localhost:9001',
-              changeOrigin: true,
-            },
-          }
-        : undefined,
     },
     build: {
       rollupOptions: {
