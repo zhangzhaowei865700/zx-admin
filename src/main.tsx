@@ -27,7 +27,8 @@ const queryClient = new QueryClient({
 const Router = import.meta.env.MODE === 'demo' ? HashRouter : BrowserRouter
 
 async function bootstrap() {
-  if (import.meta.env.MODE === 'demo' || import.meta.env.DEV) {
+  // demo/dev 模式，或未配置真实后端（VITE_API_BASE_URL 为空）时，启用 MSW mock
+  if (import.meta.env.MODE === 'demo' || import.meta.env.DEV || !import.meta.env.VITE_API_BASE_URL) {
     const { setupProdMockServer } = await import('../mock/mockProdServer')
     await setupProdMockServer()
   }
