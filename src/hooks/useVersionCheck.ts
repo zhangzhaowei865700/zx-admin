@@ -7,8 +7,10 @@ export function useVersionCheck() {
   const [hasNewVersion, setHasNewVersion] = useState(false)
 
   const checkVersion = useCallback(async () => {
+    if (import.meta.env.DEV) return // dev 模式无 version.json，跳过
     try {
-      const res = await fetch(`/version.json?t=${Date.now()}`)
+      const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+      const res = await fetch(`${base}/version.json?t=${Date.now()}`)
       if (!res.ok) return
       const { version } = await res.json()
       if (version && version !== __APP_VERSION__) {
