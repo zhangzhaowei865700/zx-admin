@@ -51,12 +51,22 @@ function adaptHandlers() {
 export async function setupProdMockServer() {
   const handlers = adaptHandlers() as ReturnType<typeof http.get>[]
   const worker = setupWorker(...handlers)
-  // 兼容子路径部署（如 GitHub Pages /ZX-Admin/），动态拼�� serviceWorker 路径
+  // 兼容子路径部署（如 GitHub Pages /ZX-Admin/），动态拼接 serviceWorker 路径
   const base = import.meta.env.BASE_URL ?? '/'
   const swUrl = base.replace(/\/$/, '') + '/mockServiceWorker.js'
-  await worker.start({
+  const startOptions = {
     serviceWorker: { url: swUrl },
-    onUnhandledRequest: 'bypass',
+    // 导航请求（页面跳转）直接跳过，避免 service worker 内部 fetch navigate 模式报错
+    onUnhandledRequest(request: Request) {
+      if (request.mode === 'navigate') return
+    },
     quiet: true,
+  }
+  await worker.start(startOptions)
+
+  // 新部署后浏览器安装新 SW 并接管页面时，重新激活 mock handlers
+  // 否则新 SW 接管后没有 handlers，请求会穿透到真实服务器
+  navigator.serviceWorker?.addEventListener('controllerchange', () => {
+    worker.start(startOptions)
   })
 }
