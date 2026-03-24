@@ -194,7 +194,7 @@ const { tableSize, tableBordered } = useAppStore()
 ### 环境变量
 
 ```bash
-VITE_API_BASE_URL=           # 空 = 使用 vite-plugin-mock
+VITE_API_BASE_URL=           # 空 = dev 用 vite-plugin-mock，非 dev 用 MSW
 VITE_CRYPTO_ENABLED=false    # 启用 AES 加密
 VITE_APP_KEY=merchant-admin  # 请求签名
 VITE_APP_SECRET=dev-secret   # 请求签名
@@ -216,7 +216,14 @@ VITE_APP_SECRET=dev-secret   # 请求签名
 
 ## Mock 数据
 
-开发环境通过 `vite-plugin-mock` 启用，Mock 文件在 `mock/` 目录。
+Mock 文件在 `mock/` 目录，采用双系统分层架构：
+
+| 环境 | Mock 方案 | 说明 |
+|---|---|---|
+| **dev** | `vite-plugin-mock` | Node 层拦截，请求不出浏览器网络层 |
+| **demo / preview** | MSW（Service Worker） | `mock/mockProdServer.ts` 通过 `adaptHandlers()` 将同一批 mock 文件适配为 MSW handler |
+
+**两套系统不同时运行**：dev 模式只用 vite-plugin-mock，非 dev 且 `VITE_API_BASE_URL` 为空时才启动 MSW（`src/main.tsx`）。
 
 ### Mock 认证
 
@@ -237,6 +244,17 @@ export default [
 ```
 
 `withAuth` 验证 `Authorization` header 中的 token，失败返回 `{ code: 401, data: null, msg: '登录已过期' }`。
+
+### mockServiceWorker.js 定制说明
+
+`public/mockServiceWorker.js` 在 MSW 标准模板基础上追加了 `/api/` 路径过滤，防止 preview 模式下非 API 请求（静态资源、version.json 等）触发 passthrough 导致网络错误：
+
+```js
+// fetch 事件中，navigate bypass 之后：
+if (!new URL(event.request.url).pathname.startsWith('/api/')) return
+```
+
+> **注意**：执行 `npx msw init public/` 重新生成后，需手动在 navigate 检查之后补回该行。
 
 ## 核心组件
 

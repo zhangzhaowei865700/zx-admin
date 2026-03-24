@@ -56,17 +56,18 @@ export async function setupProdMockServer() {
   const swUrl = base.replace(/\/$/, '') + '/mockServiceWorker.js'
   const startOptions = {
     serviceWorker: { url: swUrl },
-    // 导航请求（页面跳转）直接跳过，避免 service worker 内部 fetch navigate 模式报错
-    onUnhandledRequest(request: Request) {
-      if (request.mode === 'navigate') return
-    },
     quiet: true,
   }
   await worker.start(startOptions)
 
-  // 新部署后浏览器安装新 SW 并接管页面时，重新激活 mock handlers
-  // 否则新 SW 接管后没有 handlers，请求会穿透到真实服务器
+  // 新部署后浏览器安装新 SW 并接管页面时，重新加载页面
+  // 直接调用 worker.start() 无法等待其完成，导致 activeClientIds 未就绪时 API 请求绕过 SW → 404
+  // reload 后走完整的 bootstrap 流程，确保 await worker.start() 完成后再渲染
+  let isReloading = false
   navigator.serviceWorker?.addEventListener('controllerchange', () => {
-    worker.start(startOptions)
+    if (!isReloading) {
+      isReloading = true
+      window.location.reload()
+    }
   })
 }

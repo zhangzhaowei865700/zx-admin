@@ -5,6 +5,10 @@
  * Mock Service Worker.
  * @see https://github.com/mswjs/msw
  * - Please do NOT modify this file.
+ *
+ * [项目定制] fetch 事件中额外添加了 /api/ 路径过滤，仅拦截 API 请求。
+ * 如需重新生成此文件（npx msw init public/），需在 navigate bypass 之后手动补回该检查：
+ *   if (!new URL(event.request.url).pathname.startsWith('/api/')) return
  */
 
 const PACKAGE_VERSION = '2.12.13'
@@ -93,6 +97,13 @@ addEventListener('fetch', function (event) {
 
   // Bypass navigation requests.
   if (event.request.mode === 'navigate') {
+    return
+  }
+
+  // Bypass non-API requests (static assets, version.json, etc.).
+  // All mock handlers use /api/ prefix; letting the SW passthrough other
+  // requests causes fetch failures in preview mode due to SW re-interception.
+  if (!new URL(event.request.url).pathname.startsWith('/api/')) {
     return
   }
 
