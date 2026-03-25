@@ -8,6 +8,15 @@ import { broadcastAuthEvent } from '@/utils/authChannel'
 import i18n from '@/locales'
 import type { ApiResponse } from '@/types'
 
+// 登录相关接口（含切换平台流程）的 401 由调用方处理，不触发全局登出
+const AUTH_ENDPOINTS = [
+  '/auth/pre-login',
+  '/auth/login-platform',
+  '/auth/platforms',
+  '/auth/switch-platform',
+]
+const isAuthFlowRequest = (url?: string) => AUTH_ENDPOINTS.some((ep) => url?.includes(ep))
+
 let isHandlingUnauthorized = false
 function handleUnauthorized() {
   if (isHandlingUnauthorized) return
@@ -65,8 +74,15 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   (response: AxiosResponse<ApiResponse | string>) => {
-    const rawPayload = cryptoEnabled ? decrypt(response.data as string) : response.data
-    if (!rawPayload || typeof rawPayload !== 'object') {
+    let rawPayload: unknown
+    try {
+      rawPayload = cryptoEnabled ? decrypt(response.data as string) : response.data
+    } catch (e) {
+      console.error('[request] Decrypt failed:', e)
+      message.error(i18n.t('common:responseError'))
+      return Promise.reject(new Error('Decrypt failed'))
+    }
+    if (!rawPayload || typeof rawPayload !== 'object' || Array.isArray(rawPayload)) {
       message.error(i18n.t('common:responseError'))
       return Promise.reject(rawPayload)
     }
@@ -77,12 +93,7 @@ service.interceptors.response.use(
     }
 
     if (code === 401) {
-      // 登录相关接口（含切换平台流程）的 401 由调用方处理，不触发全局登出
-      const isAuthFlowRequest = response.config.url?.includes('/auth/pre-login') ||
-                                response.config.url?.includes('/auth/login-platform') ||
-                                response.config.url?.includes('/auth/platforms') ||
-                                response.config.url?.includes('/auth/switch-platform')
-      if (!isAuthFlowRequest) {
+      if (!isAuthFlowRequest(response.config.url)) {
         handleUnauthorized()
       }
       return Promise.reject(rawPayload)
@@ -93,12 +104,7 @@ service.interceptors.response.use(
   },
   (error) => {
     if (error?.response?.status === 401) {
-      // 登录相关接口（含切换平台流程）的 401 由调用方处理，不触发全局登出
-      const isAuthFlowRequest = error?.config?.url?.includes('/auth/pre-login') ||
-                                error?.config?.url?.includes('/auth/login-platform') ||
-                                error?.config?.url?.includes('/auth/platforms') ||
-                                error?.config?.url?.includes('/auth/switch-platform')
-      if (!isAuthFlowRequest) {
+      if (!isAuthFlowRequest(error?.config?.url)) {
         handleUnauthorized()
       }
       return Promise.reject(error)
