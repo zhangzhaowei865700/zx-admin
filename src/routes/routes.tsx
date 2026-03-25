@@ -4,6 +4,8 @@ import { platformRoutes } from './modules/platform'
 import { tenantRoutes } from './modules/tenant'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { TenantLayout } from '@/components/layout/TenantLayout'
+import { NotFoundPage } from '@/pages/Exception/404'
+import { ForbiddenPage } from '@/pages/Exception/403'
 
 const Login = lazy(() => import('@/pages/Login').then((m) => ({ default: m.LoginPage })))
 
@@ -13,8 +15,6 @@ const LoginFallback = () => (
     <div style={{ width: 480, background: '#fff' }} />
   </div>
 )
-const NotFound = lazy(() => import('@/pages/Exception/404').then((m) => ({ default: m.NotFoundPage })))
-const Forbidden = lazy(() => import('@/pages/Exception/403').then((m) => ({ default: m.ForbiddenPage })))
 
 export const routes: RouteObject[] = [
   {
@@ -23,7 +23,7 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/403',
-    element: <Forbidden />,
+    element: <ForbiddenPage />,
   },
   {
     path: '/',
@@ -37,6 +37,6 @@ export const routes: RouteObject[] = [
   },
   {
     path: '*',
-    element: <NotFound />,
+    element: <NotFoundPage />,
   },
 ]
