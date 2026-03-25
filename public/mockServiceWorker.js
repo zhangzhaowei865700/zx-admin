@@ -43,6 +43,10 @@ addEventListener('message', async function (event) {
 
   switch (event.data) {
     case 'KEEPALIVE_REQUEST': {
+      // SW 被浏览器闲置终止后重启时，activeClientIds 会清空。
+      // 心跳消息是客户端持续发送的，利用它将客户端 ID 重新注册，
+      // 确保 SW 重启后下一次心跳即可恢复 mock 拦截，无需页面刷新。
+      activeClientIds.add(clientId)
       sendToClient(client, {
         type: 'KEEPALIVE_RESPONSE',
       })

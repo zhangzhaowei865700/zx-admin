@@ -70,4 +70,12 @@ export async function setupProdMockServer() {
       window.location.reload()
     }
   })
+
+  // SW 被浏览器闲置终止后重启时，内存中的 activeClientIds 会清空，导致请求绕过 mock → 404/405
+  // 页面重新可见时重新调用 worker.start()，触发 MOCK_ACTIVATE 消息，将客户端 ID 重新注册到 SW
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      worker.start(startOptions).catch(() => {})
+    }
+  })
 }

@@ -254,7 +254,15 @@ export default [
 if (!new URL(event.request.url).pathname.startsWith('/api/')) return
 ```
 
-> **注意**：执行 `npx msw init public/` 重新生成后，需手动在 navigate 检查之后补回该行。
+> **注意**：执行 `npx msw init public/` 重新生成后，需手动补回以下两处修改：
+> 1. navigate bypass 之后加 `/api/` 路径过滤
+> 2. `KEEPALIVE_REQUEST` handler 中加 `activeClientIds.add(clientId)`（用于 SW 闲置重启后自动恢复）
+
+### SW 闲置终止后的重激活
+
+浏览器会在 SW 闲置一段时间后将其终止。SW 重启后内存中的 `activeClientIds` 清空，导致请求绕过 mock 直接到 Vite 静态服务器（GET → 404，POST → 405）。
+
+`mock/mockProdServer.ts` 通过监听 `visibilitychange` 解决此问题：页面重新可见时重调 `worker.start()`，触发 `MOCK_ACTIVATE` 消息将客户端 ID 重新注册到 SW。
 
 ## 核心组件
 
