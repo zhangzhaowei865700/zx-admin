@@ -58,11 +58,9 @@ export function usePolling(
     }
     start()
 
-    if (!visibilityAware) {
-      return () => stop()
-    }
-
+    // 始终注册监听器，在回调内部判断是否响应，避免 visibilityAware 变化时泄漏
     const handleVisibilityChange = () => {
+      if (!visibilityAware) return
       if (document.hidden) {
         stop()
       } else {
