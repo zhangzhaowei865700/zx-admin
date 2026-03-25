@@ -21,6 +21,36 @@ import type { MenuDataItem } from '@ant-design/pro-components'
 import type { ItemType } from 'antd/es/menu/interface'
 import type { User } from '@/types'
 
+// 独立提取内容区，只订阅主题相关属性，避免布局设置变化时触发内容区重渲染
+const LayoutContent = memo(function LayoutContent({ watermarkContent }: { watermarkContent: string }) {
+  const { darkMode, primaryColor, compactMode, showWatermark, watermarkText } = useAppStore(
+    useShallow((s) => ({
+      darkMode: s.darkMode,
+      primaryColor: s.primaryColor,
+      compactMode: s.compactMode,
+      showWatermark: s.showWatermark,
+      watermarkText: s.watermarkText,
+    })),
+  )
+  const finalWatermarkContent = watermarkText.trim() || watermarkContent
+  return (
+    <Watermark content={showWatermark ? finalWatermarkContent : ''}>
+      <ConfigProvider
+        theme={{
+          algorithm: [
+            darkMode ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+            ...(compactMode ? [antTheme.compactAlgorithm] : []),
+          ],
+          token: { colorPrimary: primaryColor, colorLink: primaryColor },
+        }}
+      >
+        <MultiTabs />
+        <PageTransitionWrapper />
+      </ConfigProvider>
+    </Watermark>
+  )
+})
+
 export interface BaseLayoutProps {
   /** ProLayout title */
   title: string
@@ -82,9 +112,6 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     sidebarWidth,
     darkMode,
     primaryColor,
-    compactMode,
-    showWatermark,
-    watermarkText,
     contentWidth,
     contentPadding,
     sidebarDark,
@@ -99,15 +126,12 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     sidebarWidth: s.sidebarWidth,
     darkMode: s.darkMode,
     primaryColor: s.primaryColor,
-    compactMode: s.compactMode,
-    showWatermark: s.showWatermark,
-    watermarkText: s.watermarkText,
     contentWidth: s.contentWidth,
     contentPadding: s.contentPadding,
     sidebarDark: s.sidebarDark,
   })))
 
-  const { userInfo: storeUserInfo, setUserInfo: setStoreUserInfo, logout: storeLogout } = useUserStore()
+  const { userInfo, setUserInfo: setStoreUserInfo, logout: storeLogout } = useUserStore()
   const [profileVisible, setProfileVisible] = useState(false)
   const screens = Grid.useBreakpoint()
   const isMobile = screens.md !== undefined && !screens.md
@@ -119,19 +143,13 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     }
   }, [isMobile, layoutMode, setLayoutMode])
 
-  // 从 localStorage 初始化用户信息
-  const [userInfo, setUserInfo] = useState(storeUserInfo)
+  // 从 localStorage 回填用户信息到 store（页面刷新后 userInfo 不持久化，需手动恢复）
   useEffect(() => {
-    if (!storeUserInfo) {
+    if (!userInfo) {
       const info = getUserInfo<User>()
-      if (info) {
-        setUserInfo(info)
-        setStoreUserInfo(info)
-      }
-    } else {
-      setUserInfo(storeUserInfo)
+      if (info) setStoreUserInfo(info)
     }
-  }, [storeUserInfo, setStoreUserInfo])
+  }, [userInfo, setStoreUserInfo])
 
   const handleLogout = useCallback(async () => {
     try {
@@ -209,8 +227,6 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
     { key: 'logout', label: t('common:logoutBtn'), icon: <LogoutOutlined />, danger: true },
   ], [t, extraMenuItems, userInfo?.roles])
 
-  // 导航栏暗色模式（sidebarDark 开启且非全局暗黑时）
-  // side 布局下 ProLayout 将 header 操作渲染在侧边栏底部，同样需要暗色文字
   const isNavDark = sidebarDark && !darkMode && layoutMode !== 'mix'
 
   const rightContentRender = useCallback(() => (
@@ -252,8 +268,6 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
       </Dropdown>
     </div>
   ), [userInfo, dropdownItems, handleMenuClick, headerActions, themeToken, isMobile, t, isNavDark])
-
-  const finalWatermarkContent = watermarkText.trim() || watermarkContent
 
   return (
     <>
@@ -322,20 +336,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         }}
         bgLayoutImgList={darkMode ? [] : undefined}
       >
-        <Watermark content={showWatermark ? finalWatermarkContent : ''}>
-          <ConfigProvider
-            theme={{
-              algorithm: [
-                darkMode ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-                ...(compactMode ? [antTheme.compactAlgorithm] : []),
-              ],
-              token: { colorPrimary: primaryColor, colorLink: primaryColor },
-            }}
-          >
-            <MultiTabs />
-            <PageTransitionWrapper />
-          </ConfigProvider>
-        </Watermark>
+        <LayoutContent watermarkContent={watermarkContent} />
 
         <Modal
           title={t('common:profileCenter')}
