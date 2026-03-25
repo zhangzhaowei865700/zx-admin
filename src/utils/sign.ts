@@ -10,6 +10,6 @@ interface SignParams {
 
 export function generateSign(params: SignParams): string {
   const { appKey, timestamp, nonce, body, appSecret } = params
-  const signString = `${appKey}${timestamp}${nonce}${body}${appSecret}`
+  const signString = [appKey, timestamp, nonce, body, appSecret].join('|')
   return CryptoJS.SHA256(signString).toString()
 }
