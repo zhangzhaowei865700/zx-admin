@@ -31,3 +31,9 @@ export const onAppEvent = (callback: (event: AppEvent) => void) => {
   appChannel.addEventListener('message', handler)
   return () => appChannel.removeEventListener('message', handler)
 }
+
+// 关闭所有 BroadcastChannel，供应用卸载时调用以释放资源
+export const closeAuthChannels = () => {
+  authChannel.close()
+  appChannel.close()
+}
