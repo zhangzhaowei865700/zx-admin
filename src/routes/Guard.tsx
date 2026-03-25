@@ -21,7 +21,7 @@ const getRequiredPermission = (pathname: string): string | undefined => {
 }
 
 export const Guard = memo(function Guard({ children }: { children: React.ReactNode }) {
-  const { permissions, _hasHydrated } = useUserStore()
+  const { permissions, _hasHydrated, permissionsLoaded } = useUserStore()
   const token = getToken()
   const location = useLocation()
   const normalizedPath = location.pathname.replace(/\/+$/, '') || '/'
@@ -42,7 +42,12 @@ export const Guard = memo(function Guard({ children }: { children: React.ReactNo
     }
   }
 
-  // permissions is empty: allow all (for backend-not-ready compatibility)
+  // token 存在但权限尚未从后端加载，等待中（避免放行未授权访问）
+  if (token && !permissionsLoaded && !WHITE_LIST.includes(normalizedPath)) {
+    return null
+  }
+
+  // permissions 为空数组表示完全访问（后端未配置权限或全局管理员）
   if (token && permissions.length > 0 && !WHITE_LIST.includes(normalizedPath)) {
     const requiredPermission = getRequiredPermission(normalizedPath)
     if (requiredPermission && !permissions.includes(requiredPermission)) {
