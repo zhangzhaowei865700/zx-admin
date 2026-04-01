@@ -123,8 +123,16 @@ addEventListener('fetch', function (event) {
   // Bypass all requests when there are no active clients.
   // Prevents the self-unregistered worked from handling requests
   // after it's been terminated (still remains active until the next reload).
+  //
+  // [项目定制] SW 被浏览器闲置终止重启后 activeClientIds 会清空。
+  // 利用 event.clientId（发起请求的页面 ID）直接恢复，无需等待 MOCK_ACTIVATE 往返，
+  // 避免第一个请求绕过 mock 打到 GitHub Pages 返回 404。
   if (activeClientIds.size === 0) {
-    return
+    if (event.clientId) {
+      activeClientIds.add(event.clientId)
+    } else {
+      return
+    }
   }
 
   const requestId = crypto.randomUUID()

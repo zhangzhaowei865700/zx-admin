@@ -26,13 +26,11 @@ function adaptHandlers() {
         }
       }
 
-      // 收集 headers 为普通对象，与现有 mock handler 的接口一致
       const headers: Record<string, string> = {}
       request.headers.forEach((value, key) => {
         headers[key] = value
       })
 
-      // URL query params
       const query: Record<string, string> = { ...params } as Record<string, string>
       const reqUrl = new URL(request.url)
       reqUrl.searchParams.forEach((value, key) => {
@@ -51,18 +49,25 @@ function adaptHandlers() {
 export async function setupProdMockServer() {
   const handlers = adaptHandlers() as ReturnType<typeof http.get>[]
   const worker = setupWorker(...handlers)
-  // 兼容子路径部署（如 GitHub Pages /ZX-Admin/），动态拼接 serviceWorker 路径
   const base = import.meta.env.BASE_URL ?? '/'
   const swUrl = base.replace(/\/$/, '') + '/mockServiceWorker.js'
   const startOptions = {
     serviceWorker: { url: swUrl },
     quiet: true,
   }
+
   await worker.start(startOptions)
 
-  // 新部署后浏览器安装新 SW 并接管页面时，重新加载页面
-  // 直接调用 worker.start() 无法等待其完成，导致 activeClientIds 未就绪时 API 请求绕过 SW → 404
-  // reload 后走完整的 bootstrap 流程，确保 await worker.start() 完成后再渲染
+  const sendKeepAlive = () => {
+    const controller = navigator.serviceWorker?.controller
+    if (controller) {
+      controller.postMessage('KEEPALIVE_REQUEST')
+      return
+    }
+
+    worker.start(startOptions).catch(() => {})
+  }
+
   let isReloading = false
   navigator.serviceWorker?.addEventListener('controllerchange', () => {
     if (!isReloading) {
@@ -71,11 +76,18 @@ export async function setupProdMockServer() {
     }
   })
 
-  // SW 被浏览器闲置终止后重启时，内存中的 activeClientIds 会清空，导致请求绕过 mock → 404/405
-  // 页面重新可见时重新调用 worker.start()，触发 MOCK_ACTIVATE 消息，将客户端 ID 重新注册到 SW
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      worker.start(startOptions).catch(() => {})
+      sendKeepAlive()
     }
   })
+
+  window.addEventListener('focus', sendKeepAlive)
+  window.addEventListener('pageshow', sendKeepAlive)
+  window.addEventListener('online', sendKeepAlive)
+  window.setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      sendKeepAlive()
+    }
+  }, 30_000)
 }
