@@ -262,7 +262,7 @@ if (!new URL(event.request.url).pathname.startsWith('/api/')) return
 
 浏览器会在 SW 闲置一段时间后将其终止。SW 重启后内存中的 `activeClientIds` 清空，导致请求绕过 mock 直接到 Vite 静态服务器（GET → 404，POST → 405）。
 
-`mock/mockProdServer.ts` 通过监听 `visibilitychange` 解决此问题：页面重新可见时重调 `worker.start()`，触发 `MOCK_ACTIVATE` 消息将客户端 ID 重新注册到 SW。
+`public/mockServiceWorker.js` 在 fetch 处理时自愈：当 `activeClientIds` 为空时，直接用 `event.clientId`（请求来源页面 ID）恢复拦截，无需等待 `MOCK_ACTIVATE` 往返，第一个请求即可正常 mock。
 
 ## 核心组件
 
